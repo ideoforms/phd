@@ -1,0 +1,35 @@
+# imitation-cpp gengetopt config
+#------------------------------------------------------------------------
+
+package 				"imitation-cpp"
+version 				"1.0"
+
+option "popsize"	N	"population size" 					int			no
+option "bits"		B	"environmental bits"				int			no
+option "steps"		s	"steps to run"						int			no
+
+option "mu"			m	"s.d. of mutations"					double		no
+option "alpha"		a	"fitness rolloff"					double		no
+
+option "omega0"		O	"initial metabolism"				double		no
+
+option "p_mut"		-	"prob. of bit mutation"				double		no
+option "p_switch"	-	"prob. of environment change"		double		no
+option "p_move"		-	"prob. of agent movement"			double		no
+option "p_noise"	-	"prob. of social learning noise"	double		no
+
+option "cost_soc"	-	"prob. of social learning noise"	double		no
+
+option "logfile"	L	"path to store log file"			string		no
+option "log"		l	"logging on/off"					flag		on
+option "debug"		d	"debug on/off"						flag		off
+option "batch"		b	"batch mode on/off"					flag		off
+
+option "metabolism"		-	"metabolism on/off"				flag		off
+
+option "perturbation"		-	"perturbation on/off"		flag		off
+option "perturbation_time"	-	"perturbation timestep"		int			no
+option "perturbation_size"	-	"perturbation magnitude"	double		no
+
+option "conf-file"	C	"config file to read"				string		no		default = "settings.conf"
+
