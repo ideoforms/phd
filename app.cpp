@@ -132,6 +132,7 @@ void init_logging()
 		/*
 		if (access(logfile, F_OK) != 0)
 		{
+			// TODO: get dirname of this
 			int rv = mkdir(logfile, 0755);
 			if (rv)
 			{
@@ -140,6 +141,7 @@ void init_logging()
 			}
 		}
 		*/
+		printf("logging to file %s\n", logfile);
 
 		logger = new csvwriter(logfile);
 		logger->start
