@@ -15,7 +15,6 @@ Environment::Environment(int population)
 	this->mTask = Task(settings.bits_arg).set();
 	this->mSwitchIndex = 0;
 	this->mAge = 0;
-	// this->mTask = Task().set();
 
 	cout << "bits is " << settings.bits_arg << std::endl;
 
@@ -58,6 +57,9 @@ void Environment::update()
 		// delete &mAgents[child_index];
 		mAgents[child_index] = *child;
 	}
+	/*--------------------------------------------------------------------*
+	 * metabolic reproduction
+	 *--------------------------------------------------------------------*/
 	else
 	{
 		int n = 0;
@@ -88,21 +90,28 @@ void Environment::update()
 
 void Environment::perturb(double amount)
 {
-	printf("OERsADF: %f\n", amount);
+	/*-----------------------------------------------------------------------*
+	 * cause a sudden perturbation in the environment, flipping each bit
+	 * with a probability of _amount_
+	 *-----------------------------------------------------------------------*/
 	for (int i = 0; i < settings.bits_arg; i++)
 	{
 		if (rng_coin(amount))
 		{
-			printf("flipping bit %d\n", i);
 			mTask.flip(i);
 		}
 	}
 }
 
 
-double Environment::payoff(Task task)
+double Environment::payoff(Task phenotype)
 {
-	double distance = (double) (task ^ mTask).count() / settings.bits_arg;
+	/*-----------------------------------------------------------------------*
+	 * returns the fitness for a given phenotype.
+	 * alpha_arg is used for a rapid falloff from peak, to create a sharper
+	 * fitness differential.
+	 *-----------------------------------------------------------------------*/
+	double distance = (double) (phenotype ^ mTask).count() / settings.bits_arg;
 	double proximity = 1.0 - distance;
 	double fitness = pow(proximity, 1.0 / settings.alpha_arg);
 
@@ -133,6 +142,11 @@ vector <Agent *> Environment::get_neighbours(Agent &agent)
 
 stats_t Environment::stats()
 {
+	/*--------------------------------------------------------------------*
+	 * calculate and return the current environmental statistics:
+	 *  - minimum, maximum and mean fitness
+	 *  - mean values for each of the b_evo, b_ind and b_soc traits.
+	 *--------------------------------------------------------------------*/
 	stats_t 	stats;
 
 	int 		popsize = this->get_popsize();

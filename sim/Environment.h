@@ -35,14 +35,21 @@ public:
 
 	int 				get_popsize();
 
-	double 				payoff(Task task);
+	double 				payoff(Task genotype);
 	vector <Agent *> 	get_neighbours(Agent &agent);
 
+	/*-----------------------------------------------------------------------*
+	 * define as a friend so that agents can directly access protected
+	 * properties of the environment.
+	 *-----------------------------------------------------------------------*/
 	friend class Agent;
 
 	friend ostream & operator<< (ostream &stream, const Environment &object)
 	{
-		stream << "[environment: t = " << object.mAge << ", pop = " << object.mAgents.size() << ", task = " << object.mTask << "]";
+		stream << "[environment: t = " <<
+			object.mAge << ", pop = " <<
+			object.mAgents.size() << ", task = " <<
+			object.mTask << "]";
 		return stream;
 	}
 

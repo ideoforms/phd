@@ -23,13 +23,15 @@ int main (int argc, char *argv[])
 	init_simulator();
 	init_logging();
 
+	// env = new sim::Environment(settings.popsize_arg);
 	env = new sim::Environment(settings.popsize_arg);
+	// sim = new sim::Simulation(env);
 
-	printf("    steps: %d\n", settings.steps_arg);
-	printf("    bits: %d\n", settings.bits_arg);
+	printf("    steps: %d\n",   settings.steps_arg);
+	printf("     bits: %d\n",   settings.bits_arg);
 	printf(" p_switch: %.1f\n", settings.p_switch_arg);
-	printf("      log: %d\n", settings.log_given);
-	printf("  logfile: %s\n", settings.logfile_arg);
+	printf("      log: %d\n",   settings.log_given);
+	printf("  logfile: %s\n",   settings.logfile_arg);
 
 	for (int step = 0; step < settings.steps_arg; step++)
 	{
@@ -49,13 +51,13 @@ int main (int argc, char *argv[])
 		 * update the environment, and generate stats.
 		 *---------------------------------------------------------------------*/
 		env->update();
-		stats_t stats = env->stats();
 
 		/*---------------------------------------------------------------------*
 		 * if we're logging each timestep, output accordingly.
 		 *---------------------------------------------------------------------*/
 		if (settings.log_given)
 		{
+			stats_t stats = env->stats();
 			logger->write
 			(
 			 	step,
@@ -91,11 +93,13 @@ void init_config(int argc, char *argv[])
 
 void init_simulator()
 {
+	/*---------------------------------------------------------------------*
+	 * general simulator setup (necessary for all simulation types):
+	 *  - initialise random number generator
+	 *  - redirect output to /dev/null if in batch mode
+	 *---------------------------------------------------------------------*/
 	sim::rng_init();
-}
 
-void init_logging()
-{
 	if (settings.batch_given)
 	{
 		/*---------------------------------------------------------------------*
@@ -104,6 +108,11 @@ void init_logging()
 		 *---------------------------------------------------------------------*/
 		stdout_orig = dup(1);
 		int stdout_new = open("/dev/null", O_WRONLY);
+
+		/*---------------------------------------------------------------------*
+		 * dup2 does the job of assigning the new (null) fd to descriptor 1,
+		 * so any subsequent printf statements will go into the void.
+		 *---------------------------------------------------------------------*/
 		dup2(stdout_new, 1);
 		close(stdout_new);
 
@@ -113,6 +122,10 @@ void init_logging()
 		settings.log_given = false;
 	}
 
+}
+
+void init_logging()
+{
 	if (settings.log_given)
 	{
 		/*---------------------------------------------------------------------*
@@ -126,38 +139,23 @@ void init_logging()
 		sprintf(logfile, logfile_format, timestr);
 		settings.logfile_arg = logfile;
 
-		/*---------------------------------------------------------------------*
-		 * if the directory does not already exist, create it.
-		 *---------------------------------------------------------------------*/
-		/*
-		if (access(logfile, F_OK) != 0)
-		{
-			// TODO: get dirname of this
-			int rv = mkdir(logfile, 0755);
-			if (rv)
-			{
-				printf("could not make logfile %s\n", logfile);
-				exit(1);
-			}
-		}
-		*/
 		printf("logging to file %s\n", logfile);
 
 		logger = new csvwriter(logfile);
 		logger->start
-			(
-			 	"iffffffff",
+		(
+		 	"iffffffff",
 
-				"t",
-				"evo",
-				"ind",
-				"soc",
-				"d_min",
-				"d_mean",
-				"d_max",
-				"geno",
-				"pheno"
-			);
+			"t",
+			"evo",
+			"ind",
+			"soc",
+			"d_min",
+			"d_mean",
+			"d_max",
+			"geno",
+			"pheno"
+		);
 	}
 }
 
@@ -174,17 +172,17 @@ void close_logging()
 		csvwriter batchlog(stdout);
 		batchlog.format("iiiffffff");
 		batchlog.write
-			(
-				settings.popsize_arg,
-				settings.steps_arg,
-				settings.bits_arg,
-				settings.p_switch_arg,
-				settings.p_noise_arg,
-				stats.fitness_mean,
-				stats.bevo_mean,
-				stats.bind_mean,
-				stats.bsoc_mean
-			);
+		(
+			settings.popsize_arg,
+			settings.steps_arg,
+			settings.bits_arg,
+			settings.p_switch_arg,
+			settings.p_noise_arg,
+			stats.fitness_mean,
+			stats.bevo_mean,
+			stats.bind_mean,
+			stats.bsoc_mean
+		);
 	}
 
 	if (settings.log_given)
