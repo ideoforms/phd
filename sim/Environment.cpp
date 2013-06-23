@@ -18,6 +18,7 @@ Environment::Environment(int population)
 
 	cout << "bits is " << settings.bits_arg << std::endl;
 
+	printf("creating %d agents\n", population);
 	for (int i = 0; i < population; i++)
 	{
 		Agent agent(this);
@@ -38,6 +39,12 @@ void Environment::update()
 		// cout << "fitness: " << it->fitness() << std::endl;
 	}
 
+	this->reproduce();
+	this->fluctuate();
+}
+
+void Environment::reproduce()
+{
 	/*--------------------------------------------------------------------*
 	 * birth-death reproduction
 	 *--------------------------------------------------------------------*/
@@ -77,7 +84,10 @@ void Environment::update()
 			}
 		}
 	}
+}
 
+void Environment::fluctuate()
+{
 	/*--------------------------------------------------------------------*
 	 * fluctuations
 	 *--------------------------------------------------------------------*/

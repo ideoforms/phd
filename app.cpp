@@ -23,9 +23,11 @@ int main (int argc, char *argv[])
 	init_simulator();
 	init_logging();
 
-	// env = new sim::Environment(settings.popsize_arg);
 	env = new sim::Environment(settings.popsize_arg);
+
 	// sim = new sim::Simulation(env);
+	// sim.init_config(argc, argv);
+	// sim.dump();
 
 	printf("    steps: %d\n",   settings.steps_arg);
 	printf("     bits: %d\n",   settings.bits_arg);
@@ -166,24 +168,24 @@ void close_logging()
 		fflush(stdout);
 		dup2(stdout_orig, 1);
 		close(stdout_orig);
-
-		stats_t stats = env->stats();
-
-		csvwriter batchlog(stdout);
-		batchlog.format("iiiffffff");
-		batchlog.write
-		(
-			settings.popsize_arg,
-			settings.steps_arg,
-			settings.bits_arg,
-			settings.p_switch_arg,
-			settings.p_noise_arg,
-			stats.fitness_mean,
-			stats.bevo_mean,
-			stats.bind_mean,
-			stats.bsoc_mean
-		);
 	}
+
+	stats_t stats = env->stats();
+
+	csvwriter batchlog(stdout);
+	batchlog.format("iiiffffff");
+	batchlog.write
+	(
+		settings.popsize_arg,
+		settings.steps_arg,
+		settings.bits_arg,
+		settings.p_switch_arg,
+		settings.p_noise_arg,
+		stats.fitness_mean,
+		stats.bevo_mean,
+		stats.bind_mean,
+		stats.bsoc_mean
+	);
 
 	if (settings.log_given)
 	{

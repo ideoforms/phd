@@ -54,6 +54,7 @@ const char *settings_t_help[] = {
   "      --perturbation_time=INT   perturbation timestep",
   "      --perturbation_size=DOUBLE\n                                perturbation magnitude",
   "  -C, --conf-file=STRING        config file to read  (default=`settings.conf')",
+  "  -w, --ca_width=INT            ca width  (default=`16')",
     0
 };
 
@@ -126,6 +127,7 @@ void clear_given (struct settings_t *args_info)
   args_info->perturbation_time_given = 0 ;
   args_info->perturbation_size_given = 0 ;
   args_info->conf_file_given = 0 ;
+  args_info->ca_width_given = 0 ;
 }
 
 static
@@ -154,6 +156,8 @@ void clear_args (struct settings_t *args_info)
   args_info->perturbation_size_orig = NULL;
   args_info->conf_file_arg = gengetopt_strdup ("settings.conf");
   args_info->conf_file_orig = NULL;
+  args_info->ca_width_arg = 16;
+  args_info->ca_width_orig = NULL;
   
 }
 
@@ -184,6 +188,7 @@ void init_args_info(struct settings_t *args_info)
   args_info->perturbation_time_help = settings_t_help[19] ;
   args_info->perturbation_size_help = settings_t_help[20] ;
   args_info->conf_file_help = settings_t_help[21] ;
+  args_info->ca_width_help = settings_t_help[22] ;
   
 }
 
@@ -281,6 +286,7 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->perturbation_size_orig));
   free_string_field (&(args_info->conf_file_arg));
   free_string_field (&(args_info->conf_file_orig));
+  free_string_field (&(args_info->ca_width_orig));
   
   
 
@@ -355,6 +361,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "perturbation_size", args_info->perturbation_size_orig, 0);
   if (args_info->conf_file_given)
     write_into_file(outfile, "conf-file", args_info->conf_file_orig, 0);
+  if (args_info->ca_width_given)
+    write_into_file(outfile, "ca_width", args_info->ca_width_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -635,10 +643,11 @@ config_parser_internal (
         { "perturbation_time",	1, NULL, 0 },
         { "perturbation_size",	1, NULL, 0 },
         { "conf-file",	1, NULL, 'C' },
+        { "ca_width",	1, NULL, 'w' },
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "hVN:B:s:m:a:O:L:ldbC:", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVN:B:s:m:a:O:L:ldbC:w:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -776,6 +785,18 @@ config_parser_internal (
               &(local_args_info.conf_file_given), optarg, 0, "settings.conf", ARG_STRING,
               check_ambiguity, override, 0, 0,
               "conf-file", 'C',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'w':	/* ca width.  */
+        
+        
+          if (update_arg( (void *)&(args_info->ca_width_arg), 
+               &(args_info->ca_width_orig), &(args_info->ca_width_given),
+              &(local_args_info.ca_width_given), optarg, 0, "16", ARG_INT,
+              check_ambiguity, override, 0, 0,
+              "ca_width", 'w',
               additional_error))
             goto failure;
         

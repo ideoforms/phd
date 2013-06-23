@@ -94,6 +94,9 @@ struct settings_t
   char * conf_file_arg;	/**< @brief config file to read (default='settings.conf').  */
   char * conf_file_orig;	/**< @brief config file to read original value given at command line.  */
   const char *conf_file_help; /**< @brief config file to read help description.  */
+  int ca_width_arg;	/**< @brief ca width (default='16').  */
+  char * ca_width_orig;	/**< @brief ca width original value given at command line.  */
+  const char *ca_width_help; /**< @brief ca width help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -117,6 +120,7 @@ struct settings_t
   unsigned int perturbation_time_given ;	/**< @brief Whether perturbation_time was given.  */
   unsigned int perturbation_size_given ;	/**< @brief Whether perturbation_size was given.  */
   unsigned int conf_file_given ;	/**< @brief Whether conf-file was given.  */
+  unsigned int ca_width_given ;	/**< @brief Whether ca_width was given.  */
 
 } ;
 

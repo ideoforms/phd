@@ -65,7 +65,7 @@ void Agent::reset()
 	this->mLastAction = 0;
 }
 
-int Agent::index()
+int Agent::get_index()
 {
 	for (unsigned int i = 0; i < mEnv->mAgents.size(); i++)
 	{

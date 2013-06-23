@@ -31,7 +31,7 @@ public:
 
 	void 				reset();
 	void 				update();
-	int					index();
+	int					get_index();
 
 	double				fitness();
 	Agent *				replicate();
@@ -60,6 +60,7 @@ protected:
 
 
 	friend class		Environment;
+	friend class		EnvironmentCA;
 
 };
 

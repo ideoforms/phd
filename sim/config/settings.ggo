@@ -4,6 +4,7 @@
 package 				"imitation-cpp"
 version 				"1.0"
 
+
 option "popsize"	N	"population size" 					int			no
 option "bits"		B	"environmental bits"				int			no
 option "steps"		s	"steps to run"						int			no
@@ -33,3 +34,5 @@ option "perturbation_size"	-	"perturbation magnitude"	double		no
 
 option "conf-file"	C	"config file to read"				string		no		default = "settings.conf"
 
+
+option "ca_width"	w	"ca width" 							int			no		default = "16"
