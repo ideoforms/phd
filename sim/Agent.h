@@ -31,11 +31,12 @@ public:
 
 	void 				reset();
 	void 				update();
-	int					get_index();
-
-	double				fitness();
-	Agent *				replicate();
 	void				mutate();
+	Agent *				replicate();
+
+	int					get_index() const;
+	double				get_fitness() const;
+
 
 	friend ostream& operator<< (ostream &stream, Agent &object);
 

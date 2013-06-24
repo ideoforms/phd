@@ -35,8 +35,7 @@ struct stats_t
 
 typedef boost::dynamic_bitset <> Task;
 
-typedef std::vector<Agent>::iterator agent_iterator;
-typedef std::vector<Agent *>::iterator agent_p_iterator;
+typedef std::vector<Agent *>::iterator agent_iterator;
 
 } // namespace sim
 

@@ -65,11 +65,11 @@ void Agent::reset()
 	this->mLastAction = 0;
 }
 
-int Agent::get_index()
+int Agent::get_index() const
 {
 	for (unsigned int i = 0; i < mEnv->mAgents.size(); i++)
 	{
-		if (&mEnv->mAgents[i] == this)
+		if (mEnv->mAgents[i] == this)
 			return i;
 	}
 
@@ -84,7 +84,7 @@ void Agent::normalize()
 	this->mBSoc /= sum;
 }
 
-double Agent::fitness()
+double Agent::get_fitness() const
 {
 	// return this->mEnv->fitness(*this);
 	return this->mDelta;
@@ -111,12 +111,12 @@ void Agent::update()
 			action.flip(bit);
 			break;
 		case MODE_SOC:
-			vector <Agent *> neighbours = this->mEnv->get_neighbours(*this);
+			vector <Agent *> neighbours = this->mEnv->get_neighbours(this);
 			if (neighbours.size() > 0)
 			{
 				double fitnesses[neighbours.size()];
 				for (unsigned int i = 0; i < neighbours.size(); i++)
-					fitnesses[i] = neighbours[i]->fitness();
+					fitnesses[i] = neighbours[i]->get_fitness();
 				index = roulette(fitnesses, neighbours.size());
 
 				Agent *exemplar = neighbours[index];
@@ -220,7 +220,7 @@ Agent *Agent::replicate()
 ostream& operator<< (ostream &stream, Agent &object)
 {
 	stream << setprecision(4) << fixed;
-	stream << "[agent ([ " << object.mBEvo << ", " << object.mBInd << ", " << object.mBSoc << " | " << object.mLastAction << ": " << object.fitness() << " | " << object.mGenotype << " | " << object.mPhenotype << "]) ]";
+	stream << "[agent ([ " << object.mBEvo << ", " << object.mBInd << ", " << object.mBSoc << " | " << object.mLastAction << ": " << object.get_fitness() << " | " << object.mGenotype << " | " << object.mPhenotype << "]) ]";
 	return stream;
 }
 

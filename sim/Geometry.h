@@ -16,9 +16,13 @@ class Point2D
 		void set(const T x, const T y) { this->x = x; this->y = y; }
 
 		Point2D operator +(const Point2D &v) const
-		{
-			return Point2D(x + v.x, y + v.y);
-		}
+			{ return Point2D(x + v.x, y + v.y); }
+
+		Point2D operator -(const Point2D &v) const
+			{ return Point2D(x - v.x, y - v.y); }
+
+		Point2D operator *(const T v) const
+			{ return Point2D(x * v, y * v); }
 
 		friend std::ostream & operator<< (std::ostream &stream, Point2D &v)
 		{

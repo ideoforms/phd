@@ -40,7 +40,7 @@ public:
 	int 					get_popsize();
 
 	double 					payoff(Task genotype);
-	vector <Agent *> 		get_neighbours(Agent &agent);
+	vector <Agent *> 		get_neighbours(const Agent *agent);
 
 	/*-----------------------------------------------------------------------*
 	 * define as a friend so that agents can directly access protected
@@ -57,7 +57,7 @@ public:
 		return stream;
 	}
 
-	std::vector <Agent> 	mAgents;
+	std::vector <Agent *> 	mAgents;
 
 	Task					mTask;
 	int						mSwitchIndex;
@@ -75,7 +75,7 @@ public:
 	Agent *				agent_at(unsigned x, unsigned y);
 
 	stats_t				stats();
-	vector <Agent *> 	get_neighbours(Agent &agent);
+	vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	friend class Agent;
 

@@ -24,7 +24,7 @@ EnvironmentCA::EnvironmentCA(unsigned width, unsigned height) : Environment(widt
 	int n = 0;
 	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
 	{
-		Agent *agent = &(*it);
+		Agent *agent = *it;
 		int x = n % width;
 		int y = (int) n / width;
 
@@ -36,24 +36,25 @@ EnvironmentCA::EnvironmentCA(unsigned width, unsigned height) : Environment(widt
 }
 
 
-vector <Agent *> EnvironmentCA::get_neighbours(Agent &agent)
+vector <Agent *> EnvironmentCA::get_neighbours(const Agent *agent)
 {
 	/*--------------------------------------------------------------------*
 	 * return a vector containing the 4 neighbouring agents in the 
 	 * von Neumann neighbourhood.
 	 *--------------------------------------------------------------------*/
 
-	int index = agent.get_index();
+	int index = agent->get_index();
 	Point2Di position = this->mPositions[index];
 	vector <Agent *> neighbours;
 	printf("index %d, position %d, %d\n", index, position.x, position.y);
-	neighbours.push_back(this->mGrid[this->px(position.x)][this->py(position.y)]);
-	neighbours.push_back(this->mGrid[this->nx(position.x)][this->py(position.y)]);
-	neighbours.push_back(this->mGrid[this->px(position.x)][this->ny(position.y)]);
-	neighbours.push_back(this->mGrid[this->nx(position.x)][this->ny(position.y)]);
+	neighbours.push_back(this->mGrid[this->px(position.x)][position.y]);
+	neighbours.push_back(this->mGrid[this->nx(position.x)][position.y]);
+	neighbours.push_back(this->mGrid[position.x][this->py(position.y)]);
+	neighbours.push_back(this->mGrid[position.x][this->ny(position.y)]);
 
 	return neighbours;
 }
+
 
 //Agent EnvironmentCA::agent_at(Point2Di &point)
 //{
@@ -80,14 +81,15 @@ stats_t EnvironmentCA::stats()
 
 	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
 	{
-		double fitness   = it->fitness();
+		Agent *agent = *it;
+		double fitness   = agent->get_fitness();
 		if (fitness > max_fitness) max_fitness = fitness;
 		if (fitness < min_fitness) min_fitness = fitness;
 
 		total_fitness	+= fitness;
-		total_bevo		+= it->mBEvo;
-		total_bind		+= it->mBInd;
-		total_bsoc		+= it->mBSoc;
+		total_bevo		+= agent->mBEvo;
+		total_bind		+= agent->mBInd;
+		total_bsoc		+= agent->mBSoc;
 	}
 
 	stats.fitness_min	= min_fitness;
