@@ -72,7 +72,7 @@ public:
 	EnvironmentCA(unsigned width, unsigned height);
 	~EnvironmentCA();
 
-	Agent *				agent_at(unsigned x, unsigned y);
+	void 				reproduce();
 
 	stats_t				stats();
 	vector <Agent *> 	get_neighbours(const Agent *agent);

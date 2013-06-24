@@ -55,6 +55,40 @@ vector <Agent *> EnvironmentCA::get_neighbours(const Agent *agent)
 	return neighbours;
 }
 
+void EnvironmentCA::reproduce()
+{
+	/*--------------------------------------------------------------------*
+	 * birth-death reproduction
+	 *--------------------------------------------------------------------*/
+	int popsize = this->get_popsize();
+	double fitnesses[popsize];
+	for (int i = 0; i < popsize; i++)
+		fitnesses[i] = mAgents[i]->get_fitness();
+
+	int parent_index = roulette(fitnesses, popsize);
+
+	Agent *parent = mAgents[parent_index];
+	Agent *child = parent->replicate();
+
+	Point2Di parent_loc = mPositions[parent_index];
+	Point2Di child_loc = parent_loc;
+	int location = rng_randint(4);
+	switch (location)
+	{
+		case 0: child_loc.x = this->px(child_loc.x); break;
+		case 1: child_loc.x = this->nx(child_loc.x); break;
+		case 2: child_loc.y = this->py(child_loc.y); break;
+		case 3: child_loc.y = this->ny(child_loc.y); break;
+	}
+	int child_index = this->mWidth * child_loc.y + child_loc.x;
+
+	printf("parent: [%d, %d], index = %d\n", parent_loc.x, parent_loc.y, parent_index);
+	printf(" child: [%d, %d], index = %d\n", child_loc.x, child_loc.y, child_index);
+	mAgents[child_index] = child;
+	mGrid[child_loc.x][child_loc.y] = child;
+
+	delete mAgents[child_index];
+}
 
 //Agent EnvironmentCA::agent_at(Point2Di &point)
 //{
