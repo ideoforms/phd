@@ -40,8 +40,6 @@ public:
 
 	friend ostream& operator<< (ostream &stream, Agent &object);
 
-protected:
-
 	int					mAge;
 	int					mLastAction;
 

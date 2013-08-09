@@ -30,17 +30,21 @@ public:
 	Environment(int population);
 	~Environment() {};
 
-	void 					update();
-	void 					reproduce();
-	void 					fluctuate();
-	void 					dump();
-	void					perturb(double amount = 0.5);
-	stats_t					stats();
+	/*-----------------------------------------------------------------------*
+	 * all of these declared as virtual so that they can be overriden in
+	 * subclasses and then looked up successfully
+	 *-----------------------------------------------------------------------*/
+	virtual void                update();
+	virtual void                reproduce();
+	virtual void                fluctuate();
+	virtual void                dump() {};
+	virtual void                perturb(double amount = 0.5);
+	stats_t                     stats();
 
-	int 					get_popsize();
+	int                         get_popsize();
 
-	double 					payoff(Task genotype);
-	vector <Agent *> 		get_neighbours(const Agent *agent);
+	virtual double              payoff(Task genotype);
+	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	/*-----------------------------------------------------------------------*
 	 * define as a friend so that agents can directly access protected
@@ -72,10 +76,10 @@ public:
 	EnvironmentCA(unsigned width, unsigned height);
 	~EnvironmentCA();
 
-	void 				reproduce();
+	virtual void 		reproduce();
 
 	stats_t				stats();
-	vector <Agent *> 	get_neighbours(const Agent *agent);
+	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	friend class Agent;
 
@@ -87,8 +91,6 @@ public:
 			"task = " << object.mTask << "]";
 		return stream;
 	}
-
-protected:
 
 	/*-----------------------------------------------------------------------*
 	 * A CA environment has a fixed integer width and height (which are
@@ -109,9 +111,47 @@ protected:
 	 * Store a 2D grid of cells, each of which holds precisely one agent.
 	 *-----------------------------------------------------------------------*/
 	vector <vector <Agent *> > 	mGrid;
-	vector <Point2D <int> >		mPositions;
+	vector <Point2Di>		mPositions;
 
 };
+
+class EnvironmentABM : public Environment
+{
+
+public:
+
+	EnvironmentABM(unsigned population, unsigned width, unsigned height);
+	~EnvironmentABM();
+
+    virtual void 		update();
+	virtual void 		reproduce();
+
+	stats_t				stats();
+	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
+
+	friend class Agent;
+
+	friend ostream & operator<< (ostream &stream, const EnvironmentABM &object)
+	{
+		stream << "[environment-ca: " <<
+			"t = " << object.mAge << ", " <<
+			"dim = [" << object.mWidth << ", " << object.mHeight << "], " <<
+			"task = " << object.mTask << "]";
+		return stream;
+	}
+
+	/*-----------------------------------------------------------------------*
+	 * An ABM environment has a fixed integer width and height (which are
+	 * usually the same)
+	 *-----------------------------------------------------------------------*/
+	unsigned						mWidth;
+	unsigned						mHeight;
+
+	vector <Point2Df>		mPositions;
+    vector <Point2Df>		mVelocity;
+
+};
+
 
 } // namespace sim
 

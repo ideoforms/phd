@@ -43,10 +43,12 @@ vector <Agent *> EnvironmentCA::get_neighbours(const Agent *agent)
 	 * von Neumann neighbourhood.
 	 *--------------------------------------------------------------------*/
 
+    // printf("USING ADVANCED GET_NEIGHBOURS\n");
+    
 	int index = agent->get_index();
 	Point2Di position = this->mPositions[index];
 	vector <Agent *> neighbours;
-	printf("index %d, position %d, %d\n", index, position.x, position.y);
+	// printf("index %d, position %d, %d\n", index, position.x, position.y);
 	neighbours.push_back(this->mGrid[this->px(position.x)][position.y]);
 	neighbours.push_back(this->mGrid[this->nx(position.x)][position.y]);
 	neighbours.push_back(this->mGrid[position.x][this->py(position.y)]);
@@ -82,12 +84,15 @@ void EnvironmentCA::reproduce()
 	}
 	int child_index = this->mWidth * child_loc.y + child_loc.x;
 
-	printf("parent: [%d, %d], index = %d\n", parent_loc.x, parent_loc.y, parent_index);
-	printf(" child: [%d, %d], index = %d\n", child_loc.x, child_loc.y, child_index);
-	mAgents[child_index] = child;
-	mGrid[child_loc.x][child_loc.y] = child;
+//	printf("parent: [%d, %d], index = %d\n", parent_loc.x, parent_loc.y, parent_index);
+//	cout << "       - " << *parent << std::endl;
+//	printf(" child: [%d, %d], index = %d\n", child_loc.x, child_loc.y, child_index);
+//	cout << "       - " << *child<< std::endl;
 
 	delete mAgents[child_index];
+
+	mAgents[child_index] = child;
+	mGrid[child_loc.x][child_loc.y] = child;
 }
 
 //Agent EnvironmentCA::agent_at(Point2Di &point)

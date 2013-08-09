@@ -29,10 +29,13 @@ option "batch"		b	"batch mode on/off"					flag		off
 option "metabolism"		-	"metabolism on/off"				flag		off
 
 option "perturbation"		-	"perturbation on/off"		flag		off
-option "perturbation_time"	-	"perturbation timestep"		int			no
-option "perturbation_size"	-	"perturbation magnitude"	double		no
+option "perturbation-time"	-	"perturbation timestep"		int			no
+option "perturbation-size"	-	"perturbation magnitude"	double		no
 
 option "conf-file"	C	"config file to read"				string		no		default = "settings.conf"
 
 
-option "ca_width"	w	"ca width" 							int			no		default = "16"
+option "ca-width"	w	"ca width" 							int			no		default = "16"
+option "abm-width"	W	"abm width" 						int			no		default = "512"
+option "abm-neighbourhood-type"	t	"neighbourhood type" 			int			no		default = "0"
+option "abm-neighbourhood-size"	S	"neighbourhood size" 			int			no		default = "64"

@@ -97,6 +97,15 @@ struct settings_t
   int ca_width_arg;	/**< @brief ca width (default='16').  */
   char * ca_width_orig;	/**< @brief ca width original value given at command line.  */
   const char *ca_width_help; /**< @brief ca width help description.  */
+  int abm_width_arg;	/**< @brief abm width (default='512').  */
+  char * abm_width_orig;	/**< @brief abm width original value given at command line.  */
+  const char *abm_width_help; /**< @brief abm width help description.  */
+  int abm_neighbourhood_type_arg;	/**< @brief neighbourhood type (default='0').  */
+  char * abm_neighbourhood_type_orig;	/**< @brief neighbourhood type original value given at command line.  */
+  const char *abm_neighbourhood_type_help; /**< @brief neighbourhood type help description.  */
+  int abm_neighbourhood_size_arg;	/**< @brief neighbourhood size (default='64').  */
+  char * abm_neighbourhood_size_orig;	/**< @brief neighbourhood size original value given at command line.  */
+  const char *abm_neighbourhood_size_help; /**< @brief neighbourhood size help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -117,10 +126,13 @@ struct settings_t
   unsigned int batch_given ;	/**< @brief Whether batch was given.  */
   unsigned int metabolism_given ;	/**< @brief Whether metabolism was given.  */
   unsigned int perturbation_given ;	/**< @brief Whether perturbation was given.  */
-  unsigned int perturbation_time_given ;	/**< @brief Whether perturbation_time was given.  */
-  unsigned int perturbation_size_given ;	/**< @brief Whether perturbation_size was given.  */
+  unsigned int perturbation_time_given ;	/**< @brief Whether perturbation-time was given.  */
+  unsigned int perturbation_size_given ;	/**< @brief Whether perturbation-size was given.  */
   unsigned int conf_file_given ;	/**< @brief Whether conf-file was given.  */
-  unsigned int ca_width_given ;	/**< @brief Whether ca_width was given.  */
+  unsigned int ca_width_given ;	/**< @brief Whether ca-width was given.  */
+  unsigned int abm_width_given ;	/**< @brief Whether abm-width was given.  */
+  unsigned int abm_neighbourhood_type_given ;	/**< @brief Whether abm-neighbourhood-type was given.  */
+  unsigned int abm_neighbourhood_size_given ;	/**< @brief Whether abm-neighbourhood-size was given.  */
 
 } ;
 

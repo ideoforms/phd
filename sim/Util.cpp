@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <sys/time.h>
-#include <gsl/gsl_rng.h>
-#include <gsl/gsl_randist.h>
+#include "gsl/gsl_rng.h"
+#include "gsl/gsl_randist.h"
 
 #include <limits.h>
 

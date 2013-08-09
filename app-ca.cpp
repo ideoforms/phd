@@ -14,7 +14,7 @@ using namespace sim;
 settings_t sim::settings;
 
 int stdout_orig;
-sim::Environment *env;
+sim::EnvironmentCA *env;
 csvwriter *logger;
 
 int main (int argc, char *argv[])
@@ -23,7 +23,9 @@ int main (int argc, char *argv[])
 	init_simulator();
 	init_logging();
 
-	env = new sim::Environment(settings.popsize_arg);
+	env = new sim::EnvironmentCA(settings.ca_width_arg, settings.ca_width_arg);
+
+	settings.popsize_arg = settings.ca_width_arg * settings.ca_width_arg;
 
 	// sim = new sim::Simulation(env);
 	// sim.init_config(argc, argv);

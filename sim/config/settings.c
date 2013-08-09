@@ -51,10 +51,13 @@ const char *settings_t_help[] = {
   "  -b, --batch                   batch mode on/off  (default=off)",
   "      --metabolism              metabolism on/off  (default=off)",
   "      --perturbation            perturbation on/off  (default=off)",
-  "      --perturbation_time=INT   perturbation timestep",
-  "      --perturbation_size=DOUBLE\n                                perturbation magnitude",
+  "      --perturbation-time=INT   perturbation timestep",
+  "      --perturbation-size=DOUBLE\n                                perturbation magnitude",
   "  -C, --conf-file=STRING        config file to read  (default=`settings.conf')",
-  "  -w, --ca_width=INT            ca width  (default=`16')",
+  "  -w, --ca-width=INT            ca width  (default=`16')",
+  "  -W, --abm-width=INT           abm width  (default=`512')",
+  "  -t, --abm-neighbourhood-type=INT\n                                neighbourhood type  (default=`0')",
+  "  -S, --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
     0
 };
 
@@ -128,6 +131,9 @@ void clear_given (struct settings_t *args_info)
   args_info->perturbation_size_given = 0 ;
   args_info->conf_file_given = 0 ;
   args_info->ca_width_given = 0 ;
+  args_info->abm_width_given = 0 ;
+  args_info->abm_neighbourhood_type_given = 0 ;
+  args_info->abm_neighbourhood_size_given = 0 ;
 }
 
 static
@@ -158,6 +164,12 @@ void clear_args (struct settings_t *args_info)
   args_info->conf_file_orig = NULL;
   args_info->ca_width_arg = 16;
   args_info->ca_width_orig = NULL;
+  args_info->abm_width_arg = 512;
+  args_info->abm_width_orig = NULL;
+  args_info->abm_neighbourhood_type_arg = 0;
+  args_info->abm_neighbourhood_type_orig = NULL;
+  args_info->abm_neighbourhood_size_arg = 64;
+  args_info->abm_neighbourhood_size_orig = NULL;
   
 }
 
@@ -189,6 +201,9 @@ void init_args_info(struct settings_t *args_info)
   args_info->perturbation_size_help = settings_t_help[20] ;
   args_info->conf_file_help = settings_t_help[21] ;
   args_info->ca_width_help = settings_t_help[22] ;
+  args_info->abm_width_help = settings_t_help[23] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[24] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[25] ;
   
 }
 
@@ -287,6 +302,9 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->conf_file_arg));
   free_string_field (&(args_info->conf_file_orig));
   free_string_field (&(args_info->ca_width_orig));
+  free_string_field (&(args_info->abm_width_orig));
+  free_string_field (&(args_info->abm_neighbourhood_type_orig));
+  free_string_field (&(args_info->abm_neighbourhood_size_orig));
   
   
 
@@ -356,13 +374,19 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
   if (args_info->perturbation_given)
     write_into_file(outfile, "perturbation", 0, 0 );
   if (args_info->perturbation_time_given)
-    write_into_file(outfile, "perturbation_time", args_info->perturbation_time_orig, 0);
+    write_into_file(outfile, "perturbation-time", args_info->perturbation_time_orig, 0);
   if (args_info->perturbation_size_given)
-    write_into_file(outfile, "perturbation_size", args_info->perturbation_size_orig, 0);
+    write_into_file(outfile, "perturbation-size", args_info->perturbation_size_orig, 0);
   if (args_info->conf_file_given)
     write_into_file(outfile, "conf-file", args_info->conf_file_orig, 0);
   if (args_info->ca_width_given)
-    write_into_file(outfile, "ca_width", args_info->ca_width_orig, 0);
+    write_into_file(outfile, "ca-width", args_info->ca_width_orig, 0);
+  if (args_info->abm_width_given)
+    write_into_file(outfile, "abm-width", args_info->abm_width_orig, 0);
+  if (args_info->abm_neighbourhood_type_given)
+    write_into_file(outfile, "abm-neighbourhood-type", args_info->abm_neighbourhood_type_orig, 0);
+  if (args_info->abm_neighbourhood_size_given)
+    write_into_file(outfile, "abm-neighbourhood-size", args_info->abm_neighbourhood_size_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -640,14 +664,17 @@ config_parser_internal (
         { "batch",	0, NULL, 'b' },
         { "metabolism",	0, NULL, 0 },
         { "perturbation",	0, NULL, 0 },
-        { "perturbation_time",	1, NULL, 0 },
-        { "perturbation_size",	1, NULL, 0 },
+        { "perturbation-time",	1, NULL, 0 },
+        { "perturbation-size",	1, NULL, 0 },
         { "conf-file",	1, NULL, 'C' },
-        { "ca_width",	1, NULL, 'w' },
+        { "ca-width",	1, NULL, 'w' },
+        { "abm-width",	1, NULL, 'W' },
+        { "abm-neighbourhood-type",	1, NULL, 't' },
+        { "abm-neighbourhood-size",	1, NULL, 'S' },
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "hVN:B:s:m:a:O:L:ldbC:w:", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVN:B:s:m:a:O:L:ldbC:w:W:t:S:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -796,7 +823,43 @@ config_parser_internal (
                &(args_info->ca_width_orig), &(args_info->ca_width_given),
               &(local_args_info.ca_width_given), optarg, 0, "16", ARG_INT,
               check_ambiguity, override, 0, 0,
-              "ca_width", 'w',
+              "ca-width", 'w',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'W':	/* abm width.  */
+        
+        
+          if (update_arg( (void *)&(args_info->abm_width_arg), 
+               &(args_info->abm_width_orig), &(args_info->abm_width_given),
+              &(local_args_info.abm_width_given), optarg, 0, "512", ARG_INT,
+              check_ambiguity, override, 0, 0,
+              "abm-width", 'W',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 't':	/* neighbourhood type.  */
+        
+        
+          if (update_arg( (void *)&(args_info->abm_neighbourhood_type_arg), 
+               &(args_info->abm_neighbourhood_type_orig), &(args_info->abm_neighbourhood_type_given),
+              &(local_args_info.abm_neighbourhood_type_given), optarg, 0, "0", ARG_INT,
+              check_ambiguity, override, 0, 0,
+              "abm-neighbourhood-type", 't',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'S':	/* neighbourhood size.  */
+        
+        
+          if (update_arg( (void *)&(args_info->abm_neighbourhood_size_arg), 
+               &(args_info->abm_neighbourhood_size_orig), &(args_info->abm_neighbourhood_size_given),
+              &(local_args_info.abm_neighbourhood_size_given), optarg, 0, "64", ARG_INT,
+              check_ambiguity, override, 0, 0,
+              "abm-neighbourhood-size", 'S',
               additional_error))
             goto failure;
         
@@ -898,7 +961,7 @@ config_parser_internal (
           
           }
           /* perturbation timestep.  */
-          else if (strcmp (long_options[option_index].name, "perturbation_time") == 0)
+          else if (strcmp (long_options[option_index].name, "perturbation-time") == 0)
           {
           
           
@@ -906,13 +969,13 @@ config_parser_internal (
                  &(args_info->perturbation_time_orig), &(args_info->perturbation_time_given),
                 &(local_args_info.perturbation_time_given), optarg, 0, 0, ARG_INT,
                 check_ambiguity, override, 0, 0,
-                "perturbation_time", '-',
+                "perturbation-time", '-',
                 additional_error))
               goto failure;
           
           }
           /* perturbation magnitude.  */
-          else if (strcmp (long_options[option_index].name, "perturbation_size") == 0)
+          else if (strcmp (long_options[option_index].name, "perturbation-size") == 0)
           {
           
           
@@ -920,7 +983,7 @@ config_parser_internal (
                  &(args_info->perturbation_size_orig), &(args_info->perturbation_size_given),
                 &(local_args_info.perturbation_size_given), optarg, 0, 0, ARG_DOUBLE,
                 check_ambiguity, override, 0, 0,
-                "perturbation_size", '-',
+                "perturbation-size", '-',
                 additional_error))
               goto failure;
           

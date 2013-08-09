@@ -16,6 +16,8 @@ Environment::Environment(int population)
 	this->mSwitchIndex = 0;
 	this->mAge = 0;
 
+    assert (settings.bits_arg > 0);
+    
 	cout << "bits is " << settings.bits_arg << std::endl;
 
 	printf("creating %d agents\n", population);
@@ -30,6 +32,7 @@ Environment::Environment(int population)
 void Environment::update()
 {
 	this->mAge++;
+    // printf("age now %d\n", this->mAge);
 	if (settings.debug_given)
 		cout << *this << std::endl;
 
@@ -144,6 +147,7 @@ vector <Agent *> Environment::get_neighbours(const Agent *agent)
 	 * at present, simply returns a vector containing all agents.
 	 *--------------------------------------------------------------------*/
 
+    // printf("USING BASIC GET_NEIGHBOURS\n");
 	vector <Agent *> neighbours;
 	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
 	{

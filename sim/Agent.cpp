@@ -25,6 +25,8 @@ Agent::Agent(Environment *env)
 		this->mGenotype[i] = rng_coin(0.5);
 	// this->mGenotype.set();
 	// this->mGenotype = Task(rng_randint(1L << settings.bits_arg));
+    
+    this->mPhenotype = Task(settings.bits_arg);
 
 	this->mBEvo = rng_uniformuf();
 	this->mBInd = rng_uniformuf();
@@ -41,7 +43,13 @@ Agent::Agent(Agent *parent)
 	// call normal constructor and then set constants?
 	this->mEnv = parent->mEnv;
 
-	this->mGenotype  = parent->mGenotype;
+	// IMPORTANT: Must initialise an object or we risk making a copy of the parent's geno (ptr)!
+	this->mGenotype = Task(settings.bits_arg);
+	this->mGenotype = parent->mGenotype;
+	// printf("created new agent with %d bits (parent has %d)\n", this->mGenotype.size(), parent->mGenotype.size());
+	// printf("(my geno ptr = %p, parent geno ptr = %p)\n", &this->mGenotype, &parent->mGenotype);
+    
+    this->mPhenotype = Task(settings.bits_arg);
 
 	this->mBEvo = parent->mBEvo;
 	this->mBInd = parent->mBInd;
@@ -112,14 +120,27 @@ void Agent::update()
 			break;
 		case MODE_SOC:
 			vector <Agent *> neighbours = this->mEnv->get_neighbours(this);
+            // 
 			if (neighbours.size() > 0)
 			{
 				double fitnesses[neighbours.size()];
 				for (unsigned int i = 0; i < neighbours.size(); i++)
 					fitnesses[i] = neighbours[i]->get_fitness();
 				index = roulette(fitnesses, neighbours.size());
+                
+                if (index < 0)
+                {
+                    /*------------------------------------------------------------*
+                     * Couldn't find a single non-zero-fitness neighbour -- bail.
+                     * XXX: DOES THIS MAKE SENSE IN OUR MODEL?
+                     * SHOULDN'T WE STILL BE ABLE TO COPY FROM ZERO-FITNESS NEIGHBOURS?
+                     *------------------------------------------------------------*/
+                    printf("got neighbours but non with non-zero fitness, bailing...\n");
+                    break;
+                }
 
 				Agent *exemplar = neighbours[index];
+                // printf("found %d neighbours, using neighbour %d (%p)\n", neighbours.size(), index, exemplar);
 				Task exemplar_pheno = exemplar->mPhenotype;
 
 				/*
@@ -203,7 +224,10 @@ void Agent::mutate()
 	for (int i = 0; i < settings.bits_arg; i++)
 	{
 		if (rng_coin(settings.p_mut_arg))
+		{
+			// printf("flipping bit %d (of %d)\n", i, this->mGenotype.size());
 			this->mGenotype.flip(i);
+		}
 	}
 	this->mPhenotype = this->mGenotype;
 

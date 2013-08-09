@@ -14,7 +14,7 @@ using namespace sim;
 settings_t sim::settings;
 
 int stdout_orig;
-sim::Environment *env;
+sim::EnvironmentABM *env;
 csvwriter *logger;
 
 int main (int argc, char *argv[])
@@ -23,17 +23,11 @@ int main (int argc, char *argv[])
 	init_simulator();
 	init_logging();
 
-	env = new sim::Environment(settings.popsize_arg);
+	env = new sim::EnvironmentABM(settings.popsize_arg, settings.abm_width_arg, settings.abm_width_arg);
 
 	// sim = new sim::Simulation(env);
 	// sim.init_config(argc, argv);
 	// sim.dump();
-
-	printf("    steps: %d\n",   settings.steps_arg);
-	printf("     bits: %d\n",   settings.bits_arg);
-	printf(" p_switch: %.1f\n", settings.p_switch_arg);
-	printf("      log: %d\n",   settings.log_given);
-	printf("  logfile: %s\n",   settings.logfile_arg);
 
 	for (int step = 0; step < settings.steps_arg; step++)
 	{

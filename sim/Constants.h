@@ -19,6 +19,13 @@ enum behaviour_t
 	MODE_SOC
 };
 
+enum neighbourhood_type_t
+{
+    NEIGHBOURHOOD_TYPE_METRIC,
+    NEIGHBOURHOOD_TYPE_TOPOLOGICAL,
+    NEIGHBOURHOOD_TYPE_SOCIAL
+};
+
 struct stats_t
 {
 	double bevo_mean,
