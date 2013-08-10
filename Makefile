@@ -8,6 +8,11 @@ CFLAGS=/usr/local/lib/libgsl-10.5.a -O3 -Wall -isysroot /Applications/Xcode.app/
 # CFLAGS=/usr/local/lib/libgsl.a 
 
 all:
+	make basic
+	make ca
+	make abm
+
+basic:
 	gengetopt --output-dir=sim/config -f config_parser -F settings -a settings_t -C < sim/config/settings.ggo
 	$(CPP) $(INCLUDE) $(SIM) $(CFLAGS) app.cpp -o app
 

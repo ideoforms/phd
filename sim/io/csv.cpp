@@ -24,12 +24,12 @@ csvwriter::csvwriter(FILE *fd)
 csvwriter::csvwriter(string filename) 
 {
 	this->fd = fopen(filename.c_str(), "w");
-	assert(this->fd != NULL);
+	// assert(this->fd != NULL);
 }
 csvwriter::csvwriter(const char *filename) 
 {
 	this->fd = fopen(filename, "w");
-	assert(this->fd != NULL);
+	// assert(this->fd != NULL);
 }
 
 

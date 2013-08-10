@@ -101,7 +101,7 @@ vector <Agent *> EnvironmentABM::get_neighbours(const Agent *agent)
 void EnvironmentABM::update()
 {
     this->mAge++;
-    printf("age now %d\n", this->mAge);
+    // printf("age now %d\n", this->mAge);
     if (settings.debug_given)
         cout << *this << std::endl;
     
@@ -156,10 +156,10 @@ void EnvironmentABM::reproduce()
 
 	int child_index = rng_randint(popsize);
 
-	printf("parent: [%.1f, %.1f], index = %d\n", parent_loc.x, parent_loc.y, parent_index);
-	cout << "       - " << *parent << std::endl;
-	printf(" child: [%.1f, %.1f], index = %d\n", child_loc.x, child_loc.y, child_index);
-	cout << "       - " << *child<< std::endl;
+	// printf("parent: [%.1f, %.1f], index = %d\n", parent_loc.x, parent_loc.y, parent_index);
+	// cout << "       - " << *parent << std::endl;
+	// printf(" child: [%.1f, %.1f], index = %d\n", child_loc.x, child_loc.y, child_index);
+	// cout << "       - " << *child<< std::endl;
 
 	delete mAgents[child_index];
 
