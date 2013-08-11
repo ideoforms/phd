@@ -9,6 +9,7 @@
 #include "sim/Util.h"
 #include "sim/Agent.h"
 #include "sim/Geometry.h"
+#include "sim/Landscape.h"
 
 #include <vector>
 #include <bitset>
@@ -43,7 +44,8 @@ public:
 
 	int                         get_popsize();
 
-	virtual double              payoff(Task genotype);
+	virtual double              payoff(Agent *agent, Task genotype);
+	virtual Task				goal_for(Agent *agent);
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	/*-----------------------------------------------------------------------*
@@ -57,15 +59,20 @@ public:
 		stream << "[environment: t = " <<
 			object.mAge << ", pop = " <<
 			object.mAgents.size() << ", task = " <<
-			object.mTask << "]";
+			object.mLandscape->taskAt(0, 0) << "]";
 		return stream;
 	}
 
 	std::vector <Agent *> 	mAgents;
 
-	Task					mTask;
-	int						mSwitchIndex;
 	int						mAge;
+
+	/*-----------------------------------------------------------------------*
+	 * Task landscape, usually containing a grid of the same dimensions as
+	 * mGrid.
+	 *-----------------------------------------------------------------------*/
+	Landscape					*mLandscape;
+
 };
 
 class EnvironmentCA : public Environment
@@ -77,6 +84,7 @@ public:
 	~EnvironmentCA();
 
 	virtual void 		reproduce();
+	virtual Task		goal_for(Agent *agent);
 
 	stats_t				stats();
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
@@ -87,8 +95,7 @@ public:
 	{
 		stream << "[environment-ca: " <<
 			"t = " << object.mAge << ", " <<
-			"dim = [" << object.mWidth << ", " << object.mHeight << "], " <<
-			"task = " << object.mTask << "]";
+			"dim = [" << object.mWidth << ", " << object.mHeight << "]";
 		return stream;
 	}
 
@@ -111,8 +118,7 @@ public:
 	 * Store a 2D grid of cells, each of which holds precisely one agent.
 	 *-----------------------------------------------------------------------*/
 	vector <vector <Agent *> > 	mGrid;
-	vector <Point2Di>		mPositions;
-
+	vector <Point2Di>			mPositions;
 };
 
 class EnvironmentABM : public Environment
@@ -135,8 +141,7 @@ public:
 	{
 		stream << "[environment-ca: " <<
 			"t = " << object.mAge << ", " <<
-			"dim = [" << object.mWidth << ", " << object.mHeight << "], " <<
-			"task = " << object.mTask << "]";
+			"dim = [" << object.mWidth << ", " << object.mHeight << "]";
 		return stream;
 	}
 

@@ -21,6 +21,10 @@ EnvironmentCA::EnvironmentCA(unsigned width, unsigned height) : Environment(widt
 
 	this->mPositions.resize(width * height);
 
+	this->mLandscape = new Landscape(settings.bits_arg, width, height);
+	this->mLandscape->distribute(1);
+	
+
 	int n = 0;
 	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
 	{
@@ -43,8 +47,8 @@ vector <Agent *> EnvironmentCA::get_neighbours(const Agent *agent)
 	 * von Neumann neighbourhood.
 	 *--------------------------------------------------------------------*/
 
-    // printf("USING ADVANCED GET_NEIGHBOURS\n");
-    
+	// printf("USING ADVANCED GET_NEIGHBOURS\n");
+	
 	int index = agent->get_index();
 	Point2Di position = this->mPositions[index];
 	vector <Agent *> neighbours;
@@ -85,15 +89,31 @@ void EnvironmentCA::reproduce()
 	int child_index = this->mWidth * child_loc.y + child_loc.x;
 
 //	printf("parent: [%d, %d], index = %d\n", parent_loc.x, parent_loc.y, parent_index);
-//	cout << "       - " << *parent << std::endl;
+//	cout << "	   - " << *parent << std::endl;
 //	printf(" child: [%d, %d], index = %d\n", child_loc.x, child_loc.y, child_index);
-//	cout << "       - " << *child<< std::endl;
+//	cout << "	   - " << *child<< std::endl;
 
 	delete mAgents[child_index];
 
 	mAgents[child_index] = child;
 	mGrid[child_loc.x][child_loc.y] = child;
 }
+
+Task EnvironmentCA::goal_for(Agent *agent)
+{
+    /*-----------------------------------------------------------------------*
+     * In a well-mixed environment, the goal is the same for every agent.
+     * Subclasses should override this with a topography-specific method.
+     *-----------------------------------------------------------------------*/
+	int index = agent->get_index();
+	Point2Di position = this->mPositions[index];
+    Task task = this->mLandscape->taskAt(position.x, position.y);
+
+	cout << "(agent " << index << ") task at " << position << " is " << task << endl;
+
+	return task;
+}
+
 
 //Agent EnvironmentCA::agent_at(Point2Di &point)
 //{

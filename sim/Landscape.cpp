@@ -1,4 +1,4 @@
-/*--------------------------------------------------------------------*B    C VBNN 	WB1NM
+/*--------------------------------------------------------------------*B	C VBNN 	WB1NM
  * class Landscape
  *--------------------------------------------------------------------*/
 
@@ -7,46 +7,56 @@
 
 using namespace sim;
 
-#define GRID_SIZE 8
-
 namespace sim
 {
 
-LandscapeTiled::LandscapeTiled(unsigned width, unsigned height)
+Landscape::Landscape(unsigned bits, unsigned width, unsigned height)
 {
+	this->mBits = bits;
 	this->mWidth = width;
 	this->mHeight = height;
-}
 
-void LandscapeTiled::distribute(unsigned correlation)
-{
-    this->mGrid.resize(this->mWidth);
-    for (int x = 0; x < this->mWidth; x++)
+	this->mGrid.resize(this->mWidth);
+	for (int x = 0; x < this->mWidth; x++)
 	{
-        this->mGrid[x].resize(this->mHeight);
+		this->mGrid[x].resize(this->mHeight);
 		for (int y = 0; y < this->mHeight; y++)
-			this->mGrid[x][y] = Task(GRID_SIZE);
+			this->mGrid[x][y] = Task(this->mBits);
 	}
 
+}
+
+void Landscape::distribute(unsigned heterogeneity)
+{
+	/*-----------------------------------------------------------------------*
+	 * Creates a 2D grid landscape where the pairwise Hamming distance
+	 * between any two cells is equal to heterogeneity.
+	 *-----------------------------------------------------------------------*/
 	for (int y = 1; y < this->mHeight; y++)
 	{
 		this->mGrid[0][y] = this->mGrid[0][y - 1];
-		int index = rng_randint(GRID_SIZE - 1);
-		this->mGrid[0][y].flip(index);
+		for (int h = 0; h < heterogeneity; h++)
+		{
+			int index = rng_randint(this->mBits);
+			this->mGrid[0][y].flip(index);
+		}
 	}
 
 	for (int x = 1; x < this->mWidth; x++)
 	{
 		this->mGrid[x][0] = this->mGrid[x - 1][0];
-		int index = rng_randint(GRID_SIZE - 1);
-		this->mGrid[x][0].flip(index);
+		for (int h = 0; h < heterogeneity; h++)
+		{
+			int index = rng_randint(this->mBits);
+			this->mGrid[x][0].flip(index);
+		}
 
 		for (int y = 1; y < this->mHeight; y++)
 			this->mGrid[x][y] = this->mGrid[x][0] ^ this->mGrid[0][y];
 	}
 }
 
-void LandscapeTiled::dump()
+void Landscape::dump()
 {
 	for (int y = 0; y < this->mHeight; y++)
 	{
@@ -58,25 +68,36 @@ void LandscapeTiled::dump()
 	}
 }
 
+void Landscape::perturb(float perturbance)
+{
+	for (int index = 0; index < this->mBits; index++)
+	{
+		if (rng_coin(perturbance))
+		{
+			for (int x = 0; x < this->mWidth; x++)
+			for (int y = 0; y < this->mHeight; y++)
+				this->mGrid[x][y].flip(index);
+		}
+	}
+}
 
-void LandscapeTiled::fluctuate()
+void Landscape::fluctuate()
 {
 	/*--------------------------------------------------------------------*
 	 * fluctuations
 	 *--------------------------------------------------------------------*/
-	unsigned index = rng_randint(GRID_SIZE - 1);
+	unsigned index = rng_randint(this->mBits);
 	for (int x = 0; x < this->mWidth; x++)
 	for (int y = 0; y < this->mHeight; y++)
-	{
 		this->mGrid[x][y].flip(index);
-	}
 }
 
 
-Task LandscapeTiled::taskAt(unsigned x, unsigned y)
+Task Landscape::taskAt(unsigned x, unsigned y)
 {
-	return Task();
+	return this->mGrid[x][y];
 }
 
 
 } /* namespace sim */
+

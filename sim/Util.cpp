@@ -89,6 +89,10 @@ bool rng_coin(double limit = 0.5)
 	return value < limit;
 }
 
+
+/*--------------------------------------------------------------------*
+ * rng_randint: random int, up to (but excluding) to
+ *--------------------------------------------------------------------*/
 unsigned long rng_randint(unsigned long to)
 {
 	return gsl_rng_get(rng) % to;

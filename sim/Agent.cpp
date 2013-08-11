@@ -184,7 +184,7 @@ void Agent::update()
 
 	this->mAge++;
 	this->mLastAction = mode;
-	this->mDelta = mEnv->payoff(action);
+	this->mDelta = mEnv->payoff(this, action);
 
 	if (settings.debug_given)
 		std::cout << *this << std::endl;
@@ -195,7 +195,7 @@ void Agent::update()
 		 * if this action gives a better payoff than our current phenotype,
 		 * modify our phenotype accordingly (learning).
 		 *--------------------------------------------------------------------*/
-		double curFitness = mEnv->payoff(mPhenotype);
+		double curFitness = mEnv->payoff(this, mPhenotype);
 		// cout << "action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
 		if (mDelta > curFitness)
 			mPhenotype = action;

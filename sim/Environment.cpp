@@ -12,13 +12,14 @@ namespace sim
 
 Environment::Environment(int population)
 {
-	this->mTask = Task(settings.bits_arg).set();
-	this->mSwitchIndex = 0;
 	this->mAge = 0;
 
     assert (settings.bits_arg > 0);
-    
-	cout << "bits is " << settings.bits_arg << std::endl;
+
+	/*--------------------------------------------------------------------*
+	 * For a well-mixed case, create a Landscape comprising of one cell.
+	 *--------------------------------------------------------------------*/
+	this->mLandscape = new Landscape(settings.bits_arg, 1, 1);
 
 	printf("creating %d agents\n", population);
 	for (int i = 0; i < population; i++)
@@ -100,8 +101,9 @@ void Environment::fluctuate()
 	 *--------------------------------------------------------------------*/
 	if (rng_coin(settings.p_switch_arg))
 	{
-		mTask.flip(mSwitchIndex);
-		mSwitchIndex = (mSwitchIndex + 1) % settings.bits_arg;
+		this->mLandscape->fluctuate();
+		printf("fluctuate\n");
+		this->mLandscape->dump();
 	}
 }
 
@@ -111,24 +113,28 @@ void Environment::perturb(double amount)
 	 * cause a sudden perturbation in the environment, flipping each bit
 	 * with a probability of _amount_
 	 *-----------------------------------------------------------------------*/
-	for (int i = 0; i < settings.bits_arg; i++)
-	{
-		if (rng_coin(amount))
-		{
-			mTask.flip(i);
-		}
-	}
+	this->mLandscape->perturb(amount);
 }
 
 
-double Environment::payoff(Task phenotype)
+Task Environment::goal_for(Agent *agent)
+{
+	/*-----------------------------------------------------------------------*
+	 * In a well-mixed environment, the goal is the same for every agent.
+	 * Subclasses should override this with a topography-specific method.
+	 *-----------------------------------------------------------------------*/
+	return this->mLandscape->taskAt(0, 0);
+}
+
+double Environment::payoff(Agent *agent, Task phenotype)
 {
 	/*-----------------------------------------------------------------------*
 	 * returns the fitness for a given phenotype.
 	 * alpha_arg is used for a rapid falloff from peak, to create a sharper
 	 * fitness differential.
 	 *-----------------------------------------------------------------------*/
-	double distance = (double) (phenotype ^ mTask).count() / settings.bits_arg;
+	Task goal = this->goal_for(agent);
+	double distance = (double) (phenotype ^ goal).count() / settings.bits_arg;
 	double proximity = 1.0 - distance;
 	double fitness = pow(proximity, 1.0 / settings.alpha_arg);
 
