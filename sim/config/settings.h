@@ -106,6 +106,9 @@ struct settings_t
   int abm_neighbourhood_size_arg;	/**< @brief neighbourhood size (default='64').  */
   char * abm_neighbourhood_size_orig;	/**< @brief neighbourhood size original value given at command line.  */
   const char *abm_neighbourhood_size_help; /**< @brief neighbourhood size help description.  */
+  int spatial_variance_arg;	/**< @brief spatial variance (default='0').  */
+  char * spatial_variance_orig;	/**< @brief spatial variance original value given at command line.  */
+  const char *spatial_variance_help; /**< @brief spatial variance help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -133,6 +136,7 @@ struct settings_t
   unsigned int abm_width_given ;	/**< @brief Whether abm-width was given.  */
   unsigned int abm_neighbourhood_type_given ;	/**< @brief Whether abm-neighbourhood-type was given.  */
   unsigned int abm_neighbourhood_size_given ;	/**< @brief Whether abm-neighbourhood-size was given.  */
+  unsigned int spatial_variance_given ;	/**< @brief Whether spatial-variance was given.  */
 
 } ;
 

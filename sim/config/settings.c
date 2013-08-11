@@ -32,7 +32,7 @@ const char *settings_t_usage = "Usage: imitation-cpp [OPTIONS]...";
 const char *settings_t_description = "";
 
 const char *settings_t_help[] = {
-  "  -h, --help                    Print help and exit",
+  "      --help                    Print help and exit",
   "  -V, --version                 Print version and exit",
   "  -N, --popsize=INT             population size",
   "  -B, --bits=INT                environmental bits",
@@ -58,6 +58,7 @@ const char *settings_t_help[] = {
   "  -W, --abm-width=INT           abm width  (default=`512')",
   "  -t, --abm-neighbourhood-type=INT\n                                neighbourhood type  (default=`0')",
   "  -S, --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
+  "  -h, --spatial-variance=INT    spatial variance  (default=`0')",
     0
 };
 
@@ -134,6 +135,7 @@ void clear_given (struct settings_t *args_info)
   args_info->abm_width_given = 0 ;
   args_info->abm_neighbourhood_type_given = 0 ;
   args_info->abm_neighbourhood_size_given = 0 ;
+  args_info->spatial_variance_given = 0 ;
 }
 
 static
@@ -170,6 +172,8 @@ void clear_args (struct settings_t *args_info)
   args_info->abm_neighbourhood_type_orig = NULL;
   args_info->abm_neighbourhood_size_arg = 64;
   args_info->abm_neighbourhood_size_orig = NULL;
+  args_info->spatial_variance_arg = 0;
+  args_info->spatial_variance_orig = NULL;
   
 }
 
@@ -204,6 +208,7 @@ void init_args_info(struct settings_t *args_info)
   args_info->abm_width_help = settings_t_help[23] ;
   args_info->abm_neighbourhood_type_help = settings_t_help[24] ;
   args_info->abm_neighbourhood_size_help = settings_t_help[25] ;
+  args_info->spatial_variance_help = settings_t_help[26] ;
   
 }
 
@@ -305,6 +310,7 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->abm_width_orig));
   free_string_field (&(args_info->abm_neighbourhood_type_orig));
   free_string_field (&(args_info->abm_neighbourhood_size_orig));
+  free_string_field (&(args_info->spatial_variance_orig));
   
   
 
@@ -387,6 +393,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "abm-neighbourhood-type", args_info->abm_neighbourhood_type_orig, 0);
   if (args_info->abm_neighbourhood_size_given)
     write_into_file(outfile, "abm-neighbourhood-size", args_info->abm_neighbourhood_size_orig, 0);
+  if (args_info->spatial_variance_given)
+    write_into_file(outfile, "spatial-variance", args_info->spatial_variance_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -645,7 +653,7 @@ config_parser_internal (
       int option_index = 0;
 
       static struct option long_options[] = {
-        { "help",	0, NULL, 'h' },
+        { "help",	0, NULL, 0 },
         { "version",	0, NULL, 'V' },
         { "popsize",	1, NULL, 'N' },
         { "bits",	1, NULL, 'B' },
@@ -671,20 +679,16 @@ config_parser_internal (
         { "abm-width",	1, NULL, 'W' },
         { "abm-neighbourhood-type",	1, NULL, 't' },
         { "abm-neighbourhood-size",	1, NULL, 'S' },
+        { "spatial-variance",	1, NULL, 'h' },
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "hVN:B:s:m:a:O:L:ldbC:w:W:t:S:", long_options, &option_index);
+      c = getopt_long (argc, argv, "VN:B:s:m:a:O:L:ldbC:w:W:t:S:h:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
       switch (c)
         {
-        case 'h':	/* Print help and exit.  */
-          config_parser_print_help ();
-          config_parser_free (&local_args_info);
-          exit (EXIT_SUCCESS);
-
         case 'V':	/* Print version and exit.  */
           config_parser_print_version ();
           config_parser_free (&local_args_info);
@@ -864,8 +868,26 @@ config_parser_internal (
             goto failure;
         
           break;
+        case 'h':	/* spatial variance.  */
+        
+        
+          if (update_arg( (void *)&(args_info->spatial_variance_arg), 
+               &(args_info->spatial_variance_orig), &(args_info->spatial_variance_given),
+              &(local_args_info.spatial_variance_given), optarg, 0, "0", ARG_INT,
+              check_ambiguity, override, 0, 0,
+              "spatial-variance", 'h',
+              additional_error))
+            goto failure;
+        
+          break;
 
         case 0:	/* Long option with no short option */
+          if (strcmp (long_options[option_index].name, "help") == 0) {
+            config_parser_print_help ();
+            config_parser_free (&local_args_info);
+            exit (EXIT_SUCCESS);
+          }
+
           /* prob. of bit mutation.  */
           if (strcmp (long_options[option_index].name, "p_mut") == 0)
           {

@@ -102,8 +102,8 @@ void Environment::fluctuate()
 	if (rng_coin(settings.p_switch_arg))
 	{
 		this->mLandscape->fluctuate();
-		printf("fluctuate\n");
-		this->mLandscape->dump();
+		// printf("-------------------- fluctuate ----------------------\n");
+		// this->mLandscape->dump();
 	}
 }
 

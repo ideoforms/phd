@@ -22,8 +22,7 @@ EnvironmentCA::EnvironmentCA(unsigned width, unsigned height) : Environment(widt
 	this->mPositions.resize(width * height);
 
 	this->mLandscape = new Landscape(settings.bits_arg, width, height);
-	this->mLandscape->distribute(1);
-	
+	this->mLandscape->distribute(settings.spatial_variance_arg);
 
 	int n = 0;
 	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
@@ -88,10 +87,8 @@ void EnvironmentCA::reproduce()
 	}
 	int child_index = this->mWidth * child_loc.y + child_loc.x;
 
-//	printf("parent: [%d, %d], index = %d\n", parent_loc.x, parent_loc.y, parent_index);
-//	cout << "	   - " << *parent << std::endl;
-//	printf(" child: [%d, %d], index = %d\n", child_loc.x, child_loc.y, child_index);
-//	cout << "	   - " << *child<< std::endl;
+	// cout << "parent " << parent_index << " (" << parent_loc.x << ", " << parent_loc.y << "): " << *parent << " [" << parent << "]" << endl;
+	// cout << " -> " << child_index << " (" << child_loc.x << ", " << child_loc.y << "): " << *child << " [" << child << "]" << endl;
 
 	delete mAgents[child_index];
 
@@ -109,7 +106,7 @@ Task EnvironmentCA::goal_for(Agent *agent)
 	Point2Di position = this->mPositions[index];
     Task task = this->mLandscape->taskAt(position.x, position.y);
 
-	cout << "(agent " << index << ") task at " << position << " is " << task << endl;
+	// cout << "(agent " << index << ") task at " << position << " is " << task << endl;
 
 	return task;
 }
