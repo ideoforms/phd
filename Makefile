@@ -1,7 +1,7 @@
 # CPP=g++
 CPP=clang++
 INCLUDE=-I/usr/local/boost -I/usr/local/include -I.
-SIM=sim/*.cpp sim/io/*.cpp sim/config/*.c
+SIM=app-utils.cpp sim/*.cpp sim/io/*.cpp sim/config/*.c
 # CFLAGS=/usr/local/lib/libgsl.a -O3 -Wall -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5 -arch x86_64
 CFLAGS=/usr/local/lib/libgsl-10.5.a -O3 -Wall -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5 
 # CFLAGS=/usr/local/lib/libgsl.a -O3 -Wall
@@ -19,6 +19,10 @@ basic:
 ca:
 	gengetopt --output-dir=sim/config -f config_parser -F settings -a settings_t -C < sim/config/settings.ggo
 	$(CPP) $(INCLUDE) $(SIM) $(CFLAGS) app-ca.cpp -o app-ca
+
+1d:
+	gengetopt --output-dir=sim/config -f config_parser -F settings -a settings_t -C < sim/config/settings.ggo
+	$(CPP) $(INCLUDE) $(SIM) $(CFLAGS) app-1d.cpp -o app-1d
 
 abm:
 	gengetopt --output-dir=sim/config -f config_parser -F settings -a settings_t -C < sim/config/settings.ggo

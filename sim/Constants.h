@@ -28,6 +28,8 @@ enum neighbourhood_type_t
 
 struct stats_t
 {
+	unsigned step;
+
 	double bevo_mean,
 		   bind_mean,
 		   bsoc_mean;

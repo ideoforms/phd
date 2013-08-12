@@ -21,7 +21,9 @@ EnvironmentCA::EnvironmentCA(unsigned width, unsigned height) : Environment(widt
 
 	this->mPositions.resize(width * height);
 
-	this->mLandscape = new Landscape(settings.bits_arg, width / settings.spatial_patch_size_arg, height / settings.spatial_patch_size_arg);
+	this->mLandscape = new Landscape(settings.bits_arg,
+                                     width / settings.spatial_patch_size_arg,
+                                     height / settings.spatial_patch_size_arg);
 	this->mLandscape->distribute(settings.spatial_variance_arg);
 
 	int n = 0;
@@ -42,12 +44,10 @@ EnvironmentCA::EnvironmentCA(unsigned width, unsigned height) : Environment(widt
 vector <Agent *> EnvironmentCA::get_neighbours(const Agent *agent)
 {
 	/*--------------------------------------------------------------------*
-	 * return a vector containing the 4 neighbouring agents in the 
+	 * Return a vector containing the 4 neighbouring agents in the 
 	 * von Neumann neighbourhood.
 	 *--------------------------------------------------------------------*/
 
-	// printf("USING ADVANCED GET_NEIGHBOURS\n");
-	
 	int index = agent->get_index();
 	Point2Di position = this->mPositions[index];
 	vector <Agent *> neighbours;
@@ -111,10 +111,5 @@ Task EnvironmentCA::goal_for(Agent *agent)
 	return task;
 }
 
-
-//Agent EnvironmentCA::agent_at(Point2Di &point)
-//{
-//	return *(this->mGrid[point.x][point.y]);
-//}
 
 } /* namespace sim */

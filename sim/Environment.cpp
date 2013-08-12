@@ -229,6 +229,8 @@ stats_t Environment::stats()
 		// cout << "Phenotype " << agent->mPhenotype << ", task " << task << ", distance: " << pheno_dist << endl;
 	}
 
+	stats.step          = this->mAge;
+
 	stats.fitness_min	= min_fitness;
 	stats.fitness_max	= max_fitness;
 	stats.fitness_mean	= total_fitness / popsize;
