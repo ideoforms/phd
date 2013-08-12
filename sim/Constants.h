@@ -36,8 +36,8 @@ struct stats_t
 		   fitness_mean,
 	       fitness_max;
 
-	double geno_mean,
-		   pheno_mean;
+	double geno_mean_dist,
+		   pheno_mean_dist;
 };
 
 typedef boost::dynamic_bitset <> Task;

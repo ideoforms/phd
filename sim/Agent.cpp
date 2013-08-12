@@ -100,10 +100,8 @@ double Agent::get_fitness() const
 
 void Agent::update()
 {
-	// printf("[%d] update\n", this->index());
 	double modes[] = { this->mBEvo, this->mBInd, this->mBSoc };
 	int mode = roulette(modes, 3);
-	// cout << "roulette [" << modes[0] << ", " << modes[1] << ", " << modes[2] << "]: " << mode << std::endl;
 
 	Task action = this->mPhenotype;
 
@@ -196,7 +194,8 @@ void Agent::update()
 		 * modify our phenotype accordingly (learning).
 		 *--------------------------------------------------------------------*/
 		double curFitness = mEnv->payoff(this, mPhenotype);
-		// cout << "action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
+		if (settings.debug_given)
+			cout << "action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
 		if (mDelta > curFitness)
 			mPhenotype = action;
 	}

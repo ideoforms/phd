@@ -5,10 +5,14 @@
 #include "sim/Landscape.h"
 #include <iostream>
 
+#define DETERMINISTIC_VARIANCE
+
 using namespace sim;
 
 namespace sim
 {
+
+extern struct settings_t settings;
 
 Landscape::Landscape(unsigned bits, unsigned width, unsigned height)
 {
@@ -37,8 +41,12 @@ void Landscape::distribute(unsigned heterogeneity)
 		this->mGrid[0][y] = this->mGrid[0][y - 1];
 		for (int h = 0; h < heterogeneity; h++)
 		{
-			int index = rng_randint(this->mBits);
-			this->mGrid[0][y].flip(index);
+			#ifdef DETERMINISTIC_VARIANCE
+				this->mGrid[0][y].flip(h);
+			#else
+				int index = rng_randint(this->mBits);
+				this->mGrid[0][y].flip(index);
+			#endif
 		}
 	}
 
@@ -47,8 +55,12 @@ void Landscape::distribute(unsigned heterogeneity)
 		this->mGrid[x][0] = this->mGrid[x - 1][0];
 		for (int h = 0; h < heterogeneity; h++)
 		{
-			int index = rng_randint(this->mBits);
-			this->mGrid[x][0].flip(index);
+			#ifdef DETERMINISTIC_VARIANCE
+				this->mGrid[x][0].flip(h);
+			#else
+				int index = rng_randint(this->mBits);
+				this->mGrid[x][0].flip(index);
+			#endif
 		}
 
 		for (int y = 1; y < this->mHeight; y++)
@@ -95,7 +107,16 @@ void Landscape::fluctuate()
 
 Task Landscape::taskAt(unsigned x, unsigned y)
 {
-	return this->mGrid[x][y];
+	if (settings.spatial_patch_size_arg == 1)
+	{
+		return this->mGrid[x][y];
+	}
+	else
+	{
+		unsigned patch_x = x / settings.spatial_patch_size_arg;
+		unsigned patch_y = y / settings.spatial_patch_size_arg;
+		return this->mGrid[patch_x][patch_y];
+	}
 }
 
 

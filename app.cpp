@@ -39,6 +39,8 @@ int main (int argc, char *argv[])
 	{
 		if (step % 1000 == 0)
 			printf(" - step %05d\n", step);
+		if (settings.debug_given)
+			cout << env << endl;
 
 		/*---------------------------------------------------------------------*
 		 * if we're in batch mode, redirect stdout to the null device -- 
@@ -72,8 +74,8 @@ int main (int argc, char *argv[])
     			stats.fitness_mean,
     			stats.fitness_max,
 
-				0.0,
-				0.0
+				stats.geno_mean_dist,
+				stats.pheno_mean_dist
 			);
 
 		}

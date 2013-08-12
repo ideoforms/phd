@@ -77,6 +77,9 @@ struct settings_t
   const char *logfile_help; /**< @brief path to store log file help description.  */
   int log_flag;	/**< @brief logging on/off (default=on).  */
   const char *log_help; /**< @brief logging on/off help description.  */
+  int log_phenotypes_at_arg;	/**< @brief log all phenotypes at time N (default='0').  */
+  char * log_phenotypes_at_orig;	/**< @brief log all phenotypes at time N original value given at command line.  */
+  const char *log_phenotypes_at_help; /**< @brief log all phenotypes at time N help description.  */
   int debug_flag;	/**< @brief debug on/off (default=off).  */
   const char *debug_help; /**< @brief debug on/off help description.  */
   int batch_flag;	/**< @brief batch mode on/off (default=off).  */
@@ -88,9 +91,12 @@ struct settings_t
   int perturbation_time_arg;	/**< @brief perturbation timestep.  */
   char * perturbation_time_orig;	/**< @brief perturbation timestep original value given at command line.  */
   const char *perturbation_time_help; /**< @brief perturbation timestep help description.  */
-  double perturbation_size_arg;	/**< @brief perturbation magnitude.  */
+  double perturbation_size_arg;	/**< @brief perturbation magnitude (default='1.0').  */
   char * perturbation_size_orig;	/**< @brief perturbation magnitude original value given at command line.  */
   const char *perturbation_size_help; /**< @brief perturbation magnitude help description.  */
+  int neighbourhood_size_arg;	/**< @brief neighbourhood size for numeric model (default='0').  */
+  char * neighbourhood_size_orig;	/**< @brief neighbourhood size for numeric model original value given at command line.  */
+  const char *neighbourhood_size_help; /**< @brief neighbourhood size for numeric model help description.  */
   char * conf_file_arg;	/**< @brief config file to read (default='settings.conf').  */
   char * conf_file_orig;	/**< @brief config file to read original value given at command line.  */
   const char *conf_file_help; /**< @brief config file to read help description.  */
@@ -109,6 +115,9 @@ struct settings_t
   int spatial_variance_arg;	/**< @brief spatial variance (default='0').  */
   char * spatial_variance_orig;	/**< @brief spatial variance original value given at command line.  */
   const char *spatial_variance_help; /**< @brief spatial variance help description.  */
+  int spatial_patch_size_arg;	/**< @brief spatial patch size (default='1').  */
+  char * spatial_patch_size_orig;	/**< @brief spatial patch size original value given at command line.  */
+  const char *spatial_patch_size_help; /**< @brief spatial patch size help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -125,18 +134,21 @@ struct settings_t
   unsigned int cost_soc_given ;	/**< @brief Whether cost_soc was given.  */
   unsigned int logfile_given ;	/**< @brief Whether logfile was given.  */
   unsigned int log_given ;	/**< @brief Whether log was given.  */
+  unsigned int log_phenotypes_at_given ;	/**< @brief Whether log-phenotypes-at was given.  */
   unsigned int debug_given ;	/**< @brief Whether debug was given.  */
   unsigned int batch_given ;	/**< @brief Whether batch was given.  */
   unsigned int metabolism_given ;	/**< @brief Whether metabolism was given.  */
   unsigned int perturbation_given ;	/**< @brief Whether perturbation was given.  */
   unsigned int perturbation_time_given ;	/**< @brief Whether perturbation-time was given.  */
   unsigned int perturbation_size_given ;	/**< @brief Whether perturbation-size was given.  */
+  unsigned int neighbourhood_size_given ;	/**< @brief Whether neighbourhood-size was given.  */
   unsigned int conf_file_given ;	/**< @brief Whether conf-file was given.  */
   unsigned int ca_width_given ;	/**< @brief Whether ca-width was given.  */
   unsigned int abm_width_given ;	/**< @brief Whether abm-width was given.  */
   unsigned int abm_neighbourhood_type_given ;	/**< @brief Whether abm-neighbourhood-type was given.  */
   unsigned int abm_neighbourhood_size_given ;	/**< @brief Whether abm-neighbourhood-size was given.  */
   unsigned int spatial_variance_given ;	/**< @brief Whether spatial-variance was given.  */
+  unsigned int spatial_patch_size_given ;	/**< @brief Whether spatial-patch-size was given.  */
 
 } ;
 

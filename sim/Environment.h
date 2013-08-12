@@ -86,7 +86,6 @@ public:
 	virtual void 		reproduce();
 	virtual Task		goal_for(Agent *agent);
 
-	stats_t				stats();
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	friend class Agent;
@@ -132,7 +131,6 @@ public:
     virtual void 		update();
 	virtual void 		reproduce();
 
-	stats_t				stats();
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	friend class Agent;

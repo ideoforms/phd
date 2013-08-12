@@ -138,7 +138,7 @@ double Environment::payoff(Agent *agent, Task phenotype)
 	double proximity = 1.0 - distance;
 	double fitness = pow(proximity, 1.0 / settings.alpha_arg);
 
-	// cout << "task = " << task << ", distance = " << distance << ", proximity = " << proximity << ", fitness = " << fitness << std::endl;
+	// cout << "task = " << goal << ", distance = " << distance << ", proximity = " << proximity << ", fitness = " << fitness << std::endl;
 	return fitness;
 }
 
@@ -154,12 +154,38 @@ vector <Agent *> Environment::get_neighbours(const Agent *agent)
 	 *--------------------------------------------------------------------*/
 
     // printf("USING BASIC GET_NEIGHBOURS\n");
+
+	int neighbourhood_size = settings.neighbourhood_size_arg;
 	vector <Agent *> neighbours;
-	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
+
+	if (neighbourhood_size == 0)
 	{
-		Agent *agent = *it;
-		neighbours.push_back(agent);
+		for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
+		{
+			Agent *agent = *it;
+			neighbours.push_back(agent);
+		}
 	}
+	else
+	{
+		while (neighbours.size() < neighbourhood_size)
+		{
+			int index = rng_randint(mAgents.size());
+			Agent *other = mAgents[index];
+			if (other == agent)
+				continue;
+			/*--------------------------------------------------------------------*
+			 * Make sure each agent is only in our neighbourhood group once.
+			 * This is probably very costly! can we omit (and just risk including
+			 * a neighbour twice?)
+			 *--------------------------------------------------------------------*/
+			if (std::find(neighbours.begin(), neighbours.end(), other) != neighbours.end())
+				continue;
+			neighbours.push_back(other);
+		}
+	}
+
+    // printf("done (got %d neighbours)\n", neighbours.size());
 
 	return neighbours;
 }
@@ -182,6 +208,9 @@ stats_t Environment::stats()
 	double 		total_bind = 0;
 	double 		total_bsoc = 0;
 
+	double		total_geno_dist = 0.0;
+	double		total_pheno_dist = 0.0;
+
 	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
 	{
 		Agent *agent = *it;
@@ -193,6 +222,11 @@ stats_t Environment::stats()
 		total_bevo		+= agent->mBEvo;
 		total_bind		+= agent->mBInd;
 		total_bsoc		+= agent->mBSoc;
+
+		Task task = this->goal_for(agent);
+		total_geno_dist += (task ^ agent->mGenotype).count();
+		total_pheno_dist += (task ^ agent->mPhenotype).count();
+		// cout << "Phenotype " << agent->mPhenotype << ", task " << task << ", distance: " << pheno_dist << endl;
 	}
 
 	stats.fitness_min	= min_fitness;
@@ -202,6 +236,9 @@ stats_t Environment::stats()
 	stats.bevo_mean		= total_bevo / popsize;
 	stats.bind_mean		= total_bind / popsize;
 	stats.bsoc_mean		= total_bsoc / popsize;
+
+	stats.geno_mean_dist = total_geno_dist /= (settings.bits_arg * mAgents.size());
+	stats.pheno_mean_dist = total_pheno_dist /= (settings.bits_arg * mAgents.size());
 
 	return stats;
 }

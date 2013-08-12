@@ -23,6 +23,7 @@ option "cost_soc"	-	"prob. of social learning noise"	double		no
 
 option "logfile"	L	"path to store log file"			string		no
 option "log"		l	"logging on/off"					flag		on
+option "log-phenotypes-at"		-	"log all phenotypes at time N"		int	no	default = "0"
 option "debug"		d	"debug on/off"						flag		off
 option "batch"		b	"batch mode on/off"					flag		off
 
@@ -30,14 +31,17 @@ option "metabolism"		-	"metabolism on/off"				flag		off
 
 option "perturbation"		-	"perturbation on/off"		flag		off
 option "perturbation-time"	-	"perturbation timestep"		int			no
-option "perturbation-size"	-	"perturbation magnitude"	double		no
+option "perturbation-size"	-	"perturbation magnitude"	double		no		default = "1.0"
+
+option "neighbourhood-size"	-	"neighbourhood size for numeric model"		int			no		default = "0"
 
 option "conf-file"	C	"config file to read"				string		no		default = "settings.conf"
 
 
 option "ca-width"	w	"ca width" 							int			no		default = "16"
 option "abm-width"	W	"abm width" 						int			no		default = "512"
-option "abm-neighbourhood-type"	t	"neighbourhood type" 			int			no		default = "0"
-option "abm-neighbourhood-size"	S	"neighbourhood size" 			int			no		default = "64"
+option "abm-neighbourhood-type"	-	"neighbourhood type" 			int			no		default = "0"
+option "abm-neighbourhood-size"	-	"neighbourhood size" 			int			no		default = "64"
 
-option "spatial-variance"	h	"spatial variance" 			int			no		default = "0"
+option "spatial-variance"	-	"spatial variance" 			int			no		default = "0"
+option "spatial-patch-size"	-	"spatial patch size" 		int			no		default = "1"

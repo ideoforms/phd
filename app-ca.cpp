@@ -17,6 +17,8 @@ int stdout_orig;
 sim::EnvironmentCA *env;
 csvwriter *logger;
 
+void log_phenotypes();
+
 int main (int argc, char *argv[])
 {
 	init_config(argc, argv);
@@ -33,7 +35,7 @@ int main (int argc, char *argv[])
 
 	printf("    steps: %d\n",   settings.steps_arg);
 	printf("     bits: %d\n",   settings.bits_arg);
-	printf(" p_switch: %.1f\n", settings.p_switch_arg);
+	printf(" p_switch: %.3f\n", settings.p_switch_arg);
 	printf("      log: %d\n",   settings.log_given);
 	printf("  logfile: %s\n",   settings.logfile_arg);
 
@@ -49,6 +51,11 @@ int main (int argc, char *argv[])
 		if (settings.perturbation_given && settings.perturbation_time_arg == step)
 		{
 			env->perturb(settings.perturbation_size_arg);
+		}
+
+		if (settings.log_phenotypes_at_arg == step && step > 0)
+		{
+			log_phenotypes();
 		}
 
 		/*---------------------------------------------------------------------*
@@ -196,3 +203,39 @@ void close_logging()
 
 	free(settings.logfile_arg);
 }
+
+void log_phenotypes()
+{
+	/*---------------------------------------------------------------------*
+	 *---------------------------------------------------------------------*/
+	char *logfile_format = "logs/phenotypes-%s.csv";
+	char *logfile = (char *) malloc(64);
+	char timestr[32];
+	sprintf(timestr, "%ld", (long) time(NULL));
+	sprintf(logfile, logfile_format, timestr);
+	settings.logfile_arg = logfile;
+
+	printf("logging to file %s\n", logfile);
+
+	csvwriter logger(logfile);
+	logger.start
+	(
+		"iiifff",
+
+		"index",
+		"x",
+		"y",
+		"b_evo",
+		"b_ind",
+		"b_soc",
+		"fitness"
+	);
+	for (int i = 0; i < env->mAgents.size(); i++)
+	{
+		Agent *agent = env->mAgents[i];
+		logger.write(i, env->mPositions[i].x, env->mPositions[i].y,
+			agent->mBEvo, agent->mBInd, agent->mBSoc, agent->mDelta);
+	}
+	logger.close();
+}
+

@@ -32,7 +32,7 @@ const char *settings_t_usage = "Usage: imitation-cpp [OPTIONS]...";
 const char *settings_t_description = "";
 
 const char *settings_t_help[] = {
-  "      --help                    Print help and exit",
+  "  -h, --help                    Print help and exit",
   "  -V, --version                 Print version and exit",
   "  -N, --popsize=INT             population size",
   "  -B, --bits=INT                environmental bits",
@@ -47,18 +47,21 @@ const char *settings_t_help[] = {
   "      --cost_soc=DOUBLE         prob. of social learning noise",
   "  -L, --logfile=STRING          path to store log file",
   "  -l, --log                     logging on/off  (default=on)",
+  "      --log-phenotypes-at=INT   log all phenotypes at time N  (default=`0')",
   "  -d, --debug                   debug on/off  (default=off)",
   "  -b, --batch                   batch mode on/off  (default=off)",
   "      --metabolism              metabolism on/off  (default=off)",
   "      --perturbation            perturbation on/off  (default=off)",
   "      --perturbation-time=INT   perturbation timestep",
-  "      --perturbation-size=DOUBLE\n                                perturbation magnitude",
+  "      --perturbation-size=DOUBLE\n                                perturbation magnitude  (default=`1.0')",
+  "      --neighbourhood-size=INT  neighbourhood size for numeric model  \n                                  (default=`0')",
   "  -C, --conf-file=STRING        config file to read  (default=`settings.conf')",
   "  -w, --ca-width=INT            ca width  (default=`16')",
   "  -W, --abm-width=INT           abm width  (default=`512')",
-  "  -t, --abm-neighbourhood-type=INT\n                                neighbourhood type  (default=`0')",
-  "  -S, --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
-  "  -h, --spatial-variance=INT    spatial variance  (default=`0')",
+  "      --abm-neighbourhood-type=INT\n                                neighbourhood type  (default=`0')",
+  "      --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
+  "      --spatial-variance=INT    spatial variance  (default=`0')",
+  "      --spatial-patch-size=INT  spatial patch size  (default=`1')",
     0
 };
 
@@ -124,18 +127,21 @@ void clear_given (struct settings_t *args_info)
   args_info->cost_soc_given = 0 ;
   args_info->logfile_given = 0 ;
   args_info->log_given = 0 ;
+  args_info->log_phenotypes_at_given = 0 ;
   args_info->debug_given = 0 ;
   args_info->batch_given = 0 ;
   args_info->metabolism_given = 0 ;
   args_info->perturbation_given = 0 ;
   args_info->perturbation_time_given = 0 ;
   args_info->perturbation_size_given = 0 ;
+  args_info->neighbourhood_size_given = 0 ;
   args_info->conf_file_given = 0 ;
   args_info->ca_width_given = 0 ;
   args_info->abm_width_given = 0 ;
   args_info->abm_neighbourhood_type_given = 0 ;
   args_info->abm_neighbourhood_size_given = 0 ;
   args_info->spatial_variance_given = 0 ;
+  args_info->spatial_patch_size_given = 0 ;
 }
 
 static
@@ -156,12 +162,17 @@ void clear_args (struct settings_t *args_info)
   args_info->logfile_arg = NULL;
   args_info->logfile_orig = NULL;
   args_info->log_flag = 1;
+  args_info->log_phenotypes_at_arg = 0;
+  args_info->log_phenotypes_at_orig = NULL;
   args_info->debug_flag = 0;
   args_info->batch_flag = 0;
   args_info->metabolism_flag = 0;
   args_info->perturbation_flag = 0;
   args_info->perturbation_time_orig = NULL;
+  args_info->perturbation_size_arg = 1.0;
   args_info->perturbation_size_orig = NULL;
+  args_info->neighbourhood_size_arg = 0;
+  args_info->neighbourhood_size_orig = NULL;
   args_info->conf_file_arg = gengetopt_strdup ("settings.conf");
   args_info->conf_file_orig = NULL;
   args_info->ca_width_arg = 16;
@@ -174,6 +185,8 @@ void clear_args (struct settings_t *args_info)
   args_info->abm_neighbourhood_size_orig = NULL;
   args_info->spatial_variance_arg = 0;
   args_info->spatial_variance_orig = NULL;
+  args_info->spatial_patch_size_arg = 1;
+  args_info->spatial_patch_size_orig = NULL;
   
 }
 
@@ -197,18 +210,21 @@ void init_args_info(struct settings_t *args_info)
   args_info->cost_soc_help = settings_t_help[12] ;
   args_info->logfile_help = settings_t_help[13] ;
   args_info->log_help = settings_t_help[14] ;
-  args_info->debug_help = settings_t_help[15] ;
-  args_info->batch_help = settings_t_help[16] ;
-  args_info->metabolism_help = settings_t_help[17] ;
-  args_info->perturbation_help = settings_t_help[18] ;
-  args_info->perturbation_time_help = settings_t_help[19] ;
-  args_info->perturbation_size_help = settings_t_help[20] ;
-  args_info->conf_file_help = settings_t_help[21] ;
-  args_info->ca_width_help = settings_t_help[22] ;
-  args_info->abm_width_help = settings_t_help[23] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[24] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[25] ;
-  args_info->spatial_variance_help = settings_t_help[26] ;
+  args_info->log_phenotypes_at_help = settings_t_help[15] ;
+  args_info->debug_help = settings_t_help[16] ;
+  args_info->batch_help = settings_t_help[17] ;
+  args_info->metabolism_help = settings_t_help[18] ;
+  args_info->perturbation_help = settings_t_help[19] ;
+  args_info->perturbation_time_help = settings_t_help[20] ;
+  args_info->perturbation_size_help = settings_t_help[21] ;
+  args_info->neighbourhood_size_help = settings_t_help[22] ;
+  args_info->conf_file_help = settings_t_help[23] ;
+  args_info->ca_width_help = settings_t_help[24] ;
+  args_info->abm_width_help = settings_t_help[25] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[26] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[27] ;
+  args_info->spatial_variance_help = settings_t_help[28] ;
+  args_info->spatial_patch_size_help = settings_t_help[29] ;
   
 }
 
@@ -302,8 +318,10 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->cost_soc_orig));
   free_string_field (&(args_info->logfile_arg));
   free_string_field (&(args_info->logfile_orig));
+  free_string_field (&(args_info->log_phenotypes_at_orig));
   free_string_field (&(args_info->perturbation_time_orig));
   free_string_field (&(args_info->perturbation_size_orig));
+  free_string_field (&(args_info->neighbourhood_size_orig));
   free_string_field (&(args_info->conf_file_arg));
   free_string_field (&(args_info->conf_file_orig));
   free_string_field (&(args_info->ca_width_orig));
@@ -311,6 +329,7 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->abm_neighbourhood_type_orig));
   free_string_field (&(args_info->abm_neighbourhood_size_orig));
   free_string_field (&(args_info->spatial_variance_orig));
+  free_string_field (&(args_info->spatial_patch_size_orig));
   
   
 
@@ -371,6 +390,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "logfile", args_info->logfile_orig, 0);
   if (args_info->log_given)
     write_into_file(outfile, "log", 0, 0 );
+  if (args_info->log_phenotypes_at_given)
+    write_into_file(outfile, "log-phenotypes-at", args_info->log_phenotypes_at_orig, 0);
   if (args_info->debug_given)
     write_into_file(outfile, "debug", 0, 0 );
   if (args_info->batch_given)
@@ -383,6 +404,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "perturbation-time", args_info->perturbation_time_orig, 0);
   if (args_info->perturbation_size_given)
     write_into_file(outfile, "perturbation-size", args_info->perturbation_size_orig, 0);
+  if (args_info->neighbourhood_size_given)
+    write_into_file(outfile, "neighbourhood-size", args_info->neighbourhood_size_orig, 0);
   if (args_info->conf_file_given)
     write_into_file(outfile, "conf-file", args_info->conf_file_orig, 0);
   if (args_info->ca_width_given)
@@ -395,6 +418,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "abm-neighbourhood-size", args_info->abm_neighbourhood_size_orig, 0);
   if (args_info->spatial_variance_given)
     write_into_file(outfile, "spatial-variance", args_info->spatial_variance_orig, 0);
+  if (args_info->spatial_patch_size_given)
+    write_into_file(outfile, "spatial-patch-size", args_info->spatial_patch_size_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -653,7 +678,7 @@ config_parser_internal (
       int option_index = 0;
 
       static struct option long_options[] = {
-        { "help",	0, NULL, 0 },
+        { "help",	0, NULL, 'h' },
         { "version",	0, NULL, 'V' },
         { "popsize",	1, NULL, 'N' },
         { "bits",	1, NULL, 'B' },
@@ -668,27 +693,35 @@ config_parser_internal (
         { "cost_soc",	1, NULL, 0 },
         { "logfile",	1, NULL, 'L' },
         { "log",	0, NULL, 'l' },
+        { "log-phenotypes-at",	1, NULL, 0 },
         { "debug",	0, NULL, 'd' },
         { "batch",	0, NULL, 'b' },
         { "metabolism",	0, NULL, 0 },
         { "perturbation",	0, NULL, 0 },
         { "perturbation-time",	1, NULL, 0 },
         { "perturbation-size",	1, NULL, 0 },
+        { "neighbourhood-size",	1, NULL, 0 },
         { "conf-file",	1, NULL, 'C' },
         { "ca-width",	1, NULL, 'w' },
         { "abm-width",	1, NULL, 'W' },
-        { "abm-neighbourhood-type",	1, NULL, 't' },
-        { "abm-neighbourhood-size",	1, NULL, 'S' },
-        { "spatial-variance",	1, NULL, 'h' },
+        { "abm-neighbourhood-type",	1, NULL, 0 },
+        { "abm-neighbourhood-size",	1, NULL, 0 },
+        { "spatial-variance",	1, NULL, 0 },
+        { "spatial-patch-size",	1, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "VN:B:s:m:a:O:L:ldbC:w:W:t:S:h:", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVN:B:s:m:a:O:L:ldbC:w:W:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
       switch (c)
         {
+        case 'h':	/* Print help and exit.  */
+          config_parser_print_help ();
+          config_parser_free (&local_args_info);
+          exit (EXIT_SUCCESS);
+
         case 'V':	/* Print version and exit.  */
           config_parser_print_version ();
           config_parser_free (&local_args_info);
@@ -844,50 +877,8 @@ config_parser_internal (
             goto failure;
         
           break;
-        case 't':	/* neighbourhood type.  */
-        
-        
-          if (update_arg( (void *)&(args_info->abm_neighbourhood_type_arg), 
-               &(args_info->abm_neighbourhood_type_orig), &(args_info->abm_neighbourhood_type_given),
-              &(local_args_info.abm_neighbourhood_type_given), optarg, 0, "0", ARG_INT,
-              check_ambiguity, override, 0, 0,
-              "abm-neighbourhood-type", 't',
-              additional_error))
-            goto failure;
-        
-          break;
-        case 'S':	/* neighbourhood size.  */
-        
-        
-          if (update_arg( (void *)&(args_info->abm_neighbourhood_size_arg), 
-               &(args_info->abm_neighbourhood_size_orig), &(args_info->abm_neighbourhood_size_given),
-              &(local_args_info.abm_neighbourhood_size_given), optarg, 0, "64", ARG_INT,
-              check_ambiguity, override, 0, 0,
-              "abm-neighbourhood-size", 'S',
-              additional_error))
-            goto failure;
-        
-          break;
-        case 'h':	/* spatial variance.  */
-        
-        
-          if (update_arg( (void *)&(args_info->spatial_variance_arg), 
-               &(args_info->spatial_variance_orig), &(args_info->spatial_variance_given),
-              &(local_args_info.spatial_variance_given), optarg, 0, "0", ARG_INT,
-              check_ambiguity, override, 0, 0,
-              "spatial-variance", 'h',
-              additional_error))
-            goto failure;
-        
-          break;
 
         case 0:	/* Long option with no short option */
-          if (strcmp (long_options[option_index].name, "help") == 0) {
-            config_parser_print_help ();
-            config_parser_free (&local_args_info);
-            exit (EXIT_SUCCESS);
-          }
-
           /* prob. of bit mutation.  */
           if (strcmp (long_options[option_index].name, "p_mut") == 0)
           {
@@ -958,6 +949,20 @@ config_parser_internal (
               goto failure;
           
           }
+          /* log all phenotypes at time N.  */
+          else if (strcmp (long_options[option_index].name, "log-phenotypes-at") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->log_phenotypes_at_arg), 
+                 &(args_info->log_phenotypes_at_orig), &(args_info->log_phenotypes_at_given),
+                &(local_args_info.log_phenotypes_at_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "log-phenotypes-at", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* metabolism on/off.  */
           else if (strcmp (long_options[option_index].name, "metabolism") == 0)
           {
@@ -1003,9 +1008,79 @@ config_parser_internal (
           
             if (update_arg( (void *)&(args_info->perturbation_size_arg), 
                  &(args_info->perturbation_size_orig), &(args_info->perturbation_size_given),
-                &(local_args_info.perturbation_size_given), optarg, 0, 0, ARG_DOUBLE,
+                &(local_args_info.perturbation_size_given), optarg, 0, "1.0", ARG_DOUBLE,
                 check_ambiguity, override, 0, 0,
                 "perturbation-size", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* neighbourhood size for numeric model.  */
+          else if (strcmp (long_options[option_index].name, "neighbourhood-size") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->neighbourhood_size_arg), 
+                 &(args_info->neighbourhood_size_orig), &(args_info->neighbourhood_size_given),
+                &(local_args_info.neighbourhood_size_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "neighbourhood-size", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* neighbourhood type.  */
+          else if (strcmp (long_options[option_index].name, "abm-neighbourhood-type") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->abm_neighbourhood_type_arg), 
+                 &(args_info->abm_neighbourhood_type_orig), &(args_info->abm_neighbourhood_type_given),
+                &(local_args_info.abm_neighbourhood_type_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "abm-neighbourhood-type", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* neighbourhood size.  */
+          else if (strcmp (long_options[option_index].name, "abm-neighbourhood-size") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->abm_neighbourhood_size_arg), 
+                 &(args_info->abm_neighbourhood_size_orig), &(args_info->abm_neighbourhood_size_given),
+                &(local_args_info.abm_neighbourhood_size_given), optarg, 0, "64", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "abm-neighbourhood-size", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* spatial variance.  */
+          else if (strcmp (long_options[option_index].name, "spatial-variance") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->spatial_variance_arg), 
+                 &(args_info->spatial_variance_orig), &(args_info->spatial_variance_given),
+                &(local_args_info.spatial_variance_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "spatial-variance", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* spatial patch size.  */
+          else if (strcmp (long_options[option_index].name, "spatial-patch-size") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->spatial_patch_size_arg), 
+                 &(args_info->spatial_patch_size_orig), &(args_info->spatial_patch_size_given),
+                &(local_args_info.spatial_patch_size_given), optarg, 0, "1", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "spatial-patch-size", '-',
                 additional_error))
               goto failure;
           

@@ -171,47 +171,5 @@ void EnvironmentABM::reproduce()
 //	return *(this->mGrid[point.x][point.y]);
 //}
 
-stats_t EnvironmentABM::stats()
-{
-	/*--------------------------------------------------------------------*
-	 * calculate and return the current environmental statistics:
-	 *  - minimum, maximum and mean fitness
-	 *  - mean values for each of the b_evo, b_ind and b_soc traits.
-	 *--------------------------------------------------------------------*/
-	stats_t 	stats;
 
-	int 		popsize = this->get_popsize();
-
-	double 		min_fitness = INT_MAX;
-	double 		max_fitness = 0.0;
-	double 		total_fitness = 0;
-	double 		total_bevo = 0;
-	double 		total_bind = 0;
-	double 		total_bsoc = 0;
-
-	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
-	{
-		Agent *agent = *it;
-		double fitness   = agent->get_fitness();
-		if (fitness > max_fitness) max_fitness = fitness;
-		if (fitness < min_fitness) min_fitness = fitness;
-
-		total_fitness	+= fitness;
-		total_bevo		+= agent->mBEvo;
-		total_bind		+= agent->mBInd;
-		total_bsoc		+= agent->mBSoc;
-	}
-
-	stats.fitness_min	= min_fitness;
-	stats.fitness_max	= max_fitness;
-	stats.fitness_mean	= total_fitness / popsize;
-
-	stats.bevo_mean		= total_bevo / popsize;
-	stats.bind_mean		= total_bind / popsize;
-	stats.bsoc_mean		= total_bsoc / popsize;
-
-	return stats;
-}
-
-} // namespace sim
-
+} /* namespace sim */
