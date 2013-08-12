@@ -3,3 +3,8 @@ xcuserdata/
 *.build/
 build/
 DerivedData/
+logs/
+graphs/
+dev/
+batch/
+app
