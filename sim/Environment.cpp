@@ -10,7 +10,7 @@
 namespace sim
 {
 
-Environment::Environment(int population)
+Environment::Environment()
 {
 	this->mAge = 0;
 
@@ -21,6 +21,7 @@ Environment::Environment(int population)
 	 *--------------------------------------------------------------------*/
 	this->mLandscape = new Landscape(settings.bits_arg, 1, 1);
 
+	int population = settings.popsize_arg;
 	printf("creating %d agents\n", population);
 	for (int i = 0; i < population; i++)
 	{
@@ -61,8 +62,15 @@ void Environment::reproduce()
 			fitnesses[i] = mAgents[i]->get_fitness();
 
 		int parent_index = roulette(fitnesses, popsize);
+		if (parent_index < 0)
+		{
+			printf("couldn't find parent with non-zero fitness, selecting random...\n");
+			parent_index = rng_randint(popsize);
+		}
+
 		int child_index = rng_randint(popsize);
-		// cout << "replacing " << child_index << " with " << parent_index << "( fitness = " << mAgents[parent_index].fitness() << ")" << std::endl;
+		// cout << "replacing " << child_index << " with " << parent_index << "( fitness = " << mAgents[parent_index]->get_fitness() << ")" << std::endl;
+
 		Agent *parent = mAgents[parent_index];
 		Agent *child = parent->replicate();
 
@@ -162,8 +170,9 @@ vector <Agent *> Environment::get_neighbours(const Agent *agent)
 	{
 		for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
 		{
-			Agent *agent = *it;
-			neighbours.push_back(agent);
+			Agent *other = *it;
+			if (agent != other)
+				neighbours.push_back(other);
 		}
 	}
 	else

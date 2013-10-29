@@ -62,6 +62,7 @@ const char *settings_t_help[] = {
   "      --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
   "      --spatial-variance=INT    spatial variance  (default=`0')",
   "      --spatial-patch-size=INT  spatial patch size  (default=`1')",
+  "      --always-assimilate       always incorporate learned genes  (default=off)",
     0
 };
 
@@ -142,6 +143,7 @@ void clear_given (struct settings_t *args_info)
   args_info->abm_neighbourhood_size_given = 0 ;
   args_info->spatial_variance_given = 0 ;
   args_info->spatial_patch_size_given = 0 ;
+  args_info->always_assimilate_given = 0 ;
 }
 
 static
@@ -187,6 +189,7 @@ void clear_args (struct settings_t *args_info)
   args_info->spatial_variance_orig = NULL;
   args_info->spatial_patch_size_arg = 1;
   args_info->spatial_patch_size_orig = NULL;
+  args_info->always_assimilate_flag = 0;
   
 }
 
@@ -225,6 +228,7 @@ void init_args_info(struct settings_t *args_info)
   args_info->abm_neighbourhood_size_help = settings_t_help[27] ;
   args_info->spatial_variance_help = settings_t_help[28] ;
   args_info->spatial_patch_size_help = settings_t_help[29] ;
+  args_info->always_assimilate_help = settings_t_help[30] ;
   
 }
 
@@ -420,6 +424,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "spatial-variance", args_info->spatial_variance_orig, 0);
   if (args_info->spatial_patch_size_given)
     write_into_file(outfile, "spatial-patch-size", args_info->spatial_patch_size_orig, 0);
+  if (args_info->always_assimilate_given)
+    write_into_file(outfile, "always-assimilate", 0, 0 );
   
 
   i = EXIT_SUCCESS;
@@ -708,6 +714,7 @@ config_parser_internal (
         { "abm-neighbourhood-size",	1, NULL, 0 },
         { "spatial-variance",	1, NULL, 0 },
         { "spatial-patch-size",	1, NULL, 0 },
+        { "always-assimilate",	0, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -1081,6 +1088,18 @@ config_parser_internal (
                 &(local_args_info.spatial_patch_size_given), optarg, 0, "1", ARG_INT,
                 check_ambiguity, override, 0, 0,
                 "spatial-patch-size", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* always incorporate learned genes.  */
+          else if (strcmp (long_options[option_index].name, "always-assimilate") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->always_assimilate_flag), 0, &(args_info->always_assimilate_given),
+                &(local_args_info.always_assimilate_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "always-assimilate", '-',
                 additional_error))
               goto failure;
           

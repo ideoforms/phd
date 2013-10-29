@@ -45,3 +45,6 @@ option "abm-neighbourhood-size"	-	"neighbourhood size" 			int			no		default = "6
 
 option "spatial-variance"	-	"spatial variance" 			int			no		default = "0"
 option "spatial-patch-size"	-	"spatial patch size" 		int			no		default = "1"
+
+option "always-assimilate"	-	"always incorporate learned genes" 		flag	off
+

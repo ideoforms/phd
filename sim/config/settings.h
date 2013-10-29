@@ -118,6 +118,8 @@ struct settings_t
   int spatial_patch_size_arg;	/**< @brief spatial patch size (default='1').  */
   char * spatial_patch_size_orig;	/**< @brief spatial patch size original value given at command line.  */
   const char *spatial_patch_size_help; /**< @brief spatial patch size help description.  */
+  int always_assimilate_flag;	/**< @brief always incorporate learned genes (default=off).  */
+  const char *always_assimilate_help; /**< @brief always incorporate learned genes help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -149,6 +151,7 @@ struct settings_t
   unsigned int abm_neighbourhood_size_given ;	/**< @brief Whether abm-neighbourhood-size was given.  */
   unsigned int spatial_variance_given ;	/**< @brief Whether spatial-variance was given.  */
   unsigned int spatial_patch_size_given ;	/**< @brief Whether spatial-patch-size was given.  */
+  unsigned int always_assimilate_given ;	/**< @brief Whether always-assimilate was given.  */
 
 } ;
 

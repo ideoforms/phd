@@ -10,12 +10,12 @@
 namespace sim
 {
 
-EnvironmentCA1D::EnvironmentCA1D(unsigned width) : Environment(width)
+EnvironmentCA1D::EnvironmentCA1D() : Environment()
 {
-	this->mWidth = width;
+	this->mWidth = settings.popsize_arg;
 
 	this->mLandscape = new Landscape(settings.bits_arg,
-                                     width / settings.spatial_patch_size_arg, 1);
+                                     this->mWidth / settings.spatial_patch_size_arg, 1);
 	this->mLandscape->distribute(settings.spatial_variance_arg);
 }
 
@@ -30,7 +30,9 @@ vector <Agent *> EnvironmentCA1D::get_neighbours(const Agent *agent)
 	int index = agent->get_index();
 	vector <Agent *> neighbours;
 	// printf("index %d, position %d, %d\n", index, position.x, position.y);
+	// index = rng_randint(mAgents.size());
 	neighbours.push_back(this->mAgents[this->px(index)]);
+	// index = rng_randint(mAgents.size());
 	neighbours.push_back(this->mAgents[this->nx(index)]);
 
 	return neighbours;
@@ -47,6 +49,11 @@ void EnvironmentCA1D::reproduce()
 		fitnesses[i] = mAgents[i]->get_fitness();
 
 	int parent_index = roulette(fitnesses, popsize);
+	if (parent_index < 0)
+	{
+		printf("couldn't find parent with non-zero fitness, selecting random...\n");
+		parent_index = rng_randint(popsize);
+	}
 
 	Agent *parent = mAgents[parent_index];
 	Agent *child = parent->replicate();
@@ -56,8 +63,8 @@ void EnvironmentCA1D::reproduce()
         this->px(parent_index) :
         this->nx(parent_index);
 
-	cout << "parent " << parent_index << " " << *parent << " [" << parent << "]" << endl;
-	cout << " -> " << child_index << " " << *child << " [" << child << "]" << endl;
+	// cout << "parent " << parent_index << " " << *parent << " [" << parent << "]" << endl;
+	// cout << " -> " << child_index << " " << *child << " [" << child << "]" << endl;
 
 	delete mAgents[child_index];
 

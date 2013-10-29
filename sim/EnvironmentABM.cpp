@@ -10,18 +10,18 @@
 namespace sim
 {
 
-EnvironmentABM::EnvironmentABM(unsigned population, unsigned width, unsigned height) : Environment(population)
+EnvironmentABM::EnvironmentABM() : Environment()
 {
-	this->mWidth = width;
-	this->mHeight = height;
+	this->mWidth = settings.abm_width_arg;
+	this->mHeight = settings.abm_width_arg;
 
-	this->mPositions.resize(population);
-    this->mVelocity.resize(population);
+	this->mPositions.resize(settings.popsize_arg);
+    this->mVelocity.resize(settings.popsize_arg);
 
 	int n = 0;
 	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
 	{
-		this->mPositions[n].set(rng_uniform(width), rng_uniform(height));
+		this->mPositions[n].set(rng_uniform(this->mWidth), rng_uniform(this->mHeight));
         this->mVelocity[n].set(rng_uniform(-2, 2), rng_uniform(-2, 2));
         
         n++;
@@ -96,6 +96,8 @@ vector <Agent *> EnvironmentABM::get_neighbours(const Agent *agent)
 
 	return neighbours;
 }
+
+    
     
     
 void EnvironmentABM::update()
@@ -140,6 +142,11 @@ void EnvironmentABM::reproduce()
 		fitnesses[i] = mAgents[i]->get_fitness();
 
 	int parent_index = roulette(fitnesses, popsize);
+	if (parent_index < 0)
+	{
+		printf("couldn't find parent with non-zero fitness, selecting random...\n");
+		parent_index = rng_randint(popsize);
+	}
 
 	Agent *parent = mAgents[parent_index];
 	Agent *child = parent->replicate();

@@ -184,8 +184,8 @@ void Agent::update()
 	this->mLastAction = mode;
 	this->mDelta = mEnv->payoff(this, action);
 
-	if (settings.debug_given)
-		std::cout << *this << std::endl;
+	// if (settings.debug_given)
+	//	std::cout << *this << std::endl;
 
 	if (mode != MODE_EVO)
 	{
@@ -194,10 +194,14 @@ void Agent::update()
 		 * modify our phenotype accordingly (learning).
 		 *--------------------------------------------------------------------*/
 		double curFitness = mEnv->payoff(this, mPhenotype);
-		if (settings.debug_given)
-			cout << "action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
-		if (mDelta > curFitness)
+		// if (settings.debug_given)
+		//	cout << "action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
+
+		if (settings.always_assimilate_given || mDelta > curFitness)
+		{
+			// cout << "assimilating: action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
 			mPhenotype = action;
+		}
 	}
 
 	// XXX: testing fixed social cost

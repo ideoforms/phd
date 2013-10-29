@@ -28,7 +28,7 @@ class Environment
 public:
 
 	// constructors and destructors
-	Environment(int population);
+	Environment();
 	~Environment() {};
 
 	/*-----------------------------------------------------------------------*
@@ -53,6 +53,8 @@ public:
 	 * properties of the environment.
 	 *-----------------------------------------------------------------------*/
 	friend class Agent;
+
+	virtual const char * classname() { return "Environment"; }
 
 	friend ostream & operator<< (ostream &stream, const Environment &object)
 	{
@@ -80,7 +82,7 @@ class EnvironmentCA1D : public Environment
     
 public:
     
-    EnvironmentCA1D(unsigned size);
+    EnvironmentCA1D();
     ~EnvironmentCA1D();
     
     virtual void                reproduce();
@@ -88,6 +90,8 @@ public:
     virtual vector <Agent *> 	get_neighbours(const Agent *agent);
     
     friend class Agent;
+
+	virtual const char * classname() { return "Environment1D"; }
     
     friend ostream & operator<< (ostream &stream, const EnvironmentCA1D &object)
     {
@@ -110,7 +114,7 @@ class EnvironmentCA : public Environment
 
 public:
 
-	EnvironmentCA(unsigned width, unsigned height);
+	EnvironmentCA();
 	~EnvironmentCA();
 
 	virtual void                reproduce();
@@ -118,6 +122,8 @@ public:
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	friend class Agent;
+
+	virtual const char * classname() { return "EnvironmentCA"; }
 
 	friend ostream & operator<< (ostream &stream, const EnvironmentCA &object)
 	{
@@ -154,7 +160,7 @@ class EnvironmentABM : public Environment
 
 public:
 
-	EnvironmentABM(unsigned population, unsigned width, unsigned height);
+	EnvironmentABM();
 	~EnvironmentABM();
 
     virtual void 		update();
@@ -163,6 +169,8 @@ public:
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	friend class Agent;
+
+	virtual const char * classname() { return "EnvironmentABM"; }
 
 	friend ostream & operator<< (ostream &stream, const EnvironmentABM &object)
 	{

@@ -10,28 +10,31 @@
 namespace sim
 {
 
-EnvironmentCA::EnvironmentCA(unsigned width, unsigned height) : Environment(width * height)
+EnvironmentCA::EnvironmentCA() : Environment()
 {
-	this->mWidth = width;
-	this->mHeight = height;
+	this->mWidth = settings.ca_width_arg;
+	this->mHeight = settings.ca_width_arg;
 
-	this->mGrid.resize(width);
-	for (int i = 0; i < width; i++)
-		this->mGrid[i].resize(height);
+	// Slight hack to update popsize based on the CA width and height (as it is fixed)
+	assert(settings.popsize_arg == settings.ca_width_arg * settings.ca_width_arg);
 
-	this->mPositions.resize(width * height);
+	this->mGrid.resize(this->mWidth);
+	for (int i = 0; i < this->mWidth; i++)
+		this->mGrid[i].resize(this->mHeight);
+
+	this->mPositions.resize(this->mWidth * this->mHeight);
 
 	this->mLandscape = new Landscape(settings.bits_arg,
-                                     width / settings.spatial_patch_size_arg,
-                                     height / settings.spatial_patch_size_arg);
+                                     this->mWidth / settings.spatial_patch_size_arg,
+                                     this->mHeight / settings.spatial_patch_size_arg);
 	this->mLandscape->distribute(settings.spatial_variance_arg);
 
 	int n = 0;
 	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
 	{
 		Agent *agent = *it;
-		int x = n % width;
-		int y = (int) n / width;
+		int x = n % this->mWidth;
+		int y = (int) n / this->mHeight;
 
 		this->mGrid[x][y] = agent;
 		this->mPositions[n].set(x, y);
@@ -71,6 +74,11 @@ void EnvironmentCA::reproduce()
 		fitnesses[i] = mAgents[i]->get_fitness();
 
 	int parent_index = roulette(fitnesses, popsize);
+	if (parent_index < 0)
+	{
+		printf("couldn't find parent with non-zero fitness, selecting random...\n");
+		parent_index = rng_randint(popsize);
+	}
 
 	Agent *parent = mAgents[parent_index];
 	Agent *child = parent->replicate();

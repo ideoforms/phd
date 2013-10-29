@@ -9,8 +9,18 @@
 using namespace std;
 using namespace sim;
 
+#if defined(TOPOLOGY_CA)
+	#define ENV_CLASS sim::EnvironmentCA
+#elif defined(TOPOLOGY_1D)
+	#define ENV_CLASS sim::EnvironmentCA1D
+#elif defined(TOPOLOGY_ABM)
+	#define ENV_CLASS sim::EnvironmentABM
+#else
+	#define ENV_CLASS sim::Environment
+#endif
+
 settings_t 			sim::settings;
-sim::Environment 	*env;
+ENV_CLASS			*env;
 
 int main (int argc, char *argv[])
 {
@@ -18,12 +28,9 @@ int main (int argc, char *argv[])
 	init_simulator();
 	init_logging();
 
-	env = new sim::Environment(settings.popsize_arg);
+	env = new ENV_CLASS();
 
-	// sim = new sim::Simulation(env);
-	// sim.init_config(argc, argv);
-	// sim.dump();
-
+	printf("      env: %s\n",   env->classname());
 	printf("    steps: %d\n",   settings.steps_arg);
 	printf("     bits: %d\n",   settings.bits_arg);
 	printf(" p_switch: %.1f\n", settings.p_switch_arg);
@@ -34,17 +41,16 @@ int main (int argc, char *argv[])
 	{
 		if (step % 1000 == 0)
 			printf(" - step %05d\n", step);
-		if (settings.debug_given)
-			cout << env << endl;
 
 		/*---------------------------------------------------------------------*
 		 * if we're in batch mode, redirect stdout to the null device -- 
 		 * we don't want to output anything except our final state.
 		 *---------------------------------------------------------------------*/
 		if (settings.perturbation_given && settings.perturbation_time_arg == step)
-		{
 			env->perturb(settings.perturbation_size_arg);
-		}
+
+		if (settings.log_phenotypes_at_arg == step && step > 0)
+			log_phenotypes();
 
 		/*---------------------------------------------------------------------*
 		 * update the environment, and generate stats.

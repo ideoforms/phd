@@ -1,7 +1,7 @@
 #include "sim/Simulation.h"
 #include "sim/io/csv.h"
 
-#include "app.h"
+#include "app-utils.h"
 
 #include <iostream>
 #include <fcntl.h>
@@ -150,6 +150,11 @@ void log_states()
 		stats.geno_mean_dist,
 		stats.pheno_mean_dist
 	);
+
+	if (settings.debug_given)
+	{
+		printf("(%05d) %.4f %.4f %.4f (mean fitness = %.3f)\n", stats.step, stats.bevo_mean, stats.bind_mean, stats.bsoc_mean, stats.fitness_mean);
+	}
 }
 
 void log_phenotypes()
