@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 
 using namespace std;
 using namespace sim;
@@ -16,6 +17,8 @@ extern sim::EnvironmentCA *env;
 
 int stdout_orig;
 csvwriter *logger;
+
+double t0;
 
 void init_config(int argc, char *argv[])
 {
@@ -31,10 +34,18 @@ void init_simulator()
 	/*---------------------------------------------------------------------*
 	 * general simulator setup (necessary for all simulation types):
 	 *  - initialise random number generator
-	 *  - redirect output to /dev/null if in batch mode
+	 *  - capture initial timestamp, to output estimated time to completion
 	 *---------------------------------------------------------------------*/
 	rng_init();
+	t0 = millitime();
+}
 
+void init_logging()
+{
+	/*---------------------------------------------------------------------*
+	 * logging setup:
+	 *  - redirect output to /dev/null if in batch mode
+	 *---------------------------------------------------------------------*/
 	if (settings.batch_given)
 	{
 		/*---------------------------------------------------------------------*
@@ -57,22 +68,17 @@ void init_simulator()
 		settings.log_given = false;
 	}
 
-}
-
-void init_logging()
-{
 	if (settings.log_given)
 	{
 		/*---------------------------------------------------------------------*
 		 * construct logfile from the format string specified, replacing %s
 		 * with the current timestamp.
 		 *---------------------------------------------------------------------*/
-		char *logfile_format = settings.logfile_arg;
+		const char *logfile_format = settings.logfile_arg;
 		char *logfile = (char *) malloc(64);
 		char timestr[32];
 		sprintf(timestr, "%ld", (long) time(NULL));
 		sprintf(logfile, logfile_format, timestr);
-		settings.logfile_arg = logfile;
 
 		printf("logging to file %s\n", logfile);
 
@@ -125,7 +131,7 @@ void close_logging()
 		logger->close();
 	}
 
-	free(settings.logfile_arg);
+	// free(settings.logfile_arg);
 }
 
 
@@ -161,7 +167,7 @@ void log_phenotypes()
 {
 	/*---------------------------------------------------------------------*
 	 *---------------------------------------------------------------------*/
-	char *logfile_format = "logs/phenotypes-%s.csv";
+	const char *logfile_format = "logs/phenotypes-%s.csv";
 	char *logfile = (char *) malloc(64);
 	char timestr[32];
 	sprintf(timestr, "%ld", (long) time(NULL));
@@ -190,5 +196,31 @@ void log_phenotypes()
 			agent->mBEvo, agent->mBInd, agent->mBSoc, agent->mDelta);
 	}
 	logger.close();
+}
+
+void print_elapsed_time(int trial_index, int trial_total)
+{
+	double elapsed = millitime() - t0;
+	double predicted = predict(elapsed, trial_index, trial_total);
+
+    int minutes = (int) predicted / 60;
+    printf("completed trial %d/%d (elapsed %.6f, remaining %dm%.3fs)\n", trial_index, trial_total, elapsed, minutes, predicted - (60 * minutes));
+}
+
+double millitime()
+{
+	struct timeval tv;
+	int rv = gettimeofday(&tv, NULL);
+	if (rv)
+		return 0.0;
+	double time = (double) tv.tv_sec + tv.tv_usec * 0.000001f;
+	return time;
+}
+
+double predict(double elapsed, int index, int total)
+{
+	double ratio = (double) index / (double) total;
+	double ratio_time = (elapsed / ratio) * (1.0 - ratio);
+	return ratio_time;
 }
 

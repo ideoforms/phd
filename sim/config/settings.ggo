@@ -4,10 +4,12 @@
 package 				"imitation-cpp"
 version 				"1.0"
 
+option "topology"	t	"topology: numeric, ca-1d, ca-2d, abm" 	string	no default = "numeric"
 
 option "popsize"	N	"population size" 					int			no
 option "bits"		B	"environmental bits"				int			no
 option "steps"		s	"steps to run"						int			no
+option "trials"		T	"trialsto run"						int			no default = "1"
 
 option "mu"			m	"s.d. of mutations"					double		no
 option "alpha"		a	"fitness rolloff"					double		no
@@ -23,6 +25,7 @@ option "cost_soc"	-	"prob. of social learning noise"	double		no
 
 option "logfile"	L	"path to store log file"			string		no
 option "log"		l	"logging on/off"					flag		on
+option "log-every"	i	"interval between logging"			int			no default = "1"
 option "log-phenotypes-at"		-	"log all phenotypes at time N"		int	no	default = "0"
 option "debug"		d	"debug on/off"						flag		off
 option "batch"		b	"batch mode on/off"					flag		off

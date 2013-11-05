@@ -34,9 +34,11 @@ const char *settings_t_description = "";
 const char *settings_t_help[] = {
   "  -h, --help                    Print help and exit",
   "  -V, --version                 Print version and exit",
+  "  -t, --topology=STRING         topology: numeric, ca-1d, ca-2d, abm  \n                                  (default=`numeric')",
   "  -N, --popsize=INT             population size",
   "  -B, --bits=INT                environmental bits",
   "  -s, --steps=INT               steps to run",
+  "  -T, --trials=INT              trialsto run  (default=`1')",
   "  -m, --mu=DOUBLE               s.d. of mutations",
   "  -a, --alpha=DOUBLE            fitness rolloff",
   "  -O, --omega0=DOUBLE           initial metabolism",
@@ -47,6 +49,7 @@ const char *settings_t_help[] = {
   "      --cost_soc=DOUBLE         prob. of social learning noise",
   "  -L, --logfile=STRING          path to store log file",
   "  -l, --log                     logging on/off  (default=on)",
+  "  -i, --log-every=INT           interval between logging  (default=`1')",
   "      --log-phenotypes-at=INT   log all phenotypes at time N  (default=`0')",
   "  -d, --debug                   debug on/off  (default=off)",
   "  -b, --batch                   batch mode on/off  (default=off)",
@@ -115,9 +118,11 @@ void clear_given (struct settings_t *args_info)
 {
   args_info->help_given = 0 ;
   args_info->version_given = 0 ;
+  args_info->topology_given = 0 ;
   args_info->popsize_given = 0 ;
   args_info->bits_given = 0 ;
   args_info->steps_given = 0 ;
+  args_info->trials_given = 0 ;
   args_info->mu_given = 0 ;
   args_info->alpha_given = 0 ;
   args_info->omega0_given = 0 ;
@@ -128,6 +133,7 @@ void clear_given (struct settings_t *args_info)
   args_info->cost_soc_given = 0 ;
   args_info->logfile_given = 0 ;
   args_info->log_given = 0 ;
+  args_info->log_every_given = 0 ;
   args_info->log_phenotypes_at_given = 0 ;
   args_info->debug_given = 0 ;
   args_info->batch_given = 0 ;
@@ -150,9 +156,13 @@ static
 void clear_args (struct settings_t *args_info)
 {
   FIX_UNUSED (args_info);
+  args_info->topology_arg = gengetopt_strdup ("numeric");
+  args_info->topology_orig = NULL;
   args_info->popsize_orig = NULL;
   args_info->bits_orig = NULL;
   args_info->steps_orig = NULL;
+  args_info->trials_arg = 1;
+  args_info->trials_orig = NULL;
   args_info->mu_orig = NULL;
   args_info->alpha_orig = NULL;
   args_info->omega0_orig = NULL;
@@ -164,6 +174,8 @@ void clear_args (struct settings_t *args_info)
   args_info->logfile_arg = NULL;
   args_info->logfile_orig = NULL;
   args_info->log_flag = 1;
+  args_info->log_every_arg = 1;
+  args_info->log_every_orig = NULL;
   args_info->log_phenotypes_at_arg = 0;
   args_info->log_phenotypes_at_orig = NULL;
   args_info->debug_flag = 0;
@@ -200,35 +212,38 @@ void init_args_info(struct settings_t *args_info)
 
   args_info->help_help = settings_t_help[0] ;
   args_info->version_help = settings_t_help[1] ;
-  args_info->popsize_help = settings_t_help[2] ;
-  args_info->bits_help = settings_t_help[3] ;
-  args_info->steps_help = settings_t_help[4] ;
-  args_info->mu_help = settings_t_help[5] ;
-  args_info->alpha_help = settings_t_help[6] ;
-  args_info->omega0_help = settings_t_help[7] ;
-  args_info->p_mut_help = settings_t_help[8] ;
-  args_info->p_switch_help = settings_t_help[9] ;
-  args_info->p_move_help = settings_t_help[10] ;
-  args_info->p_noise_help = settings_t_help[11] ;
-  args_info->cost_soc_help = settings_t_help[12] ;
-  args_info->logfile_help = settings_t_help[13] ;
-  args_info->log_help = settings_t_help[14] ;
-  args_info->log_phenotypes_at_help = settings_t_help[15] ;
-  args_info->debug_help = settings_t_help[16] ;
-  args_info->batch_help = settings_t_help[17] ;
-  args_info->metabolism_help = settings_t_help[18] ;
-  args_info->perturbation_help = settings_t_help[19] ;
-  args_info->perturbation_time_help = settings_t_help[20] ;
-  args_info->perturbation_size_help = settings_t_help[21] ;
-  args_info->neighbourhood_size_help = settings_t_help[22] ;
-  args_info->conf_file_help = settings_t_help[23] ;
-  args_info->ca_width_help = settings_t_help[24] ;
-  args_info->abm_width_help = settings_t_help[25] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[26] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[27] ;
-  args_info->spatial_variance_help = settings_t_help[28] ;
-  args_info->spatial_patch_size_help = settings_t_help[29] ;
-  args_info->always_assimilate_help = settings_t_help[30] ;
+  args_info->topology_help = settings_t_help[2] ;
+  args_info->popsize_help = settings_t_help[3] ;
+  args_info->bits_help = settings_t_help[4] ;
+  args_info->steps_help = settings_t_help[5] ;
+  args_info->trials_help = settings_t_help[6] ;
+  args_info->mu_help = settings_t_help[7] ;
+  args_info->alpha_help = settings_t_help[8] ;
+  args_info->omega0_help = settings_t_help[9] ;
+  args_info->p_mut_help = settings_t_help[10] ;
+  args_info->p_switch_help = settings_t_help[11] ;
+  args_info->p_move_help = settings_t_help[12] ;
+  args_info->p_noise_help = settings_t_help[13] ;
+  args_info->cost_soc_help = settings_t_help[14] ;
+  args_info->logfile_help = settings_t_help[15] ;
+  args_info->log_help = settings_t_help[16] ;
+  args_info->log_every_help = settings_t_help[17] ;
+  args_info->log_phenotypes_at_help = settings_t_help[18] ;
+  args_info->debug_help = settings_t_help[19] ;
+  args_info->batch_help = settings_t_help[20] ;
+  args_info->metabolism_help = settings_t_help[21] ;
+  args_info->perturbation_help = settings_t_help[22] ;
+  args_info->perturbation_time_help = settings_t_help[23] ;
+  args_info->perturbation_size_help = settings_t_help[24] ;
+  args_info->neighbourhood_size_help = settings_t_help[25] ;
+  args_info->conf_file_help = settings_t_help[26] ;
+  args_info->ca_width_help = settings_t_help[27] ;
+  args_info->abm_width_help = settings_t_help[28] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[29] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[30] ;
+  args_info->spatial_variance_help = settings_t_help[31] ;
+  args_info->spatial_patch_size_help = settings_t_help[32] ;
+  args_info->always_assimilate_help = settings_t_help[33] ;
   
 }
 
@@ -309,9 +324,12 @@ static void
 config_parser_release (struct settings_t *args_info)
 {
 
+  free_string_field (&(args_info->topology_arg));
+  free_string_field (&(args_info->topology_orig));
   free_string_field (&(args_info->popsize_orig));
   free_string_field (&(args_info->bits_orig));
   free_string_field (&(args_info->steps_orig));
+  free_string_field (&(args_info->trials_orig));
   free_string_field (&(args_info->mu_orig));
   free_string_field (&(args_info->alpha_orig));
   free_string_field (&(args_info->omega0_orig));
@@ -322,6 +340,7 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->cost_soc_orig));
   free_string_field (&(args_info->logfile_arg));
   free_string_field (&(args_info->logfile_orig));
+  free_string_field (&(args_info->log_every_orig));
   free_string_field (&(args_info->log_phenotypes_at_orig));
   free_string_field (&(args_info->perturbation_time_orig));
   free_string_field (&(args_info->perturbation_size_orig));
@@ -368,12 +387,16 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "help", 0, 0 );
   if (args_info->version_given)
     write_into_file(outfile, "version", 0, 0 );
+  if (args_info->topology_given)
+    write_into_file(outfile, "topology", args_info->topology_orig, 0);
   if (args_info->popsize_given)
     write_into_file(outfile, "popsize", args_info->popsize_orig, 0);
   if (args_info->bits_given)
     write_into_file(outfile, "bits", args_info->bits_orig, 0);
   if (args_info->steps_given)
     write_into_file(outfile, "steps", args_info->steps_orig, 0);
+  if (args_info->trials_given)
+    write_into_file(outfile, "trials", args_info->trials_orig, 0);
   if (args_info->mu_given)
     write_into_file(outfile, "mu", args_info->mu_orig, 0);
   if (args_info->alpha_given)
@@ -394,6 +417,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "logfile", args_info->logfile_orig, 0);
   if (args_info->log_given)
     write_into_file(outfile, "log", 0, 0 );
+  if (args_info->log_every_given)
+    write_into_file(outfile, "log-every", args_info->log_every_orig, 0);
   if (args_info->log_phenotypes_at_given)
     write_into_file(outfile, "log-phenotypes-at", args_info->log_phenotypes_at_orig, 0);
   if (args_info->debug_given)
@@ -686,9 +711,11 @@ config_parser_internal (
       static struct option long_options[] = {
         { "help",	0, NULL, 'h' },
         { "version",	0, NULL, 'V' },
+        { "topology",	1, NULL, 't' },
         { "popsize",	1, NULL, 'N' },
         { "bits",	1, NULL, 'B' },
         { "steps",	1, NULL, 's' },
+        { "trials",	1, NULL, 'T' },
         { "mu",	1, NULL, 'm' },
         { "alpha",	1, NULL, 'a' },
         { "omega0",	1, NULL, 'O' },
@@ -699,6 +726,7 @@ config_parser_internal (
         { "cost_soc",	1, NULL, 0 },
         { "logfile",	1, NULL, 'L' },
         { "log",	0, NULL, 'l' },
+        { "log-every",	1, NULL, 'i' },
         { "log-phenotypes-at",	1, NULL, 0 },
         { "debug",	0, NULL, 'd' },
         { "batch",	0, NULL, 'b' },
@@ -718,7 +746,7 @@ config_parser_internal (
         { 0,  0, 0, 0 }
       };
 
-      c = getopt_long (argc, argv, "hVN:B:s:m:a:O:L:ldbC:w:W:", long_options, &option_index);
+      c = getopt_long (argc, argv, "hVt:N:B:s:T:m:a:O:L:li:dbC:w:W:", long_options, &option_index);
 
       if (c == -1) break;	/* Exit from `while (1)' loop.  */
 
@@ -734,6 +762,18 @@ config_parser_internal (
           config_parser_free (&local_args_info);
           exit (EXIT_SUCCESS);
 
+        case 't':	/* topology: numeric, ca-1d, ca-2d, abm.  */
+        
+        
+          if (update_arg( (void *)&(args_info->topology_arg), 
+               &(args_info->topology_orig), &(args_info->topology_given),
+              &(local_args_info.topology_given), optarg, 0, "numeric", ARG_STRING,
+              check_ambiguity, override, 0, 0,
+              "topology", 't',
+              additional_error))
+            goto failure;
+        
+          break;
         case 'N':	/* population size.  */
         
         
@@ -766,6 +806,18 @@ config_parser_internal (
               &(local_args_info.steps_given), optarg, 0, 0, ARG_INT,
               check_ambiguity, override, 0, 0,
               "steps", 's',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'T':	/* trialsto run.  */
+        
+        
+          if (update_arg( (void *)&(args_info->trials_arg), 
+               &(args_info->trials_orig), &(args_info->trials_given),
+              &(local_args_info.trials_given), optarg, 0, "1", ARG_INT,
+              check_ambiguity, override, 0, 0,
+              "trials", 'T',
               additional_error))
             goto failure;
         
@@ -824,6 +876,18 @@ config_parser_internal (
           if (update_arg((void *)&(args_info->log_flag), 0, &(args_info->log_given),
               &(local_args_info.log_given), optarg, 0, 0, ARG_FLAG,
               check_ambiguity, override, 1, 0, "log", 'l',
+              additional_error))
+            goto failure;
+        
+          break;
+        case 'i':	/* interval between logging.  */
+        
+        
+          if (update_arg( (void *)&(args_info->log_every_arg), 
+               &(args_info->log_every_orig), &(args_info->log_every_given),
+              &(local_args_info.log_every_given), optarg, 0, "1", ARG_INT,
+              check_ambiguity, override, 0, 0,
+              "log-every", 'i',
               additional_error))
             goto failure;
         

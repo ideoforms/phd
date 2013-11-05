@@ -39,6 +39,9 @@ struct settings_t
 {
   const char *help_help; /**< @brief Print help and exit help description.  */
   const char *version_help; /**< @brief Print version and exit help description.  */
+  char * topology_arg;	/**< @brief topology: numeric, ca-1d, ca-2d, abm (default='numeric').  */
+  char * topology_orig;	/**< @brief topology: numeric, ca-1d, ca-2d, abm original value given at command line.  */
+  const char *topology_help; /**< @brief topology: numeric, ca-1d, ca-2d, abm help description.  */
   int popsize_arg;	/**< @brief population size.  */
   char * popsize_orig;	/**< @brief population size original value given at command line.  */
   const char *popsize_help; /**< @brief population size help description.  */
@@ -48,6 +51,9 @@ struct settings_t
   int steps_arg;	/**< @brief steps to run.  */
   char * steps_orig;	/**< @brief steps to run original value given at command line.  */
   const char *steps_help; /**< @brief steps to run help description.  */
+  int trials_arg;	/**< @brief trialsto run (default='1').  */
+  char * trials_orig;	/**< @brief trialsto run original value given at command line.  */
+  const char *trials_help; /**< @brief trialsto run help description.  */
   double mu_arg;	/**< @brief s.d. of mutations.  */
   char * mu_orig;	/**< @brief s.d. of mutations original value given at command line.  */
   const char *mu_help; /**< @brief s.d. of mutations help description.  */
@@ -77,6 +83,9 @@ struct settings_t
   const char *logfile_help; /**< @brief path to store log file help description.  */
   int log_flag;	/**< @brief logging on/off (default=on).  */
   const char *log_help; /**< @brief logging on/off help description.  */
+  int log_every_arg;	/**< @brief interval between logging (default='1').  */
+  char * log_every_orig;	/**< @brief interval between logging original value given at command line.  */
+  const char *log_every_help; /**< @brief interval between logging help description.  */
   int log_phenotypes_at_arg;	/**< @brief log all phenotypes at time N (default='0').  */
   char * log_phenotypes_at_orig;	/**< @brief log all phenotypes at time N original value given at command line.  */
   const char *log_phenotypes_at_help; /**< @brief log all phenotypes at time N help description.  */
@@ -123,9 +132,11 @@ struct settings_t
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
+  unsigned int topology_given ;	/**< @brief Whether topology was given.  */
   unsigned int popsize_given ;	/**< @brief Whether popsize was given.  */
   unsigned int bits_given ;	/**< @brief Whether bits was given.  */
   unsigned int steps_given ;	/**< @brief Whether steps was given.  */
+  unsigned int trials_given ;	/**< @brief Whether trials was given.  */
   unsigned int mu_given ;	/**< @brief Whether mu was given.  */
   unsigned int alpha_given ;	/**< @brief Whether alpha was given.  */
   unsigned int omega0_given ;	/**< @brief Whether omega0 was given.  */
@@ -136,6 +147,7 @@ struct settings_t
   unsigned int cost_soc_given ;	/**< @brief Whether cost_soc was given.  */
   unsigned int logfile_given ;	/**< @brief Whether logfile was given.  */
   unsigned int log_given ;	/**< @brief Whether log was given.  */
+  unsigned int log_every_given ;	/**< @brief Whether log-every was given.  */
   unsigned int log_phenotypes_at_given ;	/**< @brief Whether log-phenotypes-at was given.  */
   unsigned int debug_given ;	/**< @brief Whether debug was given.  */
   unsigned int batch_given ;	/**< @brief Whether batch was given.  */

@@ -23,7 +23,7 @@ EnvironmentCA1D::EnvironmentCA1D() : Environment()
 vector <Agent *> EnvironmentCA1D::get_neighbours(const Agent *agent)
 {
 	/*--------------------------------------------------------------------*
-	 * Return a vector containing the 4 neighbouring agents in the 
+	 * Return a vector containing the 2 neighbouring agents in the 
 	 * von Neumann neighbourhood.
 	 *--------------------------------------------------------------------*/
 
