@@ -46,7 +46,7 @@ void init_logging()
 	 * logging setup:
 	 *  - redirect output to /dev/null if in batch mode
 	 *---------------------------------------------------------------------*/
-	if (settings.batch_given)
+	if (settings.batch_flag)
 	{
 		/*---------------------------------------------------------------------*
 		 * if we're in batch mode, redirect stdout to the null device -- 
@@ -65,24 +65,31 @@ void init_logging()
 		/*---------------------------------------------------------------------*
 		 * also disable logging to file.
 		 *---------------------------------------------------------------------*/
-		settings.log_given = false;
+		settings.log_flag = false;
 	}
 
-	if (settings.log_given)
+	if (settings.log_flag)
 	{
 		/*---------------------------------------------------------------------*
 		 * construct logfile from the format string specified, replacing %s
 		 * with the current timestamp.
 		 *---------------------------------------------------------------------*/
-		const char *logfile_format = settings.logfile_arg;
-		char *logfile = (char *) malloc(64);
-		char timestr[32];
-		sprintf(timestr, "%ld", (long) time(NULL));
-		sprintf(logfile, logfile_format, timestr);
+		static const char alphanum[] =
+			"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		char logfile[64], code[7];
+		for (int i = 0; i < 6; i++)
+			code[i] = alphanum[rng_randint(0, sizeof(alphanum) - 1)];
+		code[6] = '\0';
+		sprintf(logfile, "%ld-%s.csv", (long) time(NULL), code);
 
-		printf("logging to file %s\n", logfile);
+		mkdir(settings.logdir_arg, 0755);
 
-		logger = new csvwriter(logfile);
+		char logpath[256];
+		sprintf(logpath, "%s/%s", settings.logdir_arg, logfile);
+
+		printf("logging to file %s\n", logpath);
+
+		logger = new csvwriter(logpath);
 		logger->start
 		(
 		 	"iffffffff",
@@ -102,7 +109,7 @@ void init_logging()
 
 void close_logging()
 {
-	if (settings.batch_given)
+	if (settings.batch_flag)
 	{
 		fflush(stdout);
 		dup2(stdout_orig, 1);
@@ -126,7 +133,7 @@ void close_logging()
 		stats.bsoc_mean
 	);
 
-	if (settings.log_given)
+	if (settings.log_flag)
 	{
 		logger->close();
 	}
@@ -157,7 +164,7 @@ void log_states()
 		stats.pheno_mean_dist
 	);
 
-	if (settings.debug_given)
+	if (settings.debug_flag)
 	{
 		printf("(%05d) %.4f %.4f %.4f (mean fitness = %.3f)\n", stats.step, stats.bevo_mean, stats.bind_mean, stats.bsoc_mean, stats.fitness_mean);
 	}
@@ -172,7 +179,6 @@ void log_phenotypes()
 	char timestr[32];
 	sprintf(timestr, "%ld", (long) time(NULL));
 	sprintf(logfile, logfile_format, timestr);
-	settings.logfile_arg = logfile;
 
 	// printf("logging to file %s\n", logfile);
 

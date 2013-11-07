@@ -35,7 +35,7 @@ void Environment::update()
 {
 	this->mAge++;
     // printf("age now %d\n", this->mAge);
-	if (settings.debug_given)
+	if (settings.debug_flag)
 		cout << *this << std::endl;
 
 	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
@@ -55,7 +55,7 @@ void Environment::reproduce()
 	 * birth-death reproduction
 	 *--------------------------------------------------------------------*/
 	int popsize = this->get_popsize();
-	if (!settings.metabolism_given)
+	if (!settings.metabolism_flag)
 	{
 		double fitnesses[popsize];
 		for (int i = 0; i < popsize; i++)

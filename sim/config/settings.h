@@ -78,12 +78,12 @@ struct settings_t
   double cost_soc_arg;	/**< @brief prob. of social learning noise.  */
   char * cost_soc_orig;	/**< @brief prob. of social learning noise original value given at command line.  */
   const char *cost_soc_help; /**< @brief prob. of social learning noise help description.  */
-  char * logfile_arg;	/**< @brief path to store log file.  */
-  char * logfile_orig;	/**< @brief path to store log file original value given at command line.  */
-  const char *logfile_help; /**< @brief path to store log file help description.  */
+  char * logdir_arg;	/**< @brief path to store log (default='logs').  */
+  char * logdir_orig;	/**< @brief path to store log original value given at command line.  */
+  const char *logdir_help; /**< @brief path to store log help description.  */
   int log_flag;	/**< @brief logging on/off (default=on).  */
   const char *log_help; /**< @brief logging on/off help description.  */
-  int log_every_arg;	/**< @brief interval between logging (default='1').  */
+  int log_every_arg;	/**< @brief interval between logging (default='1000').  */
   char * log_every_orig;	/**< @brief interval between logging original value given at command line.  */
   const char *log_every_help; /**< @brief interval between logging help description.  */
   int log_phenotypes_at_arg;	/**< @brief log all phenotypes at time N (default='0').  */
@@ -145,7 +145,7 @@ struct settings_t
   unsigned int p_move_given ;	/**< @brief Whether p_move was given.  */
   unsigned int p_noise_given ;	/**< @brief Whether p_noise was given.  */
   unsigned int cost_soc_given ;	/**< @brief Whether cost_soc was given.  */
-  unsigned int logfile_given ;	/**< @brief Whether logfile was given.  */
+  unsigned int logdir_given ;	/**< @brief Whether logdir was given.  */
   unsigned int log_given ;	/**< @brief Whether log was given.  */
   unsigned int log_every_given ;	/**< @brief Whether log-every was given.  */
   unsigned int log_phenotypes_at_given ;	/**< @brief Whether log-phenotypes-at was given.  */

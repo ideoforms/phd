@@ -17,7 +17,7 @@ int main (int argc, char *argv[])
 	init_config(argc, argv);
 	init_simulator();
 
-	if (!settings.batch_given)
+	if (!settings.batch_flag)
 	{
 		printf(" topology: %s\n",   settings.topology_arg);
 		printf("    steps: %d\n",   settings.steps_arg);
@@ -53,7 +53,7 @@ int main (int argc, char *argv[])
 			 * if we're in batch mode, redirect stdout to the null device -- 
 			 * we don't want to output anything except our final state.
 			 *---------------------------------------------------------------------*/
-			if (settings.perturbation_given && settings.perturbation_time_arg == step)
+			if (settings.perturbation_flag && settings.perturbation_time_arg == step)
 				env->perturb(settings.perturbation_size_arg);
 
 			if (settings.log_phenotypes_at_arg == step && step > 0)
@@ -67,7 +67,7 @@ int main (int argc, char *argv[])
 			/*---------------------------------------------------------------------*
 			 * if we're logging each timestep, output accordingly.
 			 *---------------------------------------------------------------------*/
-			if (settings.log_given && step % settings.log_every_arg == 0)
+			if (settings.log_flag && step % settings.log_every_arg == 0)
 				log_states();
 		}
 

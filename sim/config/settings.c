@@ -47,9 +47,9 @@ const char *settings_t_help[] = {
   "      --p_move=DOUBLE           prob. of agent movement",
   "      --p_noise=DOUBLE          prob. of social learning noise",
   "      --cost_soc=DOUBLE         prob. of social learning noise",
-  "  -L, --logfile=STRING          path to store log file",
+  "  -L, --logdir=STRING           path to store log  (default=`logs')",
   "  -l, --log                     logging on/off  (default=on)",
-  "  -i, --log-every=INT           interval between logging  (default=`1')",
+  "  -i, --log-every=INT           interval between logging  (default=`1000')",
   "      --log-phenotypes-at=INT   log all phenotypes at time N  (default=`0')",
   "  -d, --debug                   debug on/off  (default=off)",
   "  -b, --batch                   batch mode on/off  (default=off)",
@@ -131,7 +131,7 @@ void clear_given (struct settings_t *args_info)
   args_info->p_move_given = 0 ;
   args_info->p_noise_given = 0 ;
   args_info->cost_soc_given = 0 ;
-  args_info->logfile_given = 0 ;
+  args_info->logdir_given = 0 ;
   args_info->log_given = 0 ;
   args_info->log_every_given = 0 ;
   args_info->log_phenotypes_at_given = 0 ;
@@ -171,10 +171,10 @@ void clear_args (struct settings_t *args_info)
   args_info->p_move_orig = NULL;
   args_info->p_noise_orig = NULL;
   args_info->cost_soc_orig = NULL;
-  args_info->logfile_arg = NULL;
-  args_info->logfile_orig = NULL;
+  args_info->logdir_arg = gengetopt_strdup ("logs");
+  args_info->logdir_orig = NULL;
   args_info->log_flag = 1;
-  args_info->log_every_arg = 1;
+  args_info->log_every_arg = 1000;
   args_info->log_every_orig = NULL;
   args_info->log_phenotypes_at_arg = 0;
   args_info->log_phenotypes_at_orig = NULL;
@@ -225,7 +225,7 @@ void init_args_info(struct settings_t *args_info)
   args_info->p_move_help = settings_t_help[12] ;
   args_info->p_noise_help = settings_t_help[13] ;
   args_info->cost_soc_help = settings_t_help[14] ;
-  args_info->logfile_help = settings_t_help[15] ;
+  args_info->logdir_help = settings_t_help[15] ;
   args_info->log_help = settings_t_help[16] ;
   args_info->log_every_help = settings_t_help[17] ;
   args_info->log_phenotypes_at_help = settings_t_help[18] ;
@@ -338,8 +338,8 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->p_move_orig));
   free_string_field (&(args_info->p_noise_orig));
   free_string_field (&(args_info->cost_soc_orig));
-  free_string_field (&(args_info->logfile_arg));
-  free_string_field (&(args_info->logfile_orig));
+  free_string_field (&(args_info->logdir_arg));
+  free_string_field (&(args_info->logdir_orig));
   free_string_field (&(args_info->log_every_orig));
   free_string_field (&(args_info->log_phenotypes_at_orig));
   free_string_field (&(args_info->perturbation_time_orig));
@@ -413,8 +413,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "p_noise", args_info->p_noise_orig, 0);
   if (args_info->cost_soc_given)
     write_into_file(outfile, "cost_soc", args_info->cost_soc_orig, 0);
-  if (args_info->logfile_given)
-    write_into_file(outfile, "logfile", args_info->logfile_orig, 0);
+  if (args_info->logdir_given)
+    write_into_file(outfile, "logdir", args_info->logdir_orig, 0);
   if (args_info->log_given)
     write_into_file(outfile, "log", 0, 0 );
   if (args_info->log_every_given)
@@ -724,7 +724,7 @@ config_parser_internal (
         { "p_move",	1, NULL, 0 },
         { "p_noise",	1, NULL, 0 },
         { "cost_soc",	1, NULL, 0 },
-        { "logfile",	1, NULL, 'L' },
+        { "logdir",	1, NULL, 'L' },
         { "log",	0, NULL, 'l' },
         { "log-every",	1, NULL, 'i' },
         { "log-phenotypes-at",	1, NULL, 0 },
@@ -858,14 +858,14 @@ config_parser_internal (
             goto failure;
         
           break;
-        case 'L':	/* path to store log file.  */
+        case 'L':	/* path to store log.  */
         
         
-          if (update_arg( (void *)&(args_info->logfile_arg), 
-               &(args_info->logfile_orig), &(args_info->logfile_given),
-              &(local_args_info.logfile_given), optarg, 0, 0, ARG_STRING,
+          if (update_arg( (void *)&(args_info->logdir_arg), 
+               &(args_info->logdir_orig), &(args_info->logdir_given),
+              &(local_args_info.logdir_given), optarg, 0, "logs", ARG_STRING,
               check_ambiguity, override, 0, 0,
-              "logfile", 'L',
+              "logdir", 'L',
               additional_error))
             goto failure;
         
@@ -885,7 +885,7 @@ config_parser_internal (
         
           if (update_arg( (void *)&(args_info->log_every_arg), 
                &(args_info->log_every_orig), &(args_info->log_every_given),
-              &(local_args_info.log_every_given), optarg, 0, "1", ARG_INT,
+              &(local_args_info.log_every_given), optarg, 0, "1000", ARG_INT,
               check_ambiguity, override, 0, 0,
               "log-every", 'i',
               additional_error))

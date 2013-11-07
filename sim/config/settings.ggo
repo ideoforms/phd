@@ -23,9 +23,9 @@ option "p_noise"	-	"prob. of social learning noise"	double		no
 
 option "cost_soc"	-	"prob. of social learning noise"	double		no
 
-option "logfile"	L	"path to store log file"			string		no
+option "logdir"		L	"path to store log"					string		no default = "logs"
 option "log"		l	"logging on/off"					flag		on
-option "log-every"	i	"interval between logging"			int			no default = "1"
+option "log-every"	i	"interval between logging"			int			no default = "1000"
 option "log-phenotypes-at"		-	"log all phenotypes at time N"		int	no	default = "0"
 option "debug"		d	"debug on/off"						flag		off
 option "batch"		b	"batch mode on/off"					flag		off

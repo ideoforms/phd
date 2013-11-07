@@ -187,7 +187,7 @@ void Agent::update()
 	this->mLastAction = mode;
 	this->mDelta = mEnv->payoff(this, action);
 
-	// if (settings.debug_given)
+	// if (settings.debug_flag)
 	//	std::cout << *this << std::endl;
 
 	if (mode != MODE_EVO)
@@ -197,10 +197,10 @@ void Agent::update()
 		 * modify our phenotype accordingly (learning).
 		 *--------------------------------------------------------------------*/
 		double curFitness = mEnv->payoff(this, mPhenotype);
-		// if (settings.debug_given)
+		// if (settings.debug_flag)
 		//	cout << "action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
 
-		if (settings.always_assimilate_given || mDelta > curFitness)
+		if (settings.always_assimilate_flag || mDelta > curFitness)
 		{
 			// cout << "assimilating: action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
 			mPhenotype = action;

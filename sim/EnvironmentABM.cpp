@@ -104,7 +104,7 @@ void EnvironmentABM::update()
 {
     this->mAge++;
     // printf("age now %d\n", this->mAge);
-    if (settings.debug_given)
+    if (settings.debug_flag)
         cout << *this << std::endl;
     
     int n = 0;
