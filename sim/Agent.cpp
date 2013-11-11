@@ -121,11 +121,24 @@ void Agent::update()
 			// 
 			if (neighbours.size() > 0)
 			{
-				double fitnesses[neighbours.size()];
-				for (unsigned int i = 0; i < neighbours.size(); i++)
-					fitnesses[i] = neighbours[i]->get_fitness();
-				index = roulette(fitnesses, neighbours.size());
-				// index = rng_randint(neighbours.size());
+				if (!settings.strategy_copy_random_neighbour_flag)
+				{
+					/*------------------------------------------------------------*
+					 * Strategy: By default, copy a neighbour weighted by their
+					 * fitness.
+					 *------------------------------------------------------------*/
+					double fitnesses[neighbours.size()];
+					for (unsigned int i = 0; i < neighbours.size(); i++)
+						fitnesses[i] = neighbours[i]->get_fitness();
+					index = roulette(fitnesses, neighbours.size());
+				}
+				else
+				{
+					/*------------------------------------------------------------*
+					 * Strategy: Alternatively, pick a neighbour at random.
+					 *------------------------------------------------------------*/
+					index = rng_randint(neighbours.size());
+				}
 				
 				if (index < 0)
 				{
@@ -142,40 +155,49 @@ void Agent::update()
 				// printf("found %d neighbours, using neighbour %d (%p)\n", neighbours.size(), index, exemplar);
 				Task exemplar_pheno = exemplar->mPhenotype;
 
-				bit = rng_randint(settings.bits_arg);
-				action.set(bit, exemplar_pheno.test(bit));
-				if (rng_coin(settings.p_noise_arg))
-					action.flip(bit);
-
-				/*
-				bool found = false;
-				int indices[settings.bits_arg];
-				for (int i = 0; i < settings.bits_arg; i++)
-					indices[i] = i;
-				rng_shuffle(indices, settings.bits_arg);
-
-				for (int i = 0; i < settings.bits_arg && !found; i++)
+				if (!settings.strategy_copy_novel_trait_flag)
 				{
-					bit = indices[i];
-					if (action.test(bit) != exemplar_pheno.test(bit))
-					{
-						// cout << "copying bit " << bit << " (mine = " << action << ", theirs = " << exemplar_pheno << ")" << std::endl;
-						found = true;
-						action.set(bit, exemplar_pheno.test(bit));
-						if (rng_coin(settings.p_noise_arg))
-							action.flip(bit);
-					}
-				}
-
-				if (!found)
-				{
+					/*------------------------------------------------------------*
+					 * Strategy: By default, copy a random trait.
+					 *------------------------------------------------------------*/
+					bit = rng_randint(settings.bits_arg);
+					action.set(bit, exemplar_pheno.test(bit));
 					if (rng_coin(settings.p_noise_arg))
-					{
-						bit = rng_randint(settings.bits_arg);
 						action.flip(bit);
+				}
+				else
+				{
+					/*------------------------------------------------------------*
+					 * Alternate strategy: search for a novel trait and copy that.
+					 *------------------------------------------------------------*/
+					bool found = false;
+					int indices[settings.bits_arg];
+					for (int i = 0; i < settings.bits_arg; i++)
+						indices[i] = i;
+					rng_shuffle(indices, settings.bits_arg);
+
+					for (int i = 0; i < settings.bits_arg && !found; i++)
+					{
+						bit = indices[i];
+						if (action.test(bit) != exemplar_pheno.test(bit))
+						{
+							// cout << "copying bit " << bit << " (mine = " << action << ", theirs = " << exemplar_pheno << ")" << std::endl;
+							found = true;
+							action.set(bit, exemplar_pheno.test(bit));
+							if (rng_coin(settings.p_noise_arg))
+								action.flip(bit);
+						}
+					}
+
+					if (!found)
+					{
+						if (rng_coin(settings.p_noise_arg))
+						{
+							bit = rng_randint(settings.bits_arg);
+							action.flip(bit);
+						}
 					}
 				}
-				*/
 
 				// printf("copying bit %d (was %d, now %d)\n", bit, mPhenotype.test(bit), action.test(bit));
 
@@ -192,18 +214,29 @@ void Agent::update()
 
 	if (mode != MODE_EVO)
 	{
-		/*--------------------------------------------------------------------*
-		 * if this action gives a better payoff than our current phenotype,
-		 * modify our phenotype accordingly (learning).
-		 *--------------------------------------------------------------------*/
-		double curFitness = mEnv->payoff(this, mPhenotype);
-		// if (settings.debug_flag)
-		//	cout << "action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
-
-		if (settings.always_assimilate_flag || mDelta > curFitness)
+		if (settings.strategy_always_assimilate_flag)
 		{
-			// cout << "assimilating: action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
+			/*--------------------------------------------------------------------*
+			 * Strategy: If we're set to always assimilate newly-learned bits, 
+			 * modify our phenotype accordingly.
+			 *--------------------------------------------------------------------*/
 			mPhenotype = action;
+		}
+		else
+		{
+			/*--------------------------------------------------------------------*
+			 * if this action gives a better payoff than our current phenotype,
+			 * modify our phenotype accordingly (learning).
+			 *--------------------------------------------------------------------*/
+			double curFitness = mEnv->payoff(this, mPhenotype);
+			// if (settings.debug_flag)
+			//	cout << "action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
+
+			if (mDelta > curFitness)
+			{
+				// cout << "assimilating: action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
+				mPhenotype = action;
+			}
 		}
 	}
 

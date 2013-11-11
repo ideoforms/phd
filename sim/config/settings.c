@@ -38,7 +38,7 @@ const char *settings_t_help[] = {
   "  -N, --popsize=INT             population size",
   "  -B, --bits=INT                environmental bits",
   "  -s, --steps=INT               steps to run",
-  "  -T, --trials=INT              trialsto run  (default=`1')",
+  "  -T, --trials=INT              trials to run  (default=`1')",
   "  -m, --mu=DOUBLE               s.d. of mutations",
   "  -a, --alpha=DOUBLE            fitness rolloff",
   "  -O, --omega0=DOUBLE           initial metabolism",
@@ -54,6 +54,9 @@ const char *settings_t_help[] = {
   "  -d, --debug                   debug on/off  (default=off)",
   "  -b, --batch                   batch mode on/off  (default=off)",
   "      --metabolism              metabolism on/off  (default=off)",
+  "      --strategy-copy-novel-trait\n                                copy novel traits only  (default=off)",
+  "      --strategy-copy-random-neighbour\n                                copy random neighbour, not fittest  \n                                  (default=off)",
+  "      --strategy-always-assimilate\n                                always assimilate newly-learned bits  \n                                  (default=off)",
   "      --perturbation            perturbation on/off  (default=off)",
   "      --perturbation-time=INT   perturbation timestep",
   "      --perturbation-size=DOUBLE\n                                perturbation magnitude  (default=`1.0')",
@@ -65,7 +68,6 @@ const char *settings_t_help[] = {
   "      --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
   "      --spatial-variance=INT    spatial variance  (default=`0')",
   "      --spatial-patch-size=INT  spatial patch size  (default=`1')",
-  "      --always-assimilate       always incorporate learned genes  (default=off)",
     0
 };
 
@@ -138,6 +140,9 @@ void clear_given (struct settings_t *args_info)
   args_info->debug_given = 0 ;
   args_info->batch_given = 0 ;
   args_info->metabolism_given = 0 ;
+  args_info->strategy_copy_novel_trait_given = 0 ;
+  args_info->strategy_copy_random_neighbour_given = 0 ;
+  args_info->strategy_always_assimilate_given = 0 ;
   args_info->perturbation_given = 0 ;
   args_info->perturbation_time_given = 0 ;
   args_info->perturbation_size_given = 0 ;
@@ -149,7 +154,6 @@ void clear_given (struct settings_t *args_info)
   args_info->abm_neighbourhood_size_given = 0 ;
   args_info->spatial_variance_given = 0 ;
   args_info->spatial_patch_size_given = 0 ;
-  args_info->always_assimilate_given = 0 ;
 }
 
 static
@@ -181,6 +185,9 @@ void clear_args (struct settings_t *args_info)
   args_info->debug_flag = 0;
   args_info->batch_flag = 0;
   args_info->metabolism_flag = 0;
+  args_info->strategy_copy_novel_trait_flag = 0;
+  args_info->strategy_copy_random_neighbour_flag = 0;
+  args_info->strategy_always_assimilate_flag = 0;
   args_info->perturbation_flag = 0;
   args_info->perturbation_time_orig = NULL;
   args_info->perturbation_size_arg = 1.0;
@@ -201,7 +208,6 @@ void clear_args (struct settings_t *args_info)
   args_info->spatial_variance_orig = NULL;
   args_info->spatial_patch_size_arg = 1;
   args_info->spatial_patch_size_orig = NULL;
-  args_info->always_assimilate_flag = 0;
   
 }
 
@@ -232,18 +238,20 @@ void init_args_info(struct settings_t *args_info)
   args_info->debug_help = settings_t_help[19] ;
   args_info->batch_help = settings_t_help[20] ;
   args_info->metabolism_help = settings_t_help[21] ;
-  args_info->perturbation_help = settings_t_help[22] ;
-  args_info->perturbation_time_help = settings_t_help[23] ;
-  args_info->perturbation_size_help = settings_t_help[24] ;
-  args_info->neighbourhood_size_help = settings_t_help[25] ;
-  args_info->conf_file_help = settings_t_help[26] ;
-  args_info->ca_width_help = settings_t_help[27] ;
-  args_info->abm_width_help = settings_t_help[28] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[29] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[30] ;
-  args_info->spatial_variance_help = settings_t_help[31] ;
-  args_info->spatial_patch_size_help = settings_t_help[32] ;
-  args_info->always_assimilate_help = settings_t_help[33] ;
+  args_info->strategy_copy_novel_trait_help = settings_t_help[22] ;
+  args_info->strategy_copy_random_neighbour_help = settings_t_help[23] ;
+  args_info->strategy_always_assimilate_help = settings_t_help[24] ;
+  args_info->perturbation_help = settings_t_help[25] ;
+  args_info->perturbation_time_help = settings_t_help[26] ;
+  args_info->perturbation_size_help = settings_t_help[27] ;
+  args_info->neighbourhood_size_help = settings_t_help[28] ;
+  args_info->conf_file_help = settings_t_help[29] ;
+  args_info->ca_width_help = settings_t_help[30] ;
+  args_info->abm_width_help = settings_t_help[31] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[32] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[33] ;
+  args_info->spatial_variance_help = settings_t_help[34] ;
+  args_info->spatial_patch_size_help = settings_t_help[35] ;
   
 }
 
@@ -427,6 +435,12 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "batch", 0, 0 );
   if (args_info->metabolism_given)
     write_into_file(outfile, "metabolism", 0, 0 );
+  if (args_info->strategy_copy_novel_trait_given)
+    write_into_file(outfile, "strategy-copy-novel-trait", 0, 0 );
+  if (args_info->strategy_copy_random_neighbour_given)
+    write_into_file(outfile, "strategy-copy-random-neighbour", 0, 0 );
+  if (args_info->strategy_always_assimilate_given)
+    write_into_file(outfile, "strategy-always-assimilate", 0, 0 );
   if (args_info->perturbation_given)
     write_into_file(outfile, "perturbation", 0, 0 );
   if (args_info->perturbation_time_given)
@@ -449,8 +463,6 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "spatial-variance", args_info->spatial_variance_orig, 0);
   if (args_info->spatial_patch_size_given)
     write_into_file(outfile, "spatial-patch-size", args_info->spatial_patch_size_orig, 0);
-  if (args_info->always_assimilate_given)
-    write_into_file(outfile, "always-assimilate", 0, 0 );
   
 
   i = EXIT_SUCCESS;
@@ -731,6 +743,9 @@ config_parser_internal (
         { "debug",	0, NULL, 'd' },
         { "batch",	0, NULL, 'b' },
         { "metabolism",	0, NULL, 0 },
+        { "strategy-copy-novel-trait",	0, NULL, 0 },
+        { "strategy-copy-random-neighbour",	0, NULL, 0 },
+        { "strategy-always-assimilate",	0, NULL, 0 },
         { "perturbation",	0, NULL, 0 },
         { "perturbation-time",	1, NULL, 0 },
         { "perturbation-size",	1, NULL, 0 },
@@ -742,7 +757,6 @@ config_parser_internal (
         { "abm-neighbourhood-size",	1, NULL, 0 },
         { "spatial-variance",	1, NULL, 0 },
         { "spatial-patch-size",	1, NULL, 0 },
-        { "always-assimilate",	0, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -810,7 +824,7 @@ config_parser_internal (
             goto failure;
         
           break;
-        case 'T':	/* trialsto run.  */
+        case 'T':	/* trials to run.  */
         
         
           if (update_arg( (void *)&(args_info->trials_arg), 
@@ -1046,6 +1060,42 @@ config_parser_internal (
               goto failure;
           
           }
+          /* copy novel traits only.  */
+          else if (strcmp (long_options[option_index].name, "strategy-copy-novel-trait") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->strategy_copy_novel_trait_flag), 0, &(args_info->strategy_copy_novel_trait_given),
+                &(local_args_info.strategy_copy_novel_trait_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "strategy-copy-novel-trait", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* copy random neighbour, not fittest.  */
+          else if (strcmp (long_options[option_index].name, "strategy-copy-random-neighbour") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->strategy_copy_random_neighbour_flag), 0, &(args_info->strategy_copy_random_neighbour_given),
+                &(local_args_info.strategy_copy_random_neighbour_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "strategy-copy-random-neighbour", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* always assimilate newly-learned bits.  */
+          else if (strcmp (long_options[option_index].name, "strategy-always-assimilate") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->strategy_always_assimilate_flag), 0, &(args_info->strategy_always_assimilate_given),
+                &(local_args_info.strategy_always_assimilate_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "strategy-always-assimilate", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* perturbation on/off.  */
           else if (strcmp (long_options[option_index].name, "perturbation") == 0)
           {
@@ -1152,18 +1202,6 @@ config_parser_internal (
                 &(local_args_info.spatial_patch_size_given), optarg, 0, "1", ARG_INT,
                 check_ambiguity, override, 0, 0,
                 "spatial-patch-size", '-',
-                additional_error))
-              goto failure;
-          
-          }
-          /* always incorporate learned genes.  */
-          else if (strcmp (long_options[option_index].name, "always-assimilate") == 0)
-          {
-          
-          
-            if (update_arg((void *)&(args_info->always_assimilate_flag), 0, &(args_info->always_assimilate_given),
-                &(local_args_info.always_assimilate_given), optarg, 0, 0, ARG_FLAG,
-                check_ambiguity, override, 1, 0, "always-assimilate", '-',
                 additional_error))
               goto failure;
           

@@ -51,9 +51,9 @@ struct settings_t
   int steps_arg;	/**< @brief steps to run.  */
   char * steps_orig;	/**< @brief steps to run original value given at command line.  */
   const char *steps_help; /**< @brief steps to run help description.  */
-  int trials_arg;	/**< @brief trialsto run (default='1').  */
-  char * trials_orig;	/**< @brief trialsto run original value given at command line.  */
-  const char *trials_help; /**< @brief trialsto run help description.  */
+  int trials_arg;	/**< @brief trials to run (default='1').  */
+  char * trials_orig;	/**< @brief trials to run original value given at command line.  */
+  const char *trials_help; /**< @brief trials to run help description.  */
   double mu_arg;	/**< @brief s.d. of mutations.  */
   char * mu_orig;	/**< @brief s.d. of mutations original value given at command line.  */
   const char *mu_help; /**< @brief s.d. of mutations help description.  */
@@ -95,6 +95,12 @@ struct settings_t
   const char *batch_help; /**< @brief batch mode on/off help description.  */
   int metabolism_flag;	/**< @brief metabolism on/off (default=off).  */
   const char *metabolism_help; /**< @brief metabolism on/off help description.  */
+  int strategy_copy_novel_trait_flag;	/**< @brief copy novel traits only (default=off).  */
+  const char *strategy_copy_novel_trait_help; /**< @brief copy novel traits only help description.  */
+  int strategy_copy_random_neighbour_flag;	/**< @brief copy random neighbour, not fittest (default=off).  */
+  const char *strategy_copy_random_neighbour_help; /**< @brief copy random neighbour, not fittest help description.  */
+  int strategy_always_assimilate_flag;	/**< @brief always assimilate newly-learned bits (default=off).  */
+  const char *strategy_always_assimilate_help; /**< @brief always assimilate newly-learned bits help description.  */
   int perturbation_flag;	/**< @brief perturbation on/off (default=off).  */
   const char *perturbation_help; /**< @brief perturbation on/off help description.  */
   int perturbation_time_arg;	/**< @brief perturbation timestep.  */
@@ -127,8 +133,6 @@ struct settings_t
   int spatial_patch_size_arg;	/**< @brief spatial patch size (default='1').  */
   char * spatial_patch_size_orig;	/**< @brief spatial patch size original value given at command line.  */
   const char *spatial_patch_size_help; /**< @brief spatial patch size help description.  */
-  int always_assimilate_flag;	/**< @brief always incorporate learned genes (default=off).  */
-  const char *always_assimilate_help; /**< @brief always incorporate learned genes help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -152,6 +156,9 @@ struct settings_t
   unsigned int debug_given ;	/**< @brief Whether debug was given.  */
   unsigned int batch_given ;	/**< @brief Whether batch was given.  */
   unsigned int metabolism_given ;	/**< @brief Whether metabolism was given.  */
+  unsigned int strategy_copy_novel_trait_given ;	/**< @brief Whether strategy-copy-novel-trait was given.  */
+  unsigned int strategy_copy_random_neighbour_given ;	/**< @brief Whether strategy-copy-random-neighbour was given.  */
+  unsigned int strategy_always_assimilate_given ;	/**< @brief Whether strategy-always-assimilate was given.  */
   unsigned int perturbation_given ;	/**< @brief Whether perturbation was given.  */
   unsigned int perturbation_time_given ;	/**< @brief Whether perturbation-time was given.  */
   unsigned int perturbation_size_given ;	/**< @brief Whether perturbation-size was given.  */
@@ -163,7 +170,6 @@ struct settings_t
   unsigned int abm_neighbourhood_size_given ;	/**< @brief Whether abm-neighbourhood-size was given.  */
   unsigned int spatial_variance_given ;	/**< @brief Whether spatial-variance was given.  */
   unsigned int spatial_patch_size_given ;	/**< @brief Whether spatial-patch-size was given.  */
-  unsigned int always_assimilate_given ;	/**< @brief Whether always-assimilate was given.  */
 
 } ;
 

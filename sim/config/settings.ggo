@@ -9,7 +9,7 @@ option "topology"	t	"topology: numeric, ca-1d, ca-2d, abm" 	string	no default = 
 option "popsize"	N	"population size" 					int			no
 option "bits"		B	"environmental bits"				int			no
 option "steps"		s	"steps to run"						int			no
-option "trials"		T	"trialsto run"						int			no default = "1"
+option "trials"		T	"trials to run"						int			no default = "1"
 
 option "mu"			m	"s.d. of mutations"					double		no
 option "alpha"		a	"fitness rolloff"					double		no
@@ -32,6 +32,10 @@ option "batch"		b	"batch mode on/off"					flag		off
 
 option "metabolism"		-	"metabolism on/off"				flag		off
 
+option "strategy-copy-novel-trait"		-	"copy novel traits only"				flag		off
+option "strategy-copy-random-neighbour"	-	"copy random neighbour, not fittest"	flag		off
+option "strategy-always-assimilate"		-	"always assimilate newly-learned bits"	flag		off
+
 option "perturbation"		-	"perturbation on/off"		flag		off
 option "perturbation-time"	-	"perturbation timestep"		int			no
 option "perturbation-size"	-	"perturbation magnitude"	double		no		default = "1.0"
@@ -48,6 +52,3 @@ option "abm-neighbourhood-size"	-	"neighbourhood size" 			int			no		default = "6
 
 option "spatial-variance"	-	"spatial variance" 			int			no		default = "0"
 option "spatial-patch-size"	-	"spatial patch size" 		int			no		default = "1"
-
-option "always-assimilate"	-	"always incorporate learned genes" 		flag	off
-
