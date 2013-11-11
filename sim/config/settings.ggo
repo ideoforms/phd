@@ -36,6 +36,12 @@ option "strategy-copy-novel-trait"		-	"copy novel traits only"				flag		off
 option "strategy-copy-random-neighbour"	-	"copy random neighbour, not fittest"	flag		off
 option "strategy-always-assimilate"		-	"always assimilate newly-learned bits"	flag		off
 
+option "suppress-b-evo"		-	"suppress b_evo"			int		no default = "0"
+option "suppress-b-ind"		-	"suppress b_ind"			int		no default = "0"
+option "suppress-b-soc"		-	"suppress b_soc"			int		no default = "0"
+
+option "thoroughbred"		-	"thoroughbred behaviours"	int		no default = "0"
+
 option "perturbation"		-	"perturbation on/off"		flag		off
 option "perturbation-time"	-	"perturbation timestep"		int			no
 option "perturbation-size"	-	"perturbation magnitude"	double		no		default = "1.0"
@@ -44,7 +50,6 @@ option "neighbourhood-size"	-	"neighbourhood size for numeric model"		int			no		
 
 option "conf-file"	C	"config file to read"				string		no		default = "settings.conf"
 
-
 option "ca-width"	w	"ca width" 							int			no		default = "16"
 option "abm-width"	W	"abm width" 						int			no		default = "512"
 option "abm-neighbourhood-type"	-	"neighbourhood type" 			int			no		default = "0"
@@ -52,3 +57,4 @@ option "abm-neighbourhood-size"	-	"neighbourhood size" 			int			no		default = "6
 
 option "spatial-variance"	-	"spatial variance" 			int			no		default = "0"
 option "spatial-patch-size"	-	"spatial patch size" 		int			no		default = "1"
+

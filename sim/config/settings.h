@@ -101,6 +101,18 @@ struct settings_t
   const char *strategy_copy_random_neighbour_help; /**< @brief copy random neighbour, not fittest help description.  */
   int strategy_always_assimilate_flag;	/**< @brief always assimilate newly-learned bits (default=off).  */
   const char *strategy_always_assimilate_help; /**< @brief always assimilate newly-learned bits help description.  */
+  int suppress_b_evo_arg;	/**< @brief suppress b_evo (default='0').  */
+  char * suppress_b_evo_orig;	/**< @brief suppress b_evo original value given at command line.  */
+  const char *suppress_b_evo_help; /**< @brief suppress b_evo help description.  */
+  int suppress_b_ind_arg;	/**< @brief suppress b_ind (default='0').  */
+  char * suppress_b_ind_orig;	/**< @brief suppress b_ind original value given at command line.  */
+  const char *suppress_b_ind_help; /**< @brief suppress b_ind help description.  */
+  int suppress_b_soc_arg;	/**< @brief suppress b_soc (default='0').  */
+  char * suppress_b_soc_orig;	/**< @brief suppress b_soc original value given at command line.  */
+  const char *suppress_b_soc_help; /**< @brief suppress b_soc help description.  */
+  int thoroughbred_arg;	/**< @brief thoroughbred behaviours (default='0').  */
+  char * thoroughbred_orig;	/**< @brief thoroughbred behaviours original value given at command line.  */
+  const char *thoroughbred_help; /**< @brief thoroughbred behaviours help description.  */
   int perturbation_flag;	/**< @brief perturbation on/off (default=off).  */
   const char *perturbation_help; /**< @brief perturbation on/off help description.  */
   int perturbation_time_arg;	/**< @brief perturbation timestep.  */
@@ -159,6 +171,10 @@ struct settings_t
   unsigned int strategy_copy_novel_trait_given ;	/**< @brief Whether strategy-copy-novel-trait was given.  */
   unsigned int strategy_copy_random_neighbour_given ;	/**< @brief Whether strategy-copy-random-neighbour was given.  */
   unsigned int strategy_always_assimilate_given ;	/**< @brief Whether strategy-always-assimilate was given.  */
+  unsigned int suppress_b_evo_given ;	/**< @brief Whether suppress-b-evo was given.  */
+  unsigned int suppress_b_ind_given ;	/**< @brief Whether suppress-b-ind was given.  */
+  unsigned int suppress_b_soc_given ;	/**< @brief Whether suppress-b-soc was given.  */
+  unsigned int thoroughbred_given ;	/**< @brief Whether thoroughbred was given.  */
   unsigned int perturbation_given ;	/**< @brief Whether perturbation was given.  */
   unsigned int perturbation_time_given ;	/**< @brief Whether perturbation-time was given.  */
   unsigned int perturbation_size_given ;	/**< @brief Whether perturbation-size was given.  */

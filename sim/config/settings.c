@@ -57,6 +57,10 @@ const char *settings_t_help[] = {
   "      --strategy-copy-novel-trait\n                                copy novel traits only  (default=off)",
   "      --strategy-copy-random-neighbour\n                                copy random neighbour, not fittest  \n                                  (default=off)",
   "      --strategy-always-assimilate\n                                always assimilate newly-learned bits  \n                                  (default=off)",
+  "      --suppress-b-evo=INT      suppress b_evo  (default=`0')",
+  "      --suppress-b-ind=INT      suppress b_ind  (default=`0')",
+  "      --suppress-b-soc=INT      suppress b_soc  (default=`0')",
+  "      --thoroughbred=INT        thoroughbred behaviours  (default=`0')",
   "      --perturbation            perturbation on/off  (default=off)",
   "      --perturbation-time=INT   perturbation timestep",
   "      --perturbation-size=DOUBLE\n                                perturbation magnitude  (default=`1.0')",
@@ -143,6 +147,10 @@ void clear_given (struct settings_t *args_info)
   args_info->strategy_copy_novel_trait_given = 0 ;
   args_info->strategy_copy_random_neighbour_given = 0 ;
   args_info->strategy_always_assimilate_given = 0 ;
+  args_info->suppress_b_evo_given = 0 ;
+  args_info->suppress_b_ind_given = 0 ;
+  args_info->suppress_b_soc_given = 0 ;
+  args_info->thoroughbred_given = 0 ;
   args_info->perturbation_given = 0 ;
   args_info->perturbation_time_given = 0 ;
   args_info->perturbation_size_given = 0 ;
@@ -188,6 +196,14 @@ void clear_args (struct settings_t *args_info)
   args_info->strategy_copy_novel_trait_flag = 0;
   args_info->strategy_copy_random_neighbour_flag = 0;
   args_info->strategy_always_assimilate_flag = 0;
+  args_info->suppress_b_evo_arg = 0;
+  args_info->suppress_b_evo_orig = NULL;
+  args_info->suppress_b_ind_arg = 0;
+  args_info->suppress_b_ind_orig = NULL;
+  args_info->suppress_b_soc_arg = 0;
+  args_info->suppress_b_soc_orig = NULL;
+  args_info->thoroughbred_arg = 0;
+  args_info->thoroughbred_orig = NULL;
   args_info->perturbation_flag = 0;
   args_info->perturbation_time_orig = NULL;
   args_info->perturbation_size_arg = 1.0;
@@ -241,17 +257,21 @@ void init_args_info(struct settings_t *args_info)
   args_info->strategy_copy_novel_trait_help = settings_t_help[22] ;
   args_info->strategy_copy_random_neighbour_help = settings_t_help[23] ;
   args_info->strategy_always_assimilate_help = settings_t_help[24] ;
-  args_info->perturbation_help = settings_t_help[25] ;
-  args_info->perturbation_time_help = settings_t_help[26] ;
-  args_info->perturbation_size_help = settings_t_help[27] ;
-  args_info->neighbourhood_size_help = settings_t_help[28] ;
-  args_info->conf_file_help = settings_t_help[29] ;
-  args_info->ca_width_help = settings_t_help[30] ;
-  args_info->abm_width_help = settings_t_help[31] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[32] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[33] ;
-  args_info->spatial_variance_help = settings_t_help[34] ;
-  args_info->spatial_patch_size_help = settings_t_help[35] ;
+  args_info->suppress_b_evo_help = settings_t_help[25] ;
+  args_info->suppress_b_ind_help = settings_t_help[26] ;
+  args_info->suppress_b_soc_help = settings_t_help[27] ;
+  args_info->thoroughbred_help = settings_t_help[28] ;
+  args_info->perturbation_help = settings_t_help[29] ;
+  args_info->perturbation_time_help = settings_t_help[30] ;
+  args_info->perturbation_size_help = settings_t_help[31] ;
+  args_info->neighbourhood_size_help = settings_t_help[32] ;
+  args_info->conf_file_help = settings_t_help[33] ;
+  args_info->ca_width_help = settings_t_help[34] ;
+  args_info->abm_width_help = settings_t_help[35] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[36] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[37] ;
+  args_info->spatial_variance_help = settings_t_help[38] ;
+  args_info->spatial_patch_size_help = settings_t_help[39] ;
   
 }
 
@@ -350,6 +370,10 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->logdir_orig));
   free_string_field (&(args_info->log_every_orig));
   free_string_field (&(args_info->log_phenotypes_at_orig));
+  free_string_field (&(args_info->suppress_b_evo_orig));
+  free_string_field (&(args_info->suppress_b_ind_orig));
+  free_string_field (&(args_info->suppress_b_soc_orig));
+  free_string_field (&(args_info->thoroughbred_orig));
   free_string_field (&(args_info->perturbation_time_orig));
   free_string_field (&(args_info->perturbation_size_orig));
   free_string_field (&(args_info->neighbourhood_size_orig));
@@ -441,6 +465,14 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "strategy-copy-random-neighbour", 0, 0 );
   if (args_info->strategy_always_assimilate_given)
     write_into_file(outfile, "strategy-always-assimilate", 0, 0 );
+  if (args_info->suppress_b_evo_given)
+    write_into_file(outfile, "suppress-b-evo", args_info->suppress_b_evo_orig, 0);
+  if (args_info->suppress_b_ind_given)
+    write_into_file(outfile, "suppress-b-ind", args_info->suppress_b_ind_orig, 0);
+  if (args_info->suppress_b_soc_given)
+    write_into_file(outfile, "suppress-b-soc", args_info->suppress_b_soc_orig, 0);
+  if (args_info->thoroughbred_given)
+    write_into_file(outfile, "thoroughbred", args_info->thoroughbred_orig, 0);
   if (args_info->perturbation_given)
     write_into_file(outfile, "perturbation", 0, 0 );
   if (args_info->perturbation_time_given)
@@ -746,6 +778,10 @@ config_parser_internal (
         { "strategy-copy-novel-trait",	0, NULL, 0 },
         { "strategy-copy-random-neighbour",	0, NULL, 0 },
         { "strategy-always-assimilate",	0, NULL, 0 },
+        { "suppress-b-evo",	1, NULL, 0 },
+        { "suppress-b-ind",	1, NULL, 0 },
+        { "suppress-b-soc",	1, NULL, 0 },
+        { "thoroughbred",	1, NULL, 0 },
         { "perturbation",	0, NULL, 0 },
         { "perturbation-time",	1, NULL, 0 },
         { "perturbation-size",	1, NULL, 0 },
@@ -1092,6 +1128,62 @@ config_parser_internal (
             if (update_arg((void *)&(args_info->strategy_always_assimilate_flag), 0, &(args_info->strategy_always_assimilate_given),
                 &(local_args_info.strategy_always_assimilate_given), optarg, 0, 0, ARG_FLAG,
                 check_ambiguity, override, 1, 0, "strategy-always-assimilate", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* suppress b_evo.  */
+          else if (strcmp (long_options[option_index].name, "suppress-b-evo") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->suppress_b_evo_arg), 
+                 &(args_info->suppress_b_evo_orig), &(args_info->suppress_b_evo_given),
+                &(local_args_info.suppress_b_evo_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "suppress-b-evo", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* suppress b_ind.  */
+          else if (strcmp (long_options[option_index].name, "suppress-b-ind") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->suppress_b_ind_arg), 
+                 &(args_info->suppress_b_ind_orig), &(args_info->suppress_b_ind_given),
+                &(local_args_info.suppress_b_ind_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "suppress-b-ind", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* suppress b_soc.  */
+          else if (strcmp (long_options[option_index].name, "suppress-b-soc") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->suppress_b_soc_arg), 
+                 &(args_info->suppress_b_soc_orig), &(args_info->suppress_b_soc_given),
+                &(local_args_info.suppress_b_soc_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "suppress-b-soc", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* thoroughbred behaviours.  */
+          else if (strcmp (long_options[option_index].name, "thoroughbred") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->thoroughbred_arg), 
+                 &(args_info->thoroughbred_orig), &(args_info->thoroughbred_given),
+                &(local_args_info.thoroughbred_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "thoroughbred", '-',
                 additional_error))
               goto failure;
           

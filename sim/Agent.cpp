@@ -86,6 +86,41 @@ int Agent::get_index() const
 
 void Agent::normalize()
 {
+	/*------------------------------------------------------------------------
+	 * If certain behavioural modes are suppressed, zero them out.
+	 *-----------------------------------------------------------------------*/
+	if (settings.suppress_b_evo_arg)
+		this->mBEvo = 0;
+	if (settings.suppress_b_ind_arg)
+		this->mBInd = 0;
+	if (settings.suppress_b_soc_arg)
+		this->mBSoc = 0;
+
+	/*------------------------------------------------------------------------
+	 * Thoroughbred mode: One trait = 1, all others = 0.
+	 *-----------------------------------------------------------------------*/
+	if (settings.thoroughbred_arg)
+	{
+		if (this->mBEvo > this->mBInd && this->mBEvo > this->mBSoc)
+		{
+			this->mBEvo = 1;
+			this->mBInd = 0;
+			this->mBSoc = 0;
+		}
+		if (this->mBInd > this->mBEvo && this->mBInd > this->mBSoc)
+		{
+			this->mBEvo = 0;
+			this->mBInd = 1;
+			this->mBSoc = 0;
+		}
+		if (this->mBSoc > this->mBEvo && this->mBSoc > this->mBInd)
+		{
+			this->mBEvo = 0;
+			this->mBInd = 0;
+			this->mBSoc = 1;
+		}
+	}
+
 	double sum = this->mBEvo + this->mBInd + this->mBSoc;
 	this->mBEvo /= sum;
 	this->mBInd /= sum;
