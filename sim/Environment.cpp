@@ -165,6 +165,7 @@ vector <Agent *> Environment::get_neighbours(const Agent *agent)
 
 	int neighbourhood_size = settings.neighbourhood_size_arg;
 	vector <Agent *> neighbours;
+	neighbours.reserve(this->get_popsize());
 
 	if (neighbourhood_size == 0)
 	{
