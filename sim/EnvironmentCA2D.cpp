@@ -83,21 +83,32 @@ void EnvironmentCA2D::reproduce()
 	Agent *parent = mAgents[parent_index];
 	Agent *child = parent->replicate();
 
+	/*--------------------------------------------------------------------*
+	 * If we are using non-adjacent reproduction, pick a random site to
+	 * produce our child; otherwise, pick a site next to the parent.
+	 *--------------------------------------------------------------------*/
+	int child_index;
+	Point2Di child_loc;
 	Point2Di parent_loc = mPositions[parent_index];
-	Point2Di child_loc = parent_loc;
-	int location = rng_randint(4);
-	switch (location)
+
+	if (!settings.ca_non_adjacent_birth_flag)
 	{
-		case 0: child_loc.x = this->px(child_loc.x); break;
-		case 1: child_loc.x = this->nx(child_loc.x); break;
-		case 2: child_loc.y = this->py(child_loc.y); break;
-		case 3: child_loc.y = this->ny(child_loc.y); break;
+		child_loc = parent_loc;
+		int location = rng_randint(4);
+		switch (location)
+		{
+			case 0: child_loc.x = this->px(child_loc.x); break;
+			case 1: child_loc.x = this->nx(child_loc.x); break;
+			case 2: child_loc.y = this->py(child_loc.y); break;
+			case 3: child_loc.y = this->ny(child_loc.y); break;
+		}
+		child_index = this->mWidth * child_loc.y + child_loc.x;
 	}
-	int child_index = this->mWidth * child_loc.y + child_loc.x;
-
-	// TODO
-    // if (settings.ca_non_adjacent_birth_flag)
-
+	else
+	{
+		child_index = rng_randint(popsize);
+		child_loc = mPositions[child_index];
+	}
 
 	// cout << "parent " << parent_index << " (" << parent_loc.x << ", " << parent_loc.y << "): " << *parent << " [" << parent << "]" << endl;
 	// cout << " -> " << child_index << " (" << child_loc.x << ", " << child_loc.y << "): " << *child << " [" << child << "]" << endl;
