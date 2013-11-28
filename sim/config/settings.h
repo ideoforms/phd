@@ -95,6 +95,9 @@ struct settings_t
   const char *batch_help; /**< @brief batch mode on/off help description.  */
   int metabolism_flag;	/**< @brief metabolism on/off (default=off).  */
   const char *metabolism_help; /**< @brief metabolism on/off help description.  */
+  int reproduction_count_arg;	/**< @brief number of reproduction events per step (default='1').  */
+  char * reproduction_count_orig;	/**< @brief number of reproduction events per step original value given at command line.  */
+  const char *reproduction_count_help; /**< @brief number of reproduction events per step help description.  */
   int strategy_copy_novel_trait_flag;	/**< @brief copy novel traits only (default=off).  */
   const char *strategy_copy_novel_trait_help; /**< @brief copy novel traits only help description.  */
   int strategy_copy_random_neighbour_flag;	/**< @brief copy random neighbour, not fittest (default=off).  */
@@ -130,6 +133,8 @@ struct settings_t
   int ca_width_arg;	/**< @brief ca width (default='16').  */
   char * ca_width_orig;	/**< @brief ca width original value given at command line.  */
   const char *ca_width_help; /**< @brief ca width help description.  */
+  int ca_non_adjacent_birth_flag;	/**< @brief ca: position offspring randomly (default=off).  */
+  const char *ca_non_adjacent_birth_help; /**< @brief ca: position offspring randomly help description.  */
   int abm_width_arg;	/**< @brief abm width (default='512').  */
   char * abm_width_orig;	/**< @brief abm width original value given at command line.  */
   const char *abm_width_help; /**< @brief abm width help description.  */
@@ -168,6 +173,7 @@ struct settings_t
   unsigned int debug_given ;	/**< @brief Whether debug was given.  */
   unsigned int batch_given ;	/**< @brief Whether batch was given.  */
   unsigned int metabolism_given ;	/**< @brief Whether metabolism was given.  */
+  unsigned int reproduction_count_given ;	/**< @brief Whether reproduction-count was given.  */
   unsigned int strategy_copy_novel_trait_given ;	/**< @brief Whether strategy-copy-novel-trait was given.  */
   unsigned int strategy_copy_random_neighbour_given ;	/**< @brief Whether strategy-copy-random-neighbour was given.  */
   unsigned int strategy_always_assimilate_given ;	/**< @brief Whether strategy-always-assimilate was given.  */
@@ -181,6 +187,7 @@ struct settings_t
   unsigned int neighbourhood_size_given ;	/**< @brief Whether neighbourhood-size was given.  */
   unsigned int conf_file_given ;	/**< @brief Whether conf-file was given.  */
   unsigned int ca_width_given ;	/**< @brief Whether ca-width was given.  */
+  unsigned int ca_non_adjacent_birth_given ;	/**< @brief Whether ca-non-adjacent-birth was given.  */
   unsigned int abm_width_given ;	/**< @brief Whether abm-width was given.  */
   unsigned int abm_neighbourhood_type_given ;	/**< @brief Whether abm-neighbourhood-type was given.  */
   unsigned int abm_neighbourhood_size_given ;	/**< @brief Whether abm-neighbourhood-size was given.  */

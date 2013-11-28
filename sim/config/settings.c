@@ -54,6 +54,7 @@ const char *settings_t_help[] = {
   "  -d, --debug                   debug on/off  (default=off)",
   "  -b, --batch                   batch mode on/off  (default=off)",
   "      --metabolism              metabolism on/off  (default=off)",
+  "      --reproduction-count=INT  number of reproduction events per step  \n                                  (default=`1')",
   "      --strategy-copy-novel-trait\n                                copy novel traits only  (default=off)",
   "      --strategy-copy-random-neighbour\n                                copy random neighbour, not fittest  \n                                  (default=off)",
   "      --strategy-always-assimilate\n                                always assimilate newly-learned bits  \n                                  (default=off)",
@@ -67,6 +68,7 @@ const char *settings_t_help[] = {
   "      --neighbourhood-size=INT  neighbourhood size for numeric model  \n                                  (default=`0')",
   "  -C, --conf-file=STRING        config file to read  (default=`settings.conf')",
   "  -w, --ca-width=INT            ca width  (default=`16')",
+  "      --ca-non-adjacent-birth   ca: position offspring randomly  (default=off)",
   "  -W, --abm-width=INT           abm width  (default=`512')",
   "      --abm-neighbourhood-type=INT\n                                neighbourhood type  (default=`0')",
   "      --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
@@ -144,6 +146,7 @@ void clear_given (struct settings_t *args_info)
   args_info->debug_given = 0 ;
   args_info->batch_given = 0 ;
   args_info->metabolism_given = 0 ;
+  args_info->reproduction_count_given = 0 ;
   args_info->strategy_copy_novel_trait_given = 0 ;
   args_info->strategy_copy_random_neighbour_given = 0 ;
   args_info->strategy_always_assimilate_given = 0 ;
@@ -157,6 +160,7 @@ void clear_given (struct settings_t *args_info)
   args_info->neighbourhood_size_given = 0 ;
   args_info->conf_file_given = 0 ;
   args_info->ca_width_given = 0 ;
+  args_info->ca_non_adjacent_birth_given = 0 ;
   args_info->abm_width_given = 0 ;
   args_info->abm_neighbourhood_type_given = 0 ;
   args_info->abm_neighbourhood_size_given = 0 ;
@@ -193,6 +197,8 @@ void clear_args (struct settings_t *args_info)
   args_info->debug_flag = 0;
   args_info->batch_flag = 0;
   args_info->metabolism_flag = 0;
+  args_info->reproduction_count_arg = 1;
+  args_info->reproduction_count_orig = NULL;
   args_info->strategy_copy_novel_trait_flag = 0;
   args_info->strategy_copy_random_neighbour_flag = 0;
   args_info->strategy_always_assimilate_flag = 0;
@@ -214,6 +220,7 @@ void clear_args (struct settings_t *args_info)
   args_info->conf_file_orig = NULL;
   args_info->ca_width_arg = 16;
   args_info->ca_width_orig = NULL;
+  args_info->ca_non_adjacent_birth_flag = 0;
   args_info->abm_width_arg = 512;
   args_info->abm_width_orig = NULL;
   args_info->abm_neighbourhood_type_arg = 0;
@@ -254,24 +261,26 @@ void init_args_info(struct settings_t *args_info)
   args_info->debug_help = settings_t_help[19] ;
   args_info->batch_help = settings_t_help[20] ;
   args_info->metabolism_help = settings_t_help[21] ;
-  args_info->strategy_copy_novel_trait_help = settings_t_help[22] ;
-  args_info->strategy_copy_random_neighbour_help = settings_t_help[23] ;
-  args_info->strategy_always_assimilate_help = settings_t_help[24] ;
-  args_info->suppress_b_evo_help = settings_t_help[25] ;
-  args_info->suppress_b_ind_help = settings_t_help[26] ;
-  args_info->suppress_b_soc_help = settings_t_help[27] ;
-  args_info->thoroughbred_help = settings_t_help[28] ;
-  args_info->perturbation_help = settings_t_help[29] ;
-  args_info->perturbation_time_help = settings_t_help[30] ;
-  args_info->perturbation_size_help = settings_t_help[31] ;
-  args_info->neighbourhood_size_help = settings_t_help[32] ;
-  args_info->conf_file_help = settings_t_help[33] ;
-  args_info->ca_width_help = settings_t_help[34] ;
-  args_info->abm_width_help = settings_t_help[35] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[36] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[37] ;
-  args_info->spatial_variance_help = settings_t_help[38] ;
-  args_info->spatial_patch_size_help = settings_t_help[39] ;
+  args_info->reproduction_count_help = settings_t_help[22] ;
+  args_info->strategy_copy_novel_trait_help = settings_t_help[23] ;
+  args_info->strategy_copy_random_neighbour_help = settings_t_help[24] ;
+  args_info->strategy_always_assimilate_help = settings_t_help[25] ;
+  args_info->suppress_b_evo_help = settings_t_help[26] ;
+  args_info->suppress_b_ind_help = settings_t_help[27] ;
+  args_info->suppress_b_soc_help = settings_t_help[28] ;
+  args_info->thoroughbred_help = settings_t_help[29] ;
+  args_info->perturbation_help = settings_t_help[30] ;
+  args_info->perturbation_time_help = settings_t_help[31] ;
+  args_info->perturbation_size_help = settings_t_help[32] ;
+  args_info->neighbourhood_size_help = settings_t_help[33] ;
+  args_info->conf_file_help = settings_t_help[34] ;
+  args_info->ca_width_help = settings_t_help[35] ;
+  args_info->ca_non_adjacent_birth_help = settings_t_help[36] ;
+  args_info->abm_width_help = settings_t_help[37] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[38] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[39] ;
+  args_info->spatial_variance_help = settings_t_help[40] ;
+  args_info->spatial_patch_size_help = settings_t_help[41] ;
   
 }
 
@@ -370,6 +379,7 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->logdir_orig));
   free_string_field (&(args_info->log_every_orig));
   free_string_field (&(args_info->log_phenotypes_at_orig));
+  free_string_field (&(args_info->reproduction_count_orig));
   free_string_field (&(args_info->suppress_b_evo_orig));
   free_string_field (&(args_info->suppress_b_ind_orig));
   free_string_field (&(args_info->suppress_b_soc_orig));
@@ -459,6 +469,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "batch", 0, 0 );
   if (args_info->metabolism_given)
     write_into_file(outfile, "metabolism", 0, 0 );
+  if (args_info->reproduction_count_given)
+    write_into_file(outfile, "reproduction-count", args_info->reproduction_count_orig, 0);
   if (args_info->strategy_copy_novel_trait_given)
     write_into_file(outfile, "strategy-copy-novel-trait", 0, 0 );
   if (args_info->strategy_copy_random_neighbour_given)
@@ -485,6 +497,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "conf-file", args_info->conf_file_orig, 0);
   if (args_info->ca_width_given)
     write_into_file(outfile, "ca-width", args_info->ca_width_orig, 0);
+  if (args_info->ca_non_adjacent_birth_given)
+    write_into_file(outfile, "ca-non-adjacent-birth", 0, 0 );
   if (args_info->abm_width_given)
     write_into_file(outfile, "abm-width", args_info->abm_width_orig, 0);
   if (args_info->abm_neighbourhood_type_given)
@@ -775,6 +789,7 @@ config_parser_internal (
         { "debug",	0, NULL, 'd' },
         { "batch",	0, NULL, 'b' },
         { "metabolism",	0, NULL, 0 },
+        { "reproduction-count",	1, NULL, 0 },
         { "strategy-copy-novel-trait",	0, NULL, 0 },
         { "strategy-copy-random-neighbour",	0, NULL, 0 },
         { "strategy-always-assimilate",	0, NULL, 0 },
@@ -788,6 +803,7 @@ config_parser_internal (
         { "neighbourhood-size",	1, NULL, 0 },
         { "conf-file",	1, NULL, 'C' },
         { "ca-width",	1, NULL, 'w' },
+        { "ca-non-adjacent-birth",	0, NULL, 0 },
         { "abm-width",	1, NULL, 'W' },
         { "abm-neighbourhood-type",	1, NULL, 0 },
         { "abm-neighbourhood-size",	1, NULL, 0 },
@@ -1096,6 +1112,20 @@ config_parser_internal (
               goto failure;
           
           }
+          /* number of reproduction events per step.  */
+          else if (strcmp (long_options[option_index].name, "reproduction-count") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->reproduction_count_arg), 
+                 &(args_info->reproduction_count_orig), &(args_info->reproduction_count_given),
+                &(local_args_info.reproduction_count_given), optarg, 0, "1", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "reproduction-count", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* copy novel traits only.  */
           else if (strcmp (long_options[option_index].name, "strategy-copy-novel-trait") == 0)
           {
@@ -1238,6 +1268,18 @@ config_parser_internal (
                 &(local_args_info.neighbourhood_size_given), optarg, 0, "0", ARG_INT,
                 check_ambiguity, override, 0, 0,
                 "neighbourhood-size", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* ca: position offspring randomly.  */
+          else if (strcmp (long_options[option_index].name, "ca-non-adjacent-birth") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->ca_non_adjacent_birth_flag), 0, &(args_info->ca_non_adjacent_birth_given),
+                &(local_args_info.ca_non_adjacent_birth_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "ca-non-adjacent-birth", '-',
                 additional_error))
               goto failure;
           

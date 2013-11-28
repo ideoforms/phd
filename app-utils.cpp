@@ -13,7 +13,7 @@ using namespace std;
 using namespace sim;
 
 extern settings_t sim::settings;
-extern sim::EnvironmentCA *env;
+extern sim::Environment *env;
 
 int stdout_orig;
 csvwriter *logger;
@@ -170,10 +170,9 @@ void log_states()
 	}
 }
 
+/*
 void log_phenotypes()
 {
-	/*---------------------------------------------------------------------*
-	 *---------------------------------------------------------------------*/
 	const char *logfile_format = "logs/phenotypes-%s.csv";
 	char *logfile = (char *) malloc(64);
 	char timestr[32];
@@ -203,6 +202,7 @@ void log_phenotypes()
 	}
 	logger.close();
 }
+*/
 
 void print_elapsed_time(int trial_index, int trial_total)
 {

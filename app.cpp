@@ -38,7 +38,7 @@ int main (int argc, char *argv[])
 		else if (strcmp(settings.topology_arg, "ca-1d") == 0)
 			env = new sim::EnvironmentCA1D();
 		else if (strcmp(settings.topology_arg, "ca-2d") == 0)
-			env = new sim::EnvironmentCA();
+			env = new sim::EnvironmentCA2D();
 		else if (strcmp(settings.topology_arg, "abm") == 0)
 			env = new sim::EnvironmentABM();
 		else
@@ -59,8 +59,8 @@ int main (int argc, char *argv[])
 			if (settings.perturbation_flag && settings.perturbation_time_arg == step)
 				env->perturb(settings.perturbation_size_arg);
 
-			if (settings.log_phenotypes_at_arg == step && step > 0)
-				log_phenotypes();
+			// if (settings.log_phenotypes_at_arg == step && step > 0)
+			//	log_phenotypes();
 
 			/*---------------------------------------------------------------------*
 			 * update the environment, and generate stats.

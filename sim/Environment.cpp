@@ -54,49 +54,52 @@ void Environment::reproduce()
 	/*--------------------------------------------------------------------*
 	 * birth-death reproduction
 	 *--------------------------------------------------------------------*/
-	int popsize = this->get_popsize();
-	if (!settings.metabolism_flag)
+	for (int i = 0; i < settings.reproduction_count_arg; i++)
 	{
-		double fitnesses[popsize];
-		for (int i = 0; i < popsize; i++)
-			fitnesses[i] = mAgents[i]->get_fitness();
-
-		int parent_index = roulette(fitnesses, popsize);
-		if (parent_index < 0)
+		int popsize = this->get_popsize();
+		if (!settings.metabolism_flag)
 		{
-			printf("couldn't find parent with non-zero fitness, selecting random...\n");
-			parent_index = rng_randint(popsize);
-		}
+			double fitnesses[popsize];
+			for (int i = 0; i < popsize; i++)
+				fitnesses[i] = mAgents[i]->get_fitness();
 
-		int child_index = rng_randint(popsize);
-		// cout << "replacing " << child_index << " with " << parent_index << "( fitness = " << mAgents[parent_index]->get_fitness() << ")" << std::endl;
-
-		Agent *parent = mAgents[parent_index];
-		Agent *child = parent->replicate();
-
-		// TODO: check if we're handling memory OK here
-		delete mAgents[child_index];
-		mAgents[child_index] = child;
-	}
-	/*--------------------------------------------------------------------*
-	 * metabolic reproduction
-	 *--------------------------------------------------------------------*/
-	else
-	{
-		int n = 0;
-		for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it, ++n)
-		{
-			Agent *agent = *it;
-			if (agent->mOmega > 2 * settings.omega0_arg)
+			int parent_index = roulette(fitnesses, popsize);
+			if (parent_index < 0)
 			{
-				// cout << "agent " << n << " metabolism = " << it->mOmega << ", reproducing" << endl;
-				agent->mOmega -= settings.omega0_arg;
+				printf("couldn't find parent with non-zero fitness, selecting random...\n");
+				parent_index = rng_randint(popsize);
+			}
 
-				int child_index = rng_randint(popsize);
-				Agent *child = agent->replicate();
+			int child_index = rng_randint(popsize);
+			// cout << "replacing " << child_index << " with " << parent_index << "( fitness = " << mAgents[parent_index]->get_fitness() << ")" << std::endl;
 
-				delete mAgents[child_index];
-				mAgents[child_index] = child;
+			Agent *parent = mAgents[parent_index];
+			Agent *child = parent->replicate();
+
+			// TODO: check if we're handling memory OK here
+			delete mAgents[child_index];
+			mAgents[child_index] = child;
+		}
+		/*--------------------------------------------------------------------*
+		 * metabolic reproduction
+		 *--------------------------------------------------------------------*/
+		else
+		{
+			int n = 0;
+			for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it, ++n)
+			{
+				Agent *agent = *it;
+				if (agent->mOmega > 2 * settings.omega0_arg)
+				{
+					// cout << "agent " << n << " metabolism = " << it->mOmega << ", reproducing" << endl;
+					agent->mOmega -= settings.omega0_arg;
+
+					int child_index = rng_randint(popsize);
+					Agent *child = agent->replicate();
+
+					delete mAgents[child_index];
+					mAgents[child_index] = child;
+				}
 			}
 		}
 	}

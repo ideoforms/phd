@@ -109,13 +109,13 @@ public:
     
 };
 
-class EnvironmentCA : public Environment
+class EnvironmentCA2D : public Environment
 {
 
 public:
 
-	EnvironmentCA();
-	~EnvironmentCA();
+	EnvironmentCA2D();
+	~EnvironmentCA2D();
 
 	virtual void                reproduce();
 	virtual Task                goal_for(Agent *agent);
@@ -123,9 +123,9 @@ public:
 
 	friend class Agent;
 
-	virtual const char * classname() { return "EnvironmentCA"; }
+	virtual const char * classname() { return "EnvironmentCA2D"; }
 
-	friend ostream & operator<< (ostream &stream, const EnvironmentCA &object)
+	friend ostream & operator<< (ostream &stream, const EnvironmentCA2D &object)
 	{
 		stream << "[environment-ca: " <<
 			"t = " << object.mAge << ", " <<

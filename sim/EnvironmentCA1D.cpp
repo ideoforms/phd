@@ -58,10 +58,19 @@ void EnvironmentCA1D::reproduce()
 	Agent *parent = mAgents[parent_index];
 	Agent *child = parent->replicate();
 
-	int location = rng_randint(2);
-    int child_index = (location == 0) ?
-        this->px(parent_index) :
-        this->nx(parent_index);
+	int child_index;
+
+	if (settings.ca_non_adjacent_birth_flag)
+	{
+		child_index = rng_randint(0, this->mWidth);
+	}
+	else
+	{
+		int location = rng_randint(2);
+		child_index = (location == 0) ?
+			this->px(parent_index) :
+			this->nx(parent_index);
+	}
 
 	// cout << "parent " << parent_index << " " << *parent << " [" << parent << "]" << endl;
 	// cout << " -> " << child_index << " " << *child << " [" << child << "]" << endl;

@@ -57,10 +57,8 @@ public:
 
 	void 				normalize();
 
-
-	friend class		Environment;
-	friend class		EnvironmentCA;
-
+	// friend class		Environment;
+	// friend class		EnvironmentCA;
 };
 
 } // namespace sim
