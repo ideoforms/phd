@@ -1,5 +1,5 @@
 /*--------------------------------------------------------------------*
- * class EnvironmentCA
+ * class EnvironmentCA2D
  *--------------------------------------------------------------------*/
 
 #include "sim/Environment.h"
@@ -10,7 +10,7 @@
 namespace sim
 {
 
-EnvironmentCA::EnvironmentCA() : Environment()
+EnvironmentCA2D::EnvironmentCA2D() : Environment()
 {
 	this->mWidth = settings.ca_width_arg;
 	this->mHeight = settings.ca_width_arg;
@@ -44,7 +44,7 @@ EnvironmentCA::EnvironmentCA() : Environment()
 }
 
 
-vector <Agent *> EnvironmentCA::get_neighbours(const Agent *agent)
+vector <Agent *> EnvironmentCA2D::get_neighbours(const Agent *agent)
 {
 	/*--------------------------------------------------------------------*
 	 * Return a vector containing the 4 neighbouring agents in the 
@@ -63,7 +63,7 @@ vector <Agent *> EnvironmentCA::get_neighbours(const Agent *agent)
 	return neighbours;
 }
 
-void EnvironmentCA::reproduce()
+void EnvironmentCA2D::reproduce()
 {
 	/*--------------------------------------------------------------------*
 	 * birth-death reproduction
@@ -95,6 +95,10 @@ void EnvironmentCA::reproduce()
 	}
 	int child_index = this->mWidth * child_loc.y + child_loc.x;
 
+	// TODO
+    // if (settings.ca_non_adjacent_birth_flag)
+
+
 	// cout << "parent " << parent_index << " (" << parent_loc.x << ", " << parent_loc.y << "): " << *parent << " [" << parent << "]" << endl;
 	// cout << " -> " << child_index << " (" << child_loc.x << ", " << child_loc.y << "): " << *child << " [" << child << "]" << endl;
 
@@ -104,7 +108,7 @@ void EnvironmentCA::reproduce()
 	mGrid[child_loc.x][child_loc.y] = child;
 }
 
-Task EnvironmentCA::goal_for(Agent *agent)
+Task EnvironmentCA2D::goal_for(Agent *agent)
 {
     /*-----------------------------------------------------------------------*
      * In a well-mixed environment, the goal is the same for every agent.
