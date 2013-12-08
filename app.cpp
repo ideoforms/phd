@@ -9,8 +9,9 @@
 using namespace std;
 using namespace sim;
 
-
-// test
+/*-----------------------------------------------------------------------*
+ * Daniel Jones 2013
+ *-----------------------------------------------------------------------*/
 
 settings_t 			sim::settings;
 Environment			*env;
@@ -39,6 +40,8 @@ int main (int argc, char *argv[])
 			env = new sim::EnvironmentCA1D();
 		else if (strcmp(settings.topology_arg, "ca-2d") == 0)
 			env = new sim::EnvironmentCA2D();
+		else if (strcmp(settings.topology_arg, "ca-2d-multi") == 0)
+			env = new sim::EnvironmentCA2DMulti();
 		else if (strcmp(settings.topology_arg, "abm") == 0)
 			env = new sim::EnvironmentABM();
 		else

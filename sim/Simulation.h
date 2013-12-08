@@ -6,26 +6,8 @@
 #pragma once
 
 #include "sim/Constants.h"
+#include "sim/Agent.h"
 #include "sim/Environment.h"
-
-namespace sim
-{
-
-class Simulation
-{
-
-public:
-
-	// constructors and destructors
-	Simulation();
-	~Simulation();
-
-	void run();
-
-protected:
-
-	Environment *env;
-
-};
-
-} // namespace sim
+#include "sim/EnvironmentCA1D.h"
+#include "sim/EnvironmentCA2D.h"
+#include "sim/EnvironmentCA2DMulti.h"

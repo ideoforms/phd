@@ -22,11 +22,11 @@
 		659AFCFD177AFEF900FC32E7 /* settings.ggo in Resources */ = {isa = PBXBuildFile; fileRef = 659AFCED177AFEF900FC32E7 /* settings.ggo */; };
 		659AFCFE177AFEF900FC32E7 /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659AFCF0177AFEF900FC32E7 /* Environment.cpp */; };
 		659AFD00177AFEF900FC32E7 /* csv.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659AFCF5177AFEF900FC32E7 /* csv.cpp */; };
-		659AFD01177AFEF900FC32E7 /* Simulation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659AFCF7177AFEF900FC32E7 /* Simulation.cpp */; };
 		659AFD02177AFEF900FC32E7 /* Util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 659AFCF9177AFEF900FC32E7 /* Util.cpp */; };
 		659AFD04177B035500FC32E7 /* settings.conf in Resources */ = {isa = PBXBuildFile; fileRef = 659AFD03177B035500FC32E7 /* settings.conf */; };
 		65A038FD1846BD34002A80F2 /* osc-client.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65A038FB1846BD34002A80F2 /* osc-client.cpp */; };
 		65A038FF1846BD8E002A80F2 /* EnvironmentCA2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65A038FE1846BD8E002A80F2 /* EnvironmentCA2D.cpp */; };
+		65A039011848DA8E002A80F2 /* EnvironmentCA2DMulti.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65A039001848DA8E002A80F2 /* EnvironmentCA2DMulti.cpp */; };
 		65B9FDE817B953BB0044A01A /* EnvironmentCA1D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65B9FDE717B953BB0044A01A /* EnvironmentCA1D.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		90EC685B3DD949C6B9323D0F /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49731BE020F94379A5EF6DA3 /* MainMenu.xib */; };
@@ -53,6 +53,7 @@
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		627D062937E7480A93EE5944 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		65285AEC17B7183E00EAC86A /* Landscape.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Landscape.cpp; sourceTree = "<group>"; };
+		65814591184F58DA006E3695 /* EnvironmentCA2DMulti.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EnvironmentCA2DMulti.h; sourceTree = "<group>"; };
 		6583764517980E84007570FD /* EnvironmentABM.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnvironmentABM.cpp; sourceTree = "<group>"; };
 		659AFCE9177AFEF900FC32E7 /* Agent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Agent.cpp; sourceTree = "<group>"; };
 		659AFCEA177AFEF900FC32E7 /* Agent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Agent.h; sourceTree = "<group>"; };
@@ -65,7 +66,6 @@
 		659AFCF3177AFEF900FC32E7 /* Geometry.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Geometry.h; sourceTree = "<group>"; };
 		659AFCF5177AFEF900FC32E7 /* csv.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = csv.cpp; sourceTree = "<group>"; };
 		659AFCF6177AFEF900FC32E7 /* csv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = csv.h; sourceTree = "<group>"; };
-		659AFCF7177AFEF900FC32E7 /* Simulation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Simulation.cpp; sourceTree = "<group>"; };
 		659AFCF8177AFEF900FC32E7 /* Simulation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Simulation.h; sourceTree = "<group>"; };
 		659AFCF9177AFEF900FC32E7 /* Util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Util.cpp; sourceTree = "<group>"; };
 		659AFCFA177AFEF900FC32E7 /* Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Util.h; sourceTree = "<group>"; };
@@ -73,6 +73,7 @@
 		65A038FB1846BD34002A80F2 /* osc-client.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = "osc-client.cpp"; sourceTree = "<group>"; };
 		65A038FC1846BD34002A80F2 /* osc-client.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "osc-client.h"; sourceTree = "<group>"; };
 		65A038FE1846BD8E002A80F2 /* EnvironmentCA2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnvironmentCA2D.cpp; sourceTree = "<group>"; };
+		65A039001848DA8E002A80F2 /* EnvironmentCA2DMulti.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnvironmentCA2DMulti.cpp; sourceTree = "<group>"; };
 		65B9FDE717B953BB0044A01A /* EnvironmentCA1D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnvironmentCA1D.cpp; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ImitationCA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImitationCA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		99DA32DDEF1B4261B4E1C97E /* ImitationCADelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ImitationCADelegate.mm; sourceTree = "<group>"; };
@@ -209,10 +210,11 @@
 				6583764517980E84007570FD /* EnvironmentABM.cpp */,
 				65B9FDE717B953BB0044A01A /* EnvironmentCA1D.cpp */,
 				65A038FE1846BD8E002A80F2 /* EnvironmentCA2D.cpp */,
+				65814591184F58DA006E3695 /* EnvironmentCA2DMulti.h */,
+				65A039001848DA8E002A80F2 /* EnvironmentCA2DMulti.cpp */,
 				65285AEC17B7183E00EAC86A /* Landscape.cpp */,
 				659AFCF3177AFEF900FC32E7 /* Geometry.h */,
 				659AFCF4177AFEF900FC32E7 /* io */,
-				659AFCF7177AFEF900FC32E7 /* Simulation.cpp */,
 				659AFCF8177AFEF900FC32E7 /* Simulation.h */,
 				659AFCF9177AFEF900FC32E7 /* Util.cpp */,
 				659AFCFA177AFEF900FC32E7 /* Util.h */,
@@ -311,11 +313,11 @@
 				65A038FD1846BD34002A80F2 /* osc-client.cpp in Sources */,
 				65A038FF1846BD8E002A80F2 /* EnvironmentCA2D.cpp in Sources */,
 				3BF85F24FA884AF995F225DD /* main.m in Sources */,
+				65A039011848DA8E002A80F2 /* EnvironmentCA2DMulti.cpp in Sources */,
 				659AFCFB177AFEF900FC32E7 /* Agent.cpp in Sources */,
 				659AFCFC177AFEF900FC32E7 /* settings.c in Sources */,
 				659AFCFE177AFEF900FC32E7 /* Environment.cpp in Sources */,
 				659AFD00177AFEF900FC32E7 /* csv.cpp in Sources */,
-				659AFD01177AFEF900FC32E7 /* Simulation.cpp in Sources */,
 				659AFD02177AFEF900FC32E7 /* Util.cpp in Sources */,
 				6583764617980E84007570FD /* EnvironmentABM.cpp in Sources */,
 				65285AED17B7183E00EAC86A /* Landscape.cpp in Sources */,

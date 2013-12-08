@@ -1,5 +1,7 @@
-#include "sim/Simulation.h"
 #include "sim/io/csv.h"
+
+#include "sim/Constants.h"
+#include "sim/Environment.h"
 
 #include "app-utils.h"
 
@@ -92,7 +94,7 @@ void init_logging()
 		logger = new csvwriter(logpath);
 		logger->start
 		(
-		 	"iffffffff",
+		 	"ifffffffff",
 
 			"t",
 			"evo",
@@ -102,7 +104,8 @@ void init_logging()
 			"d_mean",
 			"d_max",
 			"geno",
-			"pheno"
+			"pheno",
+			"age"
 		);
 	}
 }
@@ -161,7 +164,9 @@ void log_states()
 		stats.fitness_max,
 
 		stats.geno_mean_dist,
-		stats.pheno_mean_dist
+		stats.pheno_mean_dist,
+
+		stats.age_mean
 	);
 
 	if (settings.debug_flag)

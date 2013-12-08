@@ -217,6 +217,7 @@ stats_t Environment::stats()
 	double 		min_fitness = INT_MAX;
 	double 		max_fitness = 0.0;
 	double 		total_fitness = 0;
+	double 		total_age = 0;
 	double 		total_bevo = 0;
 	double 		total_bind = 0;
 	double 		total_bsoc = 0;
@@ -232,6 +233,7 @@ stats_t Environment::stats()
 		if (fitness < min_fitness) min_fitness = fitness;
 
 		total_fitness	+= fitness;
+		total_age		+= agent->mAge;
 		total_bevo		+= agent->mBEvo;
 		total_bind		+= agent->mBInd;
 		total_bsoc		+= agent->mBSoc;
@@ -247,6 +249,8 @@ stats_t Environment::stats()
 	stats.fitness_min	= min_fitness;
 	stats.fitness_max	= max_fitness;
 	stats.fitness_mean	= total_fitness / popsize;
+
+	stats.age_mean		= total_age / popsize;
 
 	stats.bevo_mean		= total_bevo / popsize;
 	stats.bind_mean		= total_bind / popsize;

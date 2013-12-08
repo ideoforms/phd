@@ -2,7 +2,7 @@
  * class EnvironmentCA1D
  *--------------------------------------------------------------------*/
 
-#include "sim/Environment.h"
+#include "sim/EnvironmentCA1D.h"
 
 #include <iostream>
 #include <math.h>

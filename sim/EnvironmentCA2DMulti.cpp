@@ -1,8 +1,8 @@
 /*--------------------------------------------------------------------*
- * class EnvironmentCA2D
+ * class EnvironmentCA2DMulti
  *--------------------------------------------------------------------*/
 
-#include "sim/EnvironmentCA2D.h"
+#include "sim/EnvironmentCA2DMulti.h"
 
 #include <iostream>
 #include <math.h>
@@ -10,7 +10,7 @@
 namespace sim
 {
 
-EnvironmentCA2D::EnvironmentCA2D() : Environment()
+EnvironmentCA2DMulti::EnvironmentCA2DMulti() : Environment()
 {
 	this->mWidth = settings.ca_width_arg;
 	this->mHeight = settings.ca_width_arg;
@@ -36,7 +36,7 @@ EnvironmentCA2D::EnvironmentCA2D() : Environment()
 		int x = n % this->mWidth;
 		int y = (int) n / this->mHeight;
 
-		this->mGrid[x][y] = agent;
+		this->mGrid[x][y].push_back(agent);
 		this->mPositions[n].set(x, y);
 
 		n += 1;
@@ -44,7 +44,7 @@ EnvironmentCA2D::EnvironmentCA2D() : Environment()
 }
 
 
-vector <Agent *> EnvironmentCA2D::get_neighbours(const Agent *agent)
+vector <Agent *> EnvironmentCA2DMulti::get_neighbours(const Agent *agent)
 {
 	/*--------------------------------------------------------------------*
 	 * Return a vector containing the 4 neighbouring agents in the 
@@ -54,16 +54,18 @@ vector <Agent *> EnvironmentCA2D::get_neighbours(const Agent *agent)
 	int index = agent->get_index();
 	Point2Di position = this->mPositions[index];
 	vector <Agent *> neighbours;
-	// printf("index %d, position %d, %d\n", index, position.x, position.y);
-	neighbours.push_back(this->mGrid[this->px(position.x)][position.y]);
-	neighbours.push_back(this->mGrid[this->nx(position.x)][position.y]);
-	neighbours.push_back(this->mGrid[position.x][this->py(position.y)]);
-	neighbours.push_back(this->mGrid[position.x][this->ny(position.y)]);
+	neighbours.reserve(8);
+	// TODO: remove self from neighbours list
+	neighbours.insert(neighbours.end(), this->mGrid[position.x][position.y].begin(), this->mGrid[position.x][position.y].end());
+	neighbours.insert(neighbours.end(), this->mGrid[this->px(position.x)][position.y].begin(), this->mGrid[this->px(position.x)][position.y].end());
+	neighbours.insert(neighbours.end(), this->mGrid[this->nx(position.x)][position.y].begin(), this->mGrid[this->nx(position.x)][position.y].end());
+	neighbours.insert(neighbours.end(), this->mGrid[position.x][this->py(position.y)].begin(), this->mGrid[position.x][this->py(position.y)].end());
+	neighbours.insert(neighbours.end(), this->mGrid[position.x][this->ny(position.y)].begin(), this->mGrid[position.x][this->ny(position.y)].end());
 
 	return neighbours;
 }
 
-void EnvironmentCA2D::reproduce()
+void EnvironmentCA2DMulti::reproduce()
 {
 	/*--------------------------------------------------------------------*
 	 * birth-death reproduction
@@ -87,12 +89,11 @@ void EnvironmentCA2D::reproduce()
 	 * If we are using non-adjacent reproduction, pick a random site to
 	 * produce our child; otherwise, pick a site next to the parent.
 	 *--------------------------------------------------------------------*/
-	int child_index;
 	Point2Di child_loc;
 	Point2Di parent_loc = mPositions[parent_index];
 
-	if (!settings.ca_non_adjacent_birth_flag)
-	{
+	assert(!settings.ca_non_adjacent_birth_flag);
+
 		child_loc = parent_loc;
 		int location = rng_randint(4);
 		switch (location)
@@ -102,24 +103,30 @@ void EnvironmentCA2D::reproduce()
 			case 2: child_loc.y = this->py(child_loc.y); break;
 			case 3: child_loc.y = this->ny(child_loc.y); break;
 		}
-		child_index = this->mWidth * child_loc.y + child_loc.x;
-	}
-	else
-	{
-		child_index = rng_randint(popsize);
-		child_loc = mPositions[child_index];
-	}
+
+	int dead_index = rng_randint(popsize);
 
 	// cout << "parent " << parent_index << " (" << parent_loc.x << ", " << parent_loc.y << "): " << *parent << " [" << parent << "]" << endl;
-	// cout << " -> " << child_index << " (" << child_loc.x << ", " << child_loc.y << "): " << *child << " [" << child << "]" << endl;
+	// cout << " -> " << dead_index << " (" << child_loc.x << ", " << child_loc.y << "): " << *child << " [" << child << "]" << endl;
 
-	delete mAgents[child_index];
+	Agent *dead_agent = mAgents[dead_index];
+	Point2Di dead_loc = mPositions[dead_index];
+	// HOW DO WE PROPERLY GET A REFERENCE?
+	// This assigns by value so we are modifying a copy. Hmm..
+	// vector <Agent *> dead_cell = &mGrid[dead_loc.x][dead_loc.y];
+	std::vector<Agent *>::iterator position = std::find(mGrid[dead_loc.x][dead_loc.y].begin(), mGrid[dead_loc.x][dead_loc.y].end(), dead_agent);
+	// printf("index %d, agents %d\n", position - mGrid[dead_loc.x][dead_loc.y].begin(), mGrid[dead_loc.x][dead_loc.y].size());
+	assert(position != mGrid[dead_loc.x][dead_loc.y].end());
+    mGrid[dead_loc.x][dead_loc.y].erase(position);
+	delete mAgents[dead_index];
 
-	mAgents[child_index] = child;
-	mGrid[child_loc.x][child_loc.y] = child;
+	mAgents[dead_index] = child;
+	mGrid[child_loc.x][child_loc.y].push_back(child);
+	mPositions[dead_index] = child_loc;
+	// printf("cell now has %d agents\n", mGrid[child_loc.x][child_loc.y].size());
 }
 
-Task EnvironmentCA2D::goal_for(Agent *agent)
+Task EnvironmentCA2DMulti::goal_for(Agent *agent)
 {
     /*-----------------------------------------------------------------------*
      * In a well-mixed environment, the goal is the same for every agent.
@@ -130,6 +137,21 @@ Task EnvironmentCA2D::goal_for(Agent *agent)
     Task task = this->mLandscape->taskAt(position.x, position.y);
 
 	return task;
+}
+
+double EnvironmentCA2DMulti::payoff(Agent *agent, Task phenotype)
+{
+    double payoff = Environment::payoff(agent, phenotype);
+
+    if (settings.frequency_inverse_payoff_flag)
+    {
+        int index = agent->get_index();
+        Point2Di position = this->mPositions[index];
+        vector <Agent *> cohabitors = this->mGrid[position.x][position.y];
+        payoff /= cohabitors.size();
+    }
+    
+    return payoff;
 }
 
 

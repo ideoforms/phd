@@ -34,6 +34,8 @@ struct stats_t
 		   bind_mean,
 		   bsoc_mean;
 
+	double age_mean;
+
 	double fitness_min,
 		   fitness_mean,
 	       fitness_max;
