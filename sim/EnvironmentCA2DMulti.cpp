@@ -64,6 +64,41 @@ vector <Agent *> EnvironmentCA2DMulti::get_neighbours(const Agent *agent)
 
 	return neighbours;
 }
+    
+void EnvironmentCA2DMulti::move(Agent *agent)
+{
+	/*--------------------------------------------------------------------*
+	 * move an agent randomly to a neighbouring cell
+	 *--------------------------------------------------------------------*/
+    int index = agent->get_index();
+    int direction = rng_randint(4);
+    Point2Di position = this->mPositions[index];
+
+    /*--------------------------------------------------------------------*
+	 * remove agent from the grid
+	 *--------------------------------------------------------------------*/
+    std::vector<Agent *>::iterator offset = std::find(mGrid[position.x][position.y].begin(), mGrid[position.x][position.y].end(), agent);
+	assert(offset != mGrid[position.x][position.y].end());
+    mGrid[position.x][position.y].erase(offset);
+    
+    switch (direction)
+    {
+        case 0:
+            this->mPositions[index].x = this->px(this->mPositions[index].x); break;
+        case 1:
+            this->mPositions[index].x = this->nx(this->mPositions[index].x); break;
+        case 2:
+            this->mPositions[index].y = this->py(this->mPositions[index].y); break;
+        case 3:
+            this->mPositions[index].y = this->ny(this->mPositions[index].y); break;
+    }
+    
+    /*--------------------------------------------------------------------*
+	 * re-add agent to grid in new position
+	 *--------------------------------------------------------------------*/
+    position = this->mPositions[index];
+    mGrid[position.x][position.y].push_back(agent);
+}
 
 void EnvironmentCA2DMulti::reproduce()
 {
@@ -111,13 +146,14 @@ void EnvironmentCA2DMulti::reproduce()
 
 	Agent *dead_agent = mAgents[dead_index];
 	Point2Di dead_loc = mPositions[dead_index];
+
 	// HOW DO WE PROPERLY GET A REFERENCE?
 	// This assigns by value so we are modifying a copy. Hmm..
 	// vector <Agent *> dead_cell = &mGrid[dead_loc.x][dead_loc.y];
 	std::vector<Agent *>::iterator position = std::find(mGrid[dead_loc.x][dead_loc.y].begin(), mGrid[dead_loc.x][dead_loc.y].end(), dead_agent);
-	// printf("index %d, agents %d\n", position - mGrid[dead_loc.x][dead_loc.y].begin(), mGrid[dead_loc.x][dead_loc.y].size());
 	assert(position != mGrid[dead_loc.x][dead_loc.y].end());
     mGrid[dead_loc.x][dead_loc.y].erase(position);
+
 	delete mAgents[dead_index];
 
 	mAgents[dead_index] = child;
@@ -143,13 +179,13 @@ double EnvironmentCA2DMulti::payoff(Agent *agent, Task phenotype)
 {
     double payoff = Environment::payoff(agent, phenotype);
 
-    if (settings.frequency_inverse_payoff_flag)
-    {
-        int index = agent->get_index();
-        Point2Di position = this->mPositions[index];
-        vector <Agent *> cohabitors = this->mGrid[position.x][position.y];
-        payoff /= cohabitors.size();
-    }
+//    if (settings.frequency_inverse_payoff_flag)
+//    {
+//        int index = agent->get_index();
+//        Point2Di position = this->mPositions[index];
+//        vector <Agent *> cohabitors = this->mGrid[position.x][position.y];
+//        payoff /= cohabitors.size();
+//    }
     
     return payoff;
 }

@@ -22,8 +22,6 @@ option "p_switch"	-	"prob. of environment change"		double		no
 option "p_move"		-	"prob. of agent movement"			double		no
 option "p_noise"	-	"prob. of social learning noise"	double		no
 
-option "cost_soc"	-	"prob. of social learning noise"	double		no
-
 option "logdir"		L	"path to store log"					string		no default = "logs"
 option "log"		l	"logging on/off"					flag		on
 option "log-every"	i	"interval between logging"			int			no default = "1000"
@@ -62,3 +60,5 @@ option "abm-neighbourhood-size"	-	"neighbourhood size" 			int			no		default = "6
 option "spatial-variance"	-	"spatial variance" 			int			no		default = "0"
 option "spatial-patch-size"	-	"spatial patch size" 		int			no		default = "1"
 
+
+option "movement"       - "movement on/off"                 flag        off

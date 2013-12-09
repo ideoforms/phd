@@ -39,6 +39,7 @@ public:
 
 	int                         get_popsize();
 
+    virtual void                move(Agent *agent);
 	virtual double              payoff(Agent *agent, Task genotype);
 	virtual Task				goal_for(Agent *agent);
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);

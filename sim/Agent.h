@@ -29,10 +29,14 @@ public:
 	Agent(Agent *parent);
 	~Agent() {}
 
-	void 				reset();
-	void 				update();
-	void				mutate();
-	Agent *				replicate();
+	virtual void 		reset();
+	virtual void 		update();
+	virtual void		mutate();
+    virtual void		move();
+	virtual Agent *		replicate();
+    
+    Task                learn_ind();
+    Task                learn_soc();
 
 	int					get_index() const;
 	double				get_fitness() const;
@@ -45,7 +49,8 @@ public:
 
 	double				mBEvo,
 						mBInd,
-						mBSoc;
+						mBSoc,
+                        mBMov;
 
 	double				mOmega;
 	double				mDelta;
@@ -57,8 +62,6 @@ public:
 
 	void 				normalize();
 
-	// friend class		Environment;
-	// friend class		EnvironmentCA;
 };
 
 } // namespace sim

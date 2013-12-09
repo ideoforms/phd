@@ -136,6 +136,16 @@ Task Environment::goal_for(Agent *agent)
 	 *-----------------------------------------------------------------------*/
 	return this->mLandscape->taskAt(0, 0);
 }
+    
+void Environment::move(Agent *agent)
+{
+    /*-----------------------------------------------------------------------*
+	 * Movement is meaningless in this environment.
+	 *-----------------------------------------------------------------------*/
+    printf("null move (this shouldn't happen)\n");
+    return;
+}
+
 
 double Environment::payoff(Agent *agent, Task phenotype)
 {

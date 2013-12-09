@@ -75,9 +75,6 @@ struct settings_t
   double p_noise_arg;	/**< @brief prob. of social learning noise.  */
   char * p_noise_orig;	/**< @brief prob. of social learning noise original value given at command line.  */
   const char *p_noise_help; /**< @brief prob. of social learning noise help description.  */
-  double cost_soc_arg;	/**< @brief prob. of social learning noise.  */
-  char * cost_soc_orig;	/**< @brief prob. of social learning noise original value given at command line.  */
-  const char *cost_soc_help; /**< @brief prob. of social learning noise help description.  */
   char * logdir_arg;	/**< @brief path to store log (default='logs').  */
   char * logdir_orig;	/**< @brief path to store log original value given at command line.  */
   const char *logdir_help; /**< @brief path to store log help description.  */
@@ -150,6 +147,8 @@ struct settings_t
   int spatial_patch_size_arg;	/**< @brief spatial patch size (default='1').  */
   char * spatial_patch_size_orig;	/**< @brief spatial patch size original value given at command line.  */
   const char *spatial_patch_size_help; /**< @brief spatial patch size help description.  */
+  int movement_flag;	/**< @brief movement on/off (default=off).  */
+  const char *movement_help; /**< @brief movement on/off help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -165,7 +164,6 @@ struct settings_t
   unsigned int p_switch_given ;	/**< @brief Whether p_switch was given.  */
   unsigned int p_move_given ;	/**< @brief Whether p_move was given.  */
   unsigned int p_noise_given ;	/**< @brief Whether p_noise was given.  */
-  unsigned int cost_soc_given ;	/**< @brief Whether cost_soc was given.  */
   unsigned int logdir_given ;	/**< @brief Whether logdir was given.  */
   unsigned int log_given ;	/**< @brief Whether log was given.  */
   unsigned int log_every_given ;	/**< @brief Whether log-every was given.  */
@@ -193,6 +191,7 @@ struct settings_t
   unsigned int abm_neighbourhood_size_given ;	/**< @brief Whether abm-neighbourhood-size was given.  */
   unsigned int spatial_variance_given ;	/**< @brief Whether spatial-variance was given.  */
   unsigned int spatial_patch_size_given ;	/**< @brief Whether spatial-patch-size was given.  */
+  unsigned int movement_given ;	/**< @brief Whether movement was given.  */
 
 } ;
 

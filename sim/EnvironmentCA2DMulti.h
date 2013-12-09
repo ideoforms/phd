@@ -22,12 +22,14 @@ public:
 
     virtual double              payoff(Agent *agent, Task genotype);
 	virtual void                reproduce();
+    virtual void                move(Agent *agent);
 	virtual Task                goal_for(Agent *agent);
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	friend class Agent;
 
 	virtual const char * classname() { return "EnvironmentCA2DMulti"; }
+    
 
 	friend ostream & operator<< (ostream &stream, const EnvironmentCA2DMulti &object)
 	{

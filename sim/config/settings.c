@@ -46,7 +46,6 @@ const char *settings_t_help[] = {
   "      --p_switch=DOUBLE         prob. of environment change",
   "      --p_move=DOUBLE           prob. of agent movement",
   "      --p_noise=DOUBLE          prob. of social learning noise",
-  "      --cost_soc=DOUBLE         prob. of social learning noise",
   "  -L, --logdir=STRING           path to store log  (default=`logs')",
   "  -l, --log                     logging on/off  (default=on)",
   "  -i, --log-every=INT           interval between logging  (default=`1000')",
@@ -74,6 +73,7 @@ const char *settings_t_help[] = {
   "      --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
   "      --spatial-variance=INT    spatial variance  (default=`0')",
   "      --spatial-patch-size=INT  spatial patch size  (default=`1')",
+  "      --movement                movement on/off  (default=off)",
     0
 };
 
@@ -138,7 +138,6 @@ void clear_given (struct settings_t *args_info)
   args_info->p_switch_given = 0 ;
   args_info->p_move_given = 0 ;
   args_info->p_noise_given = 0 ;
-  args_info->cost_soc_given = 0 ;
   args_info->logdir_given = 0 ;
   args_info->log_given = 0 ;
   args_info->log_every_given = 0 ;
@@ -166,6 +165,7 @@ void clear_given (struct settings_t *args_info)
   args_info->abm_neighbourhood_size_given = 0 ;
   args_info->spatial_variance_given = 0 ;
   args_info->spatial_patch_size_given = 0 ;
+  args_info->movement_given = 0 ;
 }
 
 static
@@ -186,7 +186,6 @@ void clear_args (struct settings_t *args_info)
   args_info->p_switch_orig = NULL;
   args_info->p_move_orig = NULL;
   args_info->p_noise_orig = NULL;
-  args_info->cost_soc_orig = NULL;
   args_info->logdir_arg = gengetopt_strdup ("logs");
   args_info->logdir_orig = NULL;
   args_info->log_flag = 1;
@@ -231,6 +230,7 @@ void clear_args (struct settings_t *args_info)
   args_info->spatial_variance_orig = NULL;
   args_info->spatial_patch_size_arg = 1;
   args_info->spatial_patch_size_orig = NULL;
+  args_info->movement_flag = 0;
   
 }
 
@@ -253,34 +253,34 @@ void init_args_info(struct settings_t *args_info)
   args_info->p_switch_help = settings_t_help[11] ;
   args_info->p_move_help = settings_t_help[12] ;
   args_info->p_noise_help = settings_t_help[13] ;
-  args_info->cost_soc_help = settings_t_help[14] ;
-  args_info->logdir_help = settings_t_help[15] ;
-  args_info->log_help = settings_t_help[16] ;
-  args_info->log_every_help = settings_t_help[17] ;
-  args_info->log_phenotypes_at_help = settings_t_help[18] ;
-  args_info->debug_help = settings_t_help[19] ;
-  args_info->batch_help = settings_t_help[20] ;
-  args_info->metabolism_help = settings_t_help[21] ;
-  args_info->reproduction_count_help = settings_t_help[22] ;
-  args_info->strategy_copy_novel_trait_help = settings_t_help[23] ;
-  args_info->strategy_copy_random_neighbour_help = settings_t_help[24] ;
-  args_info->strategy_always_assimilate_help = settings_t_help[25] ;
-  args_info->suppress_b_evo_help = settings_t_help[26] ;
-  args_info->suppress_b_ind_help = settings_t_help[27] ;
-  args_info->suppress_b_soc_help = settings_t_help[28] ;
-  args_info->thoroughbred_help = settings_t_help[29] ;
-  args_info->perturbation_help = settings_t_help[30] ;
-  args_info->perturbation_time_help = settings_t_help[31] ;
-  args_info->perturbation_size_help = settings_t_help[32] ;
-  args_info->neighbourhood_size_help = settings_t_help[33] ;
-  args_info->conf_file_help = settings_t_help[34] ;
-  args_info->ca_width_help = settings_t_help[35] ;
-  args_info->ca_non_adjacent_birth_help = settings_t_help[36] ;
-  args_info->abm_width_help = settings_t_help[37] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[38] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[39] ;
-  args_info->spatial_variance_help = settings_t_help[40] ;
-  args_info->spatial_patch_size_help = settings_t_help[41] ;
+  args_info->logdir_help = settings_t_help[14] ;
+  args_info->log_help = settings_t_help[15] ;
+  args_info->log_every_help = settings_t_help[16] ;
+  args_info->log_phenotypes_at_help = settings_t_help[17] ;
+  args_info->debug_help = settings_t_help[18] ;
+  args_info->batch_help = settings_t_help[19] ;
+  args_info->metabolism_help = settings_t_help[20] ;
+  args_info->reproduction_count_help = settings_t_help[21] ;
+  args_info->strategy_copy_novel_trait_help = settings_t_help[22] ;
+  args_info->strategy_copy_random_neighbour_help = settings_t_help[23] ;
+  args_info->strategy_always_assimilate_help = settings_t_help[24] ;
+  args_info->suppress_b_evo_help = settings_t_help[25] ;
+  args_info->suppress_b_ind_help = settings_t_help[26] ;
+  args_info->suppress_b_soc_help = settings_t_help[27] ;
+  args_info->thoroughbred_help = settings_t_help[28] ;
+  args_info->perturbation_help = settings_t_help[29] ;
+  args_info->perturbation_time_help = settings_t_help[30] ;
+  args_info->perturbation_size_help = settings_t_help[31] ;
+  args_info->neighbourhood_size_help = settings_t_help[32] ;
+  args_info->conf_file_help = settings_t_help[33] ;
+  args_info->ca_width_help = settings_t_help[34] ;
+  args_info->ca_non_adjacent_birth_help = settings_t_help[35] ;
+  args_info->abm_width_help = settings_t_help[36] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[37] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[38] ;
+  args_info->spatial_variance_help = settings_t_help[39] ;
+  args_info->spatial_patch_size_help = settings_t_help[40] ;
+  args_info->movement_help = settings_t_help[41] ;
   
 }
 
@@ -374,7 +374,6 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->p_switch_orig));
   free_string_field (&(args_info->p_move_orig));
   free_string_field (&(args_info->p_noise_orig));
-  free_string_field (&(args_info->cost_soc_orig));
   free_string_field (&(args_info->logdir_arg));
   free_string_field (&(args_info->logdir_orig));
   free_string_field (&(args_info->log_every_orig));
@@ -453,8 +452,6 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "p_move", args_info->p_move_orig, 0);
   if (args_info->p_noise_given)
     write_into_file(outfile, "p_noise", args_info->p_noise_orig, 0);
-  if (args_info->cost_soc_given)
-    write_into_file(outfile, "cost_soc", args_info->cost_soc_orig, 0);
   if (args_info->logdir_given)
     write_into_file(outfile, "logdir", args_info->logdir_orig, 0);
   if (args_info->log_given)
@@ -509,6 +506,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "spatial-variance", args_info->spatial_variance_orig, 0);
   if (args_info->spatial_patch_size_given)
     write_into_file(outfile, "spatial-patch-size", args_info->spatial_patch_size_orig, 0);
+  if (args_info->movement_given)
+    write_into_file(outfile, "movement", 0, 0 );
   
 
   i = EXIT_SUCCESS;
@@ -781,7 +780,6 @@ config_parser_internal (
         { "p_switch",	1, NULL, 0 },
         { "p_move",	1, NULL, 0 },
         { "p_noise",	1, NULL, 0 },
-        { "cost_soc",	1, NULL, 0 },
         { "logdir",	1, NULL, 'L' },
         { "log",	0, NULL, 'l' },
         { "log-every",	1, NULL, 'i' },
@@ -809,6 +807,7 @@ config_parser_internal (
         { "abm-neighbourhood-size",	1, NULL, 0 },
         { "spatial-variance",	1, NULL, 0 },
         { "spatial-patch-size",	1, NULL, 0 },
+        { "movement",	0, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -1072,20 +1071,6 @@ config_parser_internal (
               goto failure;
           
           }
-          /* prob. of social learning noise.  */
-          else if (strcmp (long_options[option_index].name, "cost_soc") == 0)
-          {
-          
-          
-            if (update_arg( (void *)&(args_info->cost_soc_arg), 
-                 &(args_info->cost_soc_orig), &(args_info->cost_soc_given),
-                &(local_args_info.cost_soc_given), optarg, 0, 0, ARG_DOUBLE,
-                check_ambiguity, override, 0, 0,
-                "cost_soc", '-',
-                additional_error))
-              goto failure;
-          
-          }
           /* log all phenotypes at time N.  */
           else if (strcmp (long_options[option_index].name, "log-phenotypes-at") == 0)
           {
@@ -1336,6 +1321,18 @@ config_parser_internal (
                 &(local_args_info.spatial_patch_size_given), optarg, 0, "1", ARG_INT,
                 check_ambiguity, override, 0, 0,
                 "spatial-patch-size", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* movement on/off.  */
+          else if (strcmp (long_options[option_index].name, "movement") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->movement_flag), 0, &(args_info->movement_given),
+                &(local_args_info.movement_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "movement", '-',
                 additional_error))
               goto failure;
           

@@ -16,7 +16,8 @@ enum behaviour_t
 {
 	MODE_EVO,
 	MODE_IND,
-	MODE_SOC
+	MODE_SOC,
+    MODE_MOV
 };
 
 enum neighbourhood_type_t

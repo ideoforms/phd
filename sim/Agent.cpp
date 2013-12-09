@@ -31,6 +31,7 @@ Agent::Agent(Environment *env)
 	this->mBEvo = rng_uniformuf();
 	this->mBInd = rng_uniformuf();
 	this->mBSoc = rng_uniformuf();
+    this->mBMov = rng_uniformuf();
 
 	this->normalize();
 
@@ -54,6 +55,7 @@ Agent::Agent(Agent *parent)
 	this->mBEvo = parent->mBEvo;
 	this->mBInd = parent->mBInd;
 	this->mBSoc = parent->mBSoc;
+    this->mBMov = parent->mBMov;
 
 	this->normalize();
 
@@ -69,7 +71,6 @@ void Agent::reset()
 	this->mPhenotype = this->mGenotype;
 	this->mAge = 0;
 	this->mDelta = 1;
-	this->mOmega = settings.omega0_arg;
 	this->mLastAction = 0;
 }
 
@@ -95,6 +96,12 @@ void Agent::normalize()
 		this->mBInd = 0;
 	if (settings.suppress_b_soc_arg)
 		this->mBSoc = 0;
+    
+    /*------------------------------------------------------------*
+     * No movement by default
+     *------------------------------------------------------------*/
+    if (!settings.movement_flag)
+        this->mBMov = 0;
 
 	/*------------------------------------------------------------------------
 	 * Thoroughbred mode: One trait = 1, all others = 0.
@@ -121,10 +128,11 @@ void Agent::normalize()
 		}
 	}
 
-	double sum = this->mBEvo + this->mBInd + this->mBSoc;
+	double sum = this->mBEvo + this->mBInd + this->mBSoc + this->mBMov;
 	this->mBEvo /= sum;
 	this->mBInd /= sum;
 	this->mBSoc /= sum;
+    this->mBMov /= sum;
 }
 
 double Agent::get_fitness() const
@@ -132,122 +140,144 @@ double Agent::get_fitness() const
 	// return this->mEnv->fitness(*this);
 	return this->mDelta;
 }
+    
+void Agent::move()
+{
+    this->mEnv->move(this);
+}
+    
+Task Agent::learn_ind()
+{
+    Task action = this->mPhenotype;
+    int bit = rng_randint(settings.bits_arg);
+    action.flip(bit);
+    return action;
+}
+    
+Task Agent::learn_soc()
+{
+    int bit, index;
+    Task action = this->mPhenotype;
+    
+    vector <Agent *> neighbours = this->mEnv->get_neighbours(this);
+
+    if (neighbours.size() > 0)
+    {
+        if (!settings.strategy_copy_random_neighbour_flag)
+        {
+            /*------------------------------------------------------------*
+             * Strategy: By default, copy a neighbour weighted by their
+             * fitness.
+             *------------------------------------------------------------*/
+            double fitnesses[neighbours.size()];
+            for (unsigned int i = 0; i < neighbours.size(); i++)
+                fitnesses[i] = neighbours[i]->get_fitness();
+            index = roulette(fitnesses, neighbours.size());
+        }
+        else
+        {
+            /*------------------------------------------------------------*
+             * Strategy: Alternatively, pick a neighbour at random.
+             *------------------------------------------------------------*/
+            index = rng_randint(neighbours.size());
+        }
+        
+        if (index < 0)
+        {
+            /*------------------------------------------------------------*
+             * Couldn't find a single non-zero-fitness neighbour -- bail.
+             * XXX: DOES THIS MAKE SENSE IN OUR MODEL?
+             * SHOULDN'T WE STILL BE ABLE TO COPY FROM ZERO-FITNESS NEIGHBOURS?
+             *------------------------------------------------------------*/
+            printf("got neighbours but non with non-zero fitness, bailing...\n");
+            return action;
+        }
+        
+        Agent *exemplar = neighbours[index];
+        Task exemplar_pheno = exemplar->mPhenotype;
+        
+        if (!settings.strategy_copy_novel_trait_flag)
+        {
+            /*------------------------------------------------------------*
+             * Strategy: By default, copy a random trait.
+             *------------------------------------------------------------*/
+            bit = rng_randint(settings.bits_arg);
+            action.set(bit, exemplar_pheno.test(bit));
+            if (rng_coin(settings.p_noise_arg))
+            {
+                action.flip(bit);
+            }
+        }
+        else
+        {
+            /*------------------------------------------------------------*
+             * Alternate strategy: search for a novel trait and copy that.
+             *------------------------------------------------------------*/
+            bool found = false;
+            int indices[settings.bits_arg];
+            for (int i = 0; i < settings.bits_arg; i++)
+                indices[i] = i;
+                rng_shuffle(indices, settings.bits_arg);
+                
+                for (int i = 0; i < settings.bits_arg && !found; i++)
+                {
+                    bit = indices[i];
+                    if (action.test(bit) != exemplar_pheno.test(bit))
+                    {
+                        // cout << "copying bit " << bit << " (mine = " << action << ", theirs = " << exemplar_pheno << ")" << std::endl;
+                        found = true;
+                        action.set(bit, exemplar_pheno.test(bit));
+                        if (rng_coin(settings.p_noise_arg))
+                            action.flip(bit);
+                    }
+                }
+            
+            if (!found)
+            {
+                if (rng_coin(settings.p_noise_arg))
+                {
+                    bit = rng_randint(settings.bits_arg);
+                    action.flip(bit);
+                }
+            }
+        }
+    }
+    
+    return action;
+}
 
 void Agent::update()
 {
-	double modes[] = { this->mBEvo, this->mBInd, this->mBSoc };
-	int mode = roulette(modes, 3);
+    this->mAge++;
+
+	double modes[] = { this->mBEvo, this->mBInd, this->mBSoc, this->mBMov };
+	int mode = roulette(modes, 4);
 
 	Task action = this->mPhenotype;
 
 	switch (mode)
 	{
-		int bit,
-			index;
-
 		case MODE_EVO:
 			break;
+            
 		case MODE_IND:
-			bit = rng_randint(settings.bits_arg);
-			action.flip(bit);
+            action = this->learn_ind();
 			break;
+            
 		case MODE_SOC:
-			vector <Agent *> neighbours = this->mEnv->get_neighbours(this);
-			// 
-			if (neighbours.size() > 0)
-			{
-				if (!settings.strategy_copy_random_neighbour_flag)
-				{
-					/*------------------------------------------------------------*
-					 * Strategy: By default, copy a neighbour weighted by their
-					 * fitness.
-					 *------------------------------------------------------------*/
-					double fitnesses[neighbours.size()];
-					for (unsigned int i = 0; i < neighbours.size(); i++)
-						fitnesses[i] = neighbours[i]->get_fitness();
-					index = roulette(fitnesses, neighbours.size());
-				}
-				else
-				{
-					/*------------------------------------------------------------*
-					 * Strategy: Alternatively, pick a neighbour at random.
-					 *------------------------------------------------------------*/
-					index = rng_randint(neighbours.size());
-				}
-				
-				if (index < 0)
-				{
-					/*------------------------------------------------------------*
-					 * Couldn't find a single non-zero-fitness neighbour -- bail.
-					 * XXX: DOES THIS MAKE SENSE IN OUR MODEL?
-					 * SHOULDN'T WE STILL BE ABLE TO COPY FROM ZERO-FITNESS NEIGHBOURS?
-					 *------------------------------------------------------------*/
-					printf("got neighbours but non with non-zero fitness, bailing...\n");
-					break;
-				}
-
-				Agent *exemplar = neighbours[index];
-				// printf("found %d neighbours, using neighbour %d (%p)\n", neighbours.size(), index, exemplar);
-				Task exemplar_pheno = exemplar->mPhenotype;
-
-				if (!settings.strategy_copy_novel_trait_flag)
-				{
-					/*------------------------------------------------------------*
-					 * Strategy: By default, copy a random trait.
-					 *------------------------------------------------------------*/
-					bit = rng_randint(settings.bits_arg);
-					action.set(bit, exemplar_pheno.test(bit));
-					if (rng_coin(settings.p_noise_arg))
-						action.flip(bit);
-				}
-				else
-				{
-					/*------------------------------------------------------------*
-					 * Alternate strategy: search for a novel trait and copy that.
-					 *------------------------------------------------------------*/
-					bool found = false;
-					int indices[settings.bits_arg];
-					for (int i = 0; i < settings.bits_arg; i++)
-						indices[i] = i;
-					rng_shuffle(indices, settings.bits_arg);
-
-					for (int i = 0; i < settings.bits_arg && !found; i++)
-					{
-						bit = indices[i];
-						if (action.test(bit) != exemplar_pheno.test(bit))
-						{
-							// cout << "copying bit " << bit << " (mine = " << action << ", theirs = " << exemplar_pheno << ")" << std::endl;
-							found = true;
-							action.set(bit, exemplar_pheno.test(bit));
-							if (rng_coin(settings.p_noise_arg))
-								action.flip(bit);
-						}
-					}
-
-					if (!found)
-					{
-						if (rng_coin(settings.p_noise_arg))
-						{
-							bit = rng_randint(settings.bits_arg);
-							action.flip(bit);
-						}
-					}
-				}
-
-				// printf("copying bit %d (was %d, now %d)\n", bit, mPhenotype.test(bit), action.test(bit));
-
-			}
+            action = this->learn_soc();
 			break;
+            
+        case MODE_MOV:
+            this->move();
+			break;
+
 	}
 
-	this->mAge++;
 	this->mLastAction = mode;
 	this->mDelta = mEnv->payoff(this, action);
-
-	// if (settings.debug_flag)
-	//	std::cout << *this << std::endl;
-
-	if (mode != MODE_EVO)
+    
+	if (mode == MODE_IND || mode == MODE_SOC)
 	{
 		if (settings.strategy_always_assimilate_flag)
 		{
@@ -264,26 +294,10 @@ void Agent::update()
 			 * modify our phenotype accordingly (learning).
 			 *--------------------------------------------------------------------*/
 			double curFitness = mEnv->payoff(this, mPhenotype);
-			// if (settings.debug_flag)
-			//	cout << "action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
-
 			if (mDelta > curFitness)
-			{
-				// cout << "assimilating: action " << mode << ": my " << mPhenotype << " = " << curFitness << ", new " << action << " = " << this->mDelta << std::endl;
 				mPhenotype = action;
-			}
 		}
 	}
-
-	// XXX: testing fixed social cost
-	if (mode == MODE_SOC)
-	{
-		this->mDelta -= settings.cost_soc_arg;
-		if (this->mDelta < 0)
-			this->mDelta = 0;
-	}
-
-	this->mOmega += this->mDelta;
 }
 
 void Agent::mutate()
@@ -294,7 +308,10 @@ void Agent::mutate()
 	this->mBInd  = clip(this->mBInd, 0, 1);
 	this->mBSoc += rng_gaussian(0, settings.mu_arg);
 	this->mBSoc  = clip(this->mBSoc, 0, 1);
+	this->mBMov += rng_gaussian(0, settings.mu_arg);
+	this->mBMov  = clip(this->mBMov, 0, 1);
 
+    
 	for (int i = 0; i < settings.bits_arg; i++)
 	{
 		if (rng_coin(settings.p_mut_arg))
