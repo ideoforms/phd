@@ -33,7 +33,8 @@ struct stats_t
 
 	double bevo_mean,
 		   bind_mean,
-		   bsoc_mean;
+		   bsoc_mean,
+	       bmov_mean;
 
 	double age_mean;
 

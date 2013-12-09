@@ -27,7 +27,7 @@ public:
 	// constructors and destructors
 	Agent(Environment *env);
 	Agent(Agent *parent);
-	~Agent() {}
+	virtual ~Agent() {}
 
 	virtual void 		reset();
 	virtual void 		update();

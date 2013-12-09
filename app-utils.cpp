@@ -133,7 +133,8 @@ void close_logging()
 		stats.fitness_mean,
 		stats.bevo_mean,
 		stats.bind_mean,
-		stats.bsoc_mean
+		stats.bsoc_mean,
+		stats.bmov_mean
 	);
 
 	if (settings.log_flag)
@@ -158,6 +159,7 @@ void log_states()
 		stats.bevo_mean,
 		stats.bind_mean,
 		stats.bsoc_mean,
+		stats.bmov_mean,
 
 		stats.fitness_min,
 		stats.fitness_mean,
