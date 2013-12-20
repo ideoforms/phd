@@ -94,12 +94,13 @@ void init_logging()
 		logger = new csvwriter(logpath);
 		logger->start
 		(
-		 	"ifffffffff",
+		 	"iffffffffff",
 
 			"t",
 			"evo",
 			"ind",
 			"soc",
+			"mov",
 			"d_min",
 			"d_mean",
 			"d_max",
@@ -122,12 +123,13 @@ void close_logging()
 	stats_t stats = env->stats();
 
 	csvwriter batchlog(stdout);
-	batchlog.format("iiiffffff");
+	batchlog.format("iiifffffff");
 	batchlog.write
 	(
 		settings.popsize_arg,
 		settings.steps_arg,
 		settings.bits_arg,
+
 		settings.p_switch_arg,
 		settings.p_noise_arg,
 		stats.fitness_mean,
