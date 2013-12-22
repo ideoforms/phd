@@ -49,8 +49,7 @@ public:
 
 	double				mBEvo,
 						mBInd,
-						mBSoc,
-                        mBMov;
+						mBSoc;
 
 	double				mOmega;
 	double				mDelta;
@@ -58,6 +57,9 @@ public:
 	Task			 	mGenotype;
 	Task			 	mPhenotype;
 	Environment 		*mEnv;
+
+	double				mMRate; /* [0..1] */
+	double				mMCoh;	/* [-1..1] */
 
 
 	void 				normalize();

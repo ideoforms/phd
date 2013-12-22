@@ -143,6 +143,24 @@ int roulette(double *values, int count)
 	return -1;
 }
 
+/*--------------------------------------------------------------------*
+ * wroulette(): weighted roulette-wheel.
+ *--------------------------------------------------------------------*/
+int wroulette(double *values, int count, double weight)
+{
+	double weights[count];
+	if (weight >= 0)
+	{
+		for (int i = 0; i < count; i++)
+			weights[i] = 1.0 + weight * values[i];
+	}
+	else
+	{
+		for (int i = 0; i < count; i++)
+			weights[i] = 1.0 / (1.0 + fabs(weight) * values[i]);
+	}
+	return roulette(weights, count);
+}
 
 /*--------------------------------------------------------------------*
  * timestamp(): Return microsecond-accurate timestamp.

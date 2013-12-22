@@ -149,6 +149,10 @@ struct settings_t
   const char *spatial_patch_size_help; /**< @brief spatial patch size help description.  */
   int movement_flag;	/**< @brief movement on/off (default=off).  */
   const char *movement_help; /**< @brief movement on/off help description.  */
+  int movement_cohesion_genetic_flag;	/**< @brief movement cohesion governed by genes (default=off).  */
+  const char *movement_cohesion_genetic_help; /**< @brief movement cohesion governed by genes help description.  */
+  int movement_rate_genetic_flag;	/**< @brief movement rate governed by genes (default=off).  */
+  const char *movement_rate_genetic_help; /**< @brief movement rate governed by genes help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -192,6 +196,8 @@ struct settings_t
   unsigned int spatial_variance_given ;	/**< @brief Whether spatial-variance was given.  */
   unsigned int spatial_patch_size_given ;	/**< @brief Whether spatial-patch-size was given.  */
   unsigned int movement_given ;	/**< @brief Whether movement was given.  */
+  unsigned int movement_cohesion_genetic_given ;	/**< @brief Whether movement-cohesion-genetic was given.  */
+  unsigned int movement_rate_genetic_given ;	/**< @brief Whether movement-rate-genetic was given.  */
 
 } ;
 

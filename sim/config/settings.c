@@ -74,6 +74,8 @@ const char *settings_t_help[] = {
   "      --spatial-variance=INT    spatial variance  (default=`0')",
   "      --spatial-patch-size=INT  spatial patch size  (default=`1')",
   "      --movement                movement on/off  (default=off)",
+  "      --movement-cohesion-genetic\n                                movement cohesion governed by genes  \n                                  (default=off)",
+  "      --movement-rate-genetic   movement rate governed by genes  (default=off)",
     0
 };
 
@@ -166,6 +168,8 @@ void clear_given (struct settings_t *args_info)
   args_info->spatial_variance_given = 0 ;
   args_info->spatial_patch_size_given = 0 ;
   args_info->movement_given = 0 ;
+  args_info->movement_cohesion_genetic_given = 0 ;
+  args_info->movement_rate_genetic_given = 0 ;
 }
 
 static
@@ -231,6 +235,8 @@ void clear_args (struct settings_t *args_info)
   args_info->spatial_patch_size_arg = 1;
   args_info->spatial_patch_size_orig = NULL;
   args_info->movement_flag = 0;
+  args_info->movement_cohesion_genetic_flag = 0;
+  args_info->movement_rate_genetic_flag = 0;
   
 }
 
@@ -281,6 +287,8 @@ void init_args_info(struct settings_t *args_info)
   args_info->spatial_variance_help = settings_t_help[39] ;
   args_info->spatial_patch_size_help = settings_t_help[40] ;
   args_info->movement_help = settings_t_help[41] ;
+  args_info->movement_cohesion_genetic_help = settings_t_help[42] ;
+  args_info->movement_rate_genetic_help = settings_t_help[43] ;
   
 }
 
@@ -508,6 +516,10 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "spatial-patch-size", args_info->spatial_patch_size_orig, 0);
   if (args_info->movement_given)
     write_into_file(outfile, "movement", 0, 0 );
+  if (args_info->movement_cohesion_genetic_given)
+    write_into_file(outfile, "movement-cohesion-genetic", 0, 0 );
+  if (args_info->movement_rate_genetic_given)
+    write_into_file(outfile, "movement-rate-genetic", 0, 0 );
   
 
   i = EXIT_SUCCESS;
@@ -808,6 +820,8 @@ config_parser_internal (
         { "spatial-variance",	1, NULL, 0 },
         { "spatial-patch-size",	1, NULL, 0 },
         { "movement",	0, NULL, 0 },
+        { "movement-cohesion-genetic",	0, NULL, 0 },
+        { "movement-rate-genetic",	0, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -1333,6 +1347,30 @@ config_parser_internal (
             if (update_arg((void *)&(args_info->movement_flag), 0, &(args_info->movement_given),
                 &(local_args_info.movement_given), optarg, 0, 0, ARG_FLAG,
                 check_ambiguity, override, 1, 0, "movement", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* movement cohesion governed by genes.  */
+          else if (strcmp (long_options[option_index].name, "movement-cohesion-genetic") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->movement_cohesion_genetic_flag), 0, &(args_info->movement_cohesion_genetic_given),
+                &(local_args_info.movement_cohesion_genetic_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "movement-cohesion-genetic", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* movement rate governed by genes.  */
+          else if (strcmp (long_options[option_index].name, "movement-rate-genetic") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->movement_rate_genetic_flag), 0, &(args_info->movement_rate_genetic_given),
+                &(local_args_info.movement_rate_genetic_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "movement-rate-genetic", '-',
                 additional_error))
               goto failure;
           

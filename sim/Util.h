@@ -22,6 +22,7 @@ bool rng_coin(double limit);
 void rng_shuffle(int *values, int count);
 
 int roulette(double *values, int count);
+int wroulette(double *values, int count, double weight);
 
 double timestamp();
 

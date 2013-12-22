@@ -61,4 +61,7 @@ option "spatial-variance"	-	"spatial variance" 			int			no		default = "0"
 option "spatial-patch-size"	-	"spatial patch size" 		int			no		default = "1"
 
 
-option "movement"       - "movement on/off"                 flag        off
+option "movement"       		- "movement on/off"                 flag        off
+option "movement-cohesion-genetic"  - "movement cohesion governed by genes"      flag        off
+option "movement-rate-genetic"  - "movement rate governed by genes" flag        off
+

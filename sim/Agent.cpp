@@ -23,15 +23,15 @@ Agent::Agent(Environment *env)
 	this->mGenotype = Task(settings.bits_arg);
 	for (int i = 0; i < settings.bits_arg; i++)
 		this->mGenotype[i] = rng_coin(0.5);
-	// this->mGenotype.set();
-	// this->mGenotype = Task(rng_randint(1L << settings.bits_arg));
 	
 	this->mPhenotype = Task(settings.bits_arg);
 
 	this->mBEvo = rng_uniformuf();
 	this->mBInd = rng_uniformuf();
 	this->mBSoc = rng_uniformuf();
-    this->mBMov = rng_uniformuf();
+
+	this->mMRate = rng_uniformuf();
+	this->mMCoh = rng_uniform(-1, 1);
 
 	this->normalize();
 
@@ -55,7 +55,9 @@ Agent::Agent(Agent *parent)
 	this->mBEvo = parent->mBEvo;
 	this->mBInd = parent->mBInd;
 	this->mBSoc = parent->mBSoc;
-    this->mBMov = parent->mBMov;
+
+	this->mMRate = parent->mMRate;
+	this->mMCoh = parent->mMCoh;
 
 	this->normalize();
 
@@ -96,12 +98,12 @@ void Agent::normalize()
 		this->mBInd = 0;
 	if (settings.suppress_b_soc_arg)
 		this->mBSoc = 0;
-    
-    /*------------------------------------------------------------*
-     * No movement by default
-     *------------------------------------------------------------*/
-    if (!settings.movement_flag)
-        this->mBMov = 0;
+
+	if (!settings.movement_flag)
+	{
+		this->mMRate = 0;
+		this->mMCoh = 0;
+	}
 
 	/*------------------------------------------------------------------------
 	 * Thoroughbred mode: One trait = 1, all others = 0.
@@ -128,11 +130,10 @@ void Agent::normalize()
 		}
 	}
 
-	double sum = this->mBEvo + this->mBInd + this->mBSoc + this->mBMov;
+	double sum = this->mBEvo + this->mBInd + this->mBSoc;
 	this->mBEvo /= sum;
 	this->mBInd /= sum;
 	this->mBSoc /= sum;
-    this->mBMov /= sum;
 }
 
 double Agent::get_fitness() const
@@ -250,8 +251,8 @@ void Agent::update()
 {
     this->mAge++;
 
-	double modes[] = { this->mBEvo, this->mBInd, this->mBSoc, this->mBMov };
-	int mode = roulette(modes, 4);
+	double modes[] = { this->mBEvo, this->mBInd, this->mBSoc };
+	int mode = roulette(modes, 3);
 
 	Task action = this->mPhenotype;
 
@@ -267,11 +268,6 @@ void Agent::update()
 		case MODE_SOC:
             action = this->learn_soc();
 			break;
-            
-        case MODE_MOV:
-            this->move();
-			break;
-
 	}
 
 	this->mLastAction = mode;
@@ -298,6 +294,22 @@ void Agent::update()
 				mPhenotype = action;
 		}
 	}
+
+	if (settings.movement_flag)
+	{
+		if (settings.movement_rate_genetic_flag)
+		{
+			bool move = rng_coin(this->mMRate);
+			if (move)
+			{
+				this->move();
+			}
+		}
+		else
+		{
+			this->move();
+		}
+	}
 }
 
 void Agent::mutate()
@@ -308,9 +320,12 @@ void Agent::mutate()
 	this->mBInd  = clip(this->mBInd, 0, 1);
 	this->mBSoc += rng_gaussian(0, settings.mu_arg);
 	this->mBSoc  = clip(this->mBSoc, 0, 1);
-	this->mBMov += rng_gaussian(0, settings.mu_arg);
-	this->mBMov  = clip(this->mBMov, 0, 1);
 
+	this->mMRate += rng_gaussian(0, settings.mu_arg);
+	this->mMRate = clip(this->mMRate, 0, 1);
+
+	this->mMCoh += rng_gaussian(0, settings.mu_arg);
+	this->mMCoh = clip(this->mMCoh, -1, 1);
     
 	for (int i = 0; i < settings.bits_arg; i++)
 	{

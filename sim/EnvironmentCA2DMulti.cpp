@@ -64,15 +64,38 @@ vector <Agent *> EnvironmentCA2DMulti::get_neighbours(const Agent *agent)
 
 	return neighbours;
 }
-    
+
 void EnvironmentCA2DMulti::move(Agent *agent)
 {
 	/*--------------------------------------------------------------------*
 	 * move an agent randomly to a neighbouring cell
 	 *--------------------------------------------------------------------*/
+	int direction;
     int index = agent->get_index();
-    int direction = rng_randint(4);
     Point2Di position = this->mPositions[index];
+
+	if (settings.movement_cohesion_genetic_flag)
+	{
+		/*------------------------------------------------------------------------*
+		 * calculate neighbour counts (as doubles for roulette wheel algorithm)
+		 *------------------------------------------------------------------------*/
+		double neighbour_counts[4];
+		neighbour_counts[0] = this->mGrid[this->px(position.x)][position.y].size();
+		neighbour_counts[1] = this->mGrid[this->nx(position.x)][position.y].size();
+		neighbour_counts[2] = this->mGrid[position.x][this->py(position.y)].size();
+		neighbour_counts[3] = this->mGrid[position.x][this->ny(position.y)].size();
+        // neighbour_counts[4] = this->mGrid[position.x][position.y].size();
+
+		/*------------------------------------------------------------------------*
+		 * weight our selection 
+		 *------------------------------------------------------------------------*/
+		direction = wroulette(neighbour_counts, 4, agent->mMCoh);
+		// printf("neighbour counts %.0f, %.0f, %.0f, %.0f, selected %.0f\n", neighbour_counts[0], neighbour_counts[1], neighbour_counts[2], neighbour_counts[3], neighbour_counts[direction]);
+	}
+	else
+	{
+		direction = rng_randint(4);
+	}
 
     /*--------------------------------------------------------------------*
 	 * remove agent from the grid
@@ -91,6 +114,9 @@ void EnvironmentCA2DMulti::move(Agent *agent)
             this->mPositions[index].y = this->py(this->mPositions[index].y); break;
         case 3:
             this->mPositions[index].y = this->ny(this->mPositions[index].y); break;
+        case 4:
+            // stay where we are
+            break;
     }
     
     /*--------------------------------------------------------------------*
