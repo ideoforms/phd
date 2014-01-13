@@ -177,6 +177,15 @@ struct settings_t
   double payoff_regeneration_rate_arg;	/**< @brief payoff regeneration rate (default='0.0').  */
   char * payoff_regeneration_rate_orig;	/**< @brief payoff regeneration rate original value given at command line.  */
   const char *payoff_regeneration_rate_help; /**< @brief payoff regeneration rate help description.  */
+  double structured_landscape_detail_arg;	/**< @brief landscape detail (default='0.5').  */
+  char * structured_landscape_detail_orig;	/**< @brief landscape detail original value given at command line.  */
+  const char *structured_landscape_detail_help; /**< @brief landscape detail help description.  */
+  double structured_landscape_gradient_arg;	/**< @brief landscape gradient (default='0.5').  */
+  char * structured_landscape_gradient_orig;	/**< @brief landscape gradient original value given at command line.  */
+  const char *structured_landscape_gradient_help; /**< @brief landscape gradient help description.  */
+  double structured_landscape_abundance_arg;	/**< @brief landscape abundance (default='0.5').  */
+  char * structured_landscape_abundance_orig;	/**< @brief landscape abundance original value given at command line.  */
+  const char *structured_landscape_abundance_help; /**< @brief landscape abundance help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -229,6 +238,9 @@ struct settings_t
   unsigned int payoff_correlation_mu_given ;	/**< @brief Whether payoff-correlation-mu was given.  */
   unsigned int payoff_depletion_rate_given ;	/**< @brief Whether payoff-depletion-rate was given.  */
   unsigned int payoff_regeneration_rate_given ;	/**< @brief Whether payoff-regeneration-rate was given.  */
+  unsigned int structured_landscape_detail_given ;	/**< @brief Whether structured-landscape-detail was given.  */
+  unsigned int structured_landscape_gradient_given ;	/**< @brief Whether structured-landscape-gradient was given.  */
+  unsigned int structured_landscape_abundance_given ;	/**< @brief Whether structured-landscape-abundance was given.  */
 
 } ;
 

@@ -73,3 +73,8 @@ option "payoff-correlation-mu"	-	"payoff correlation mu"			double no	default = "
 
 option "payoff-depletion-rate"		-	"payoff depletion rate"			double no	default = "0.0"
 option "payoff-regeneration-rate"	-	"payoff regeneration rate"		double no	default = "0.0"
+
+option "structured-landscape-detail"		-	"landscape detail"		double	no	default = "0.5"
+option "structured-landscape-gradient"		-	"landscape gradient"	double	no	default = "0.5"
+option "structured-landscape-abundance"		-	"landscape abundance"	double	no	default = "0.5"
+

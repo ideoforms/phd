@@ -27,6 +27,7 @@
 		65A038FF1846BD8E002A80F2 /* EnvironmentCA2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65A038FE1846BD8E002A80F2 /* EnvironmentCA2D.cpp */; };
 		65A039011848DA8E002A80F2 /* EnvironmentCA2DMulti.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65A039001848DA8E002A80F2 /* EnvironmentCA2DMulti.cpp */; };
 		65B9FDE817B953BB0044A01A /* EnvironmentCA1D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65B9FDE717B953BB0044A01A /* EnvironmentCA1D.cpp */; };
+		65EB92BA18845A0800064214 /* LandscapeGenerator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 65EB92B918845A0800064214 /* LandscapeGenerator.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		90EC685B3DD949C6B9323D0F /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 49731BE020F94379A5EF6DA3 /* MainMenu.xib */; };
 		AED0DF70C7724FC8A6773327 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 0AEF158592D54705BDC823CE /* CinderApp.icns */; };
@@ -74,6 +75,8 @@
 		65A038FE1846BD8E002A80F2 /* EnvironmentCA2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnvironmentCA2D.cpp; sourceTree = "<group>"; };
 		65A039001848DA8E002A80F2 /* EnvironmentCA2DMulti.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnvironmentCA2DMulti.cpp; sourceTree = "<group>"; };
 		65B9FDE717B953BB0044A01A /* EnvironmentCA1D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = EnvironmentCA1D.cpp; sourceTree = "<group>"; };
+		65EB92B918845A0800064214 /* LandscapeGenerator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LandscapeGenerator.cpp; sourceTree = "<group>"; };
+		65EB92BB18845A0C00064214 /* LandscapeGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LandscapeGenerator.h; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ImitationCA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImitationCA.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		99DA32DDEF1B4261B4E1C97E /* ImitationCADelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ImitationCADelegate.mm; sourceTree = "<group>"; };
 		C7B06810AE4044A7A96D038E /* ImitationCADelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ImitationCADelegate.h; path = ../include/ImitationCADelegate.h; sourceTree = "<group>"; };
@@ -212,6 +215,8 @@
 				65A039001848DA8E002A80F2 /* EnvironmentCA2DMulti.cpp */,
 				65285AEC17B7183E00EAC86A /* Landscape.cpp */,
 				657DD5151880372700C51BAC /* Landscape.h */,
+				65EB92B918845A0800064214 /* LandscapeGenerator.cpp */,
+				65EB92BB18845A0C00064214 /* LandscapeGenerator.h */,
 				659AFCF3177AFEF900FC32E7 /* Geometry.h */,
 				659AFCF4177AFEF900FC32E7 /* io */,
 				659AFCF8177AFEF900FC32E7 /* Simulation.h */,
@@ -318,6 +323,7 @@
 				659AFCFE177AFEF900FC32E7 /* Environment.cpp in Sources */,
 				659AFD00177AFEF900FC32E7 /* csv.cpp in Sources */,
 				659AFD02177AFEF900FC32E7 /* Util.cpp in Sources */,
+				65EB92BA18845A0800064214 /* LandscapeGenerator.cpp in Sources */,
 				65285AED17B7183E00EAC86A /* Landscape.cpp in Sources */,
 				65B9FDE817B953BB0044A01A /* EnvironmentCA1D.cpp in Sources */,
 			);

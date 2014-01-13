@@ -83,6 +83,9 @@ const char *settings_t_help[] = {
   "      --payoff-correlation-mu=DOUBLE\n                                payoff correlation mu  (default=`0.1')",
   "      --payoff-depletion-rate=DOUBLE\n                                payoff depletion rate  (default=`0.0')",
   "      --payoff-regeneration-rate=DOUBLE\n                                payoff regeneration rate  (default=`0.0')",
+  "      --structured-landscape-detail=DOUBLE\n                                landscape detail  (default=`0.5')",
+  "      --structured-landscape-gradient=DOUBLE\n                                landscape gradient  (default=`0.5')",
+  "      --structured-landscape-abundance=DOUBLE\n                                landscape abundance  (default=`0.5')",
     0
 };
 
@@ -184,6 +187,9 @@ void clear_given (struct settings_t *args_info)
   args_info->payoff_correlation_mu_given = 0 ;
   args_info->payoff_depletion_rate_given = 0 ;
   args_info->payoff_regeneration_rate_given = 0 ;
+  args_info->structured_landscape_detail_given = 0 ;
+  args_info->structured_landscape_gradient_given = 0 ;
+  args_info->structured_landscape_abundance_given = 0 ;
 }
 
 static
@@ -268,6 +274,12 @@ void clear_args (struct settings_t *args_info)
   args_info->payoff_depletion_rate_orig = NULL;
   args_info->payoff_regeneration_rate_arg = 0.0;
   args_info->payoff_regeneration_rate_orig = NULL;
+  args_info->structured_landscape_detail_arg = 0.5;
+  args_info->structured_landscape_detail_orig = NULL;
+  args_info->structured_landscape_gradient_arg = 0.5;
+  args_info->structured_landscape_gradient_orig = NULL;
+  args_info->structured_landscape_abundance_arg = 0.5;
+  args_info->structured_landscape_abundance_orig = NULL;
   
 }
 
@@ -327,6 +339,9 @@ void init_args_info(struct settings_t *args_info)
   args_info->payoff_correlation_mu_help = settings_t_help[48] ;
   args_info->payoff_depletion_rate_help = settings_t_help[49] ;
   args_info->payoff_regeneration_rate_help = settings_t_help[50] ;
+  args_info->structured_landscape_detail_help = settings_t_help[51] ;
+  args_info->structured_landscape_gradient_help = settings_t_help[52] ;
+  args_info->structured_landscape_abundance_help = settings_t_help[53] ;
   
 }
 
@@ -451,6 +466,9 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->payoff_correlation_mu_orig));
   free_string_field (&(args_info->payoff_depletion_rate_orig));
   free_string_field (&(args_info->payoff_regeneration_rate_orig));
+  free_string_field (&(args_info->structured_landscape_detail_orig));
+  free_string_field (&(args_info->structured_landscape_gradient_orig));
+  free_string_field (&(args_info->structured_landscape_abundance_orig));
   
   
 
@@ -583,6 +601,12 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "payoff-depletion-rate", args_info->payoff_depletion_rate_orig, 0);
   if (args_info->payoff_regeneration_rate_given)
     write_into_file(outfile, "payoff-regeneration-rate", args_info->payoff_regeneration_rate_orig, 0);
+  if (args_info->structured_landscape_detail_given)
+    write_into_file(outfile, "structured-landscape-detail", args_info->structured_landscape_detail_orig, 0);
+  if (args_info->structured_landscape_gradient_given)
+    write_into_file(outfile, "structured-landscape-gradient", args_info->structured_landscape_gradient_orig, 0);
+  if (args_info->structured_landscape_abundance_given)
+    write_into_file(outfile, "structured-landscape-abundance", args_info->structured_landscape_abundance_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -892,6 +916,9 @@ config_parser_internal (
         { "payoff-correlation-mu",	1, NULL, 0 },
         { "payoff-depletion-rate",	1, NULL, 0 },
         { "payoff-regeneration-rate",	1, NULL, 0 },
+        { "structured-landscape-detail",	1, NULL, 0 },
+        { "structured-landscape-gradient",	1, NULL, 0 },
+        { "structured-landscape-abundance",	1, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -1545,6 +1572,48 @@ config_parser_internal (
                 &(local_args_info.payoff_regeneration_rate_given), optarg, 0, "0.0", ARG_DOUBLE,
                 check_ambiguity, override, 0, 0,
                 "payoff-regeneration-rate", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* landscape detail.  */
+          else if (strcmp (long_options[option_index].name, "structured-landscape-detail") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->structured_landscape_detail_arg), 
+                 &(args_info->structured_landscape_detail_orig), &(args_info->structured_landscape_detail_given),
+                &(local_args_info.structured_landscape_detail_given), optarg, 0, "0.5", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "structured-landscape-detail", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* landscape gradient.  */
+          else if (strcmp (long_options[option_index].name, "structured-landscape-gradient") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->structured_landscape_gradient_arg), 
+                 &(args_info->structured_landscape_gradient_orig), &(args_info->structured_landscape_gradient_given),
+                &(local_args_info.structured_landscape_gradient_given), optarg, 0, "0.5", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "structured-landscape-gradient", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* landscape abundance.  */
+          else if (strcmp (long_options[option_index].name, "structured-landscape-abundance") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->structured_landscape_abundance_arg), 
+                 &(args_info->structured_landscape_abundance_orig), &(args_info->structured_landscape_abundance_given),
+                &(local_args_info.structured_landscape_abundance_given), optarg, 0, "0.5", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "structured-landscape-abundance", '-',
                 additional_error))
               goto failure;
           

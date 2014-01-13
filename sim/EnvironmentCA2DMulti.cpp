@@ -16,13 +16,13 @@ EnvironmentCA2DMulti::EnvironmentCA2DMulti() : Environment()
 	this->mHeight = settings.ca_width_arg;
 
 	// Slight hack to update popsize based on the CA width and height (as it is fixed)
-	assert(settings.popsize_arg == settings.ca_width_arg * settings.ca_width_arg);
+	// assert(settings.popsize_arg == settings.ca_width_arg * settings.ca_width_arg);
 
 	this->mGrid.resize(this->mWidth);
 	for (int i = 0; i < this->mWidth; i++)
 		this->mGrid[i].resize(this->mHeight);
 
-	this->mPositions.resize(this->mWidth * this->mHeight);
+	this->mPositions.resize(settings.popsize_arg);
 
 	this->mLandscape = new Landscape(settings.bits_arg,
                                      this->mWidth / settings.spatial_patch_size_arg,
@@ -30,12 +30,18 @@ EnvironmentCA2DMulti::EnvironmentCA2DMulti() : Environment()
 	this->mLandscape->distribute(settings.spatial_variance_arg);
 
 	int n = 0;
+    
+    // now set initial positions randomly
 	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
 	{
 		Agent *agent = *it;
-		int x = n % this->mWidth;
-		int y = (int) n / this->mHeight;
+        
+		// int x = n % this->mWidth;
+		// int y = (int) n / this->mHeight;
 
+        int x = rng_randint(0, this->mWidth);
+        int y = rng_randint(0, this->mHeight);
+        
 		this->mGrid[x][y].push_back(agent);
 		this->mPositions[n].set(x, y);
 
