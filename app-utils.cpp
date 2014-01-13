@@ -100,7 +100,8 @@ void init_logging()
 			"evo",
 			"ind",
 			"soc",
-			"mov",
+			"m_rate",
+			"m_coh",
 			"d_min",
 			"d_mean",
 			"d_max",
@@ -110,43 +111,6 @@ void init_logging()
 		);
 	}
 }
-
-void close_logging()
-{
-	if (settings.batch_flag)
-	{
-		fflush(stdout);
-		dup2(stdout_orig, 1);
-		close(stdout_orig);
-	}
-
-	stats_t stats = env->stats();
-
-	csvwriter batchlog(stdout);
-	batchlog.format("iiifffffff");
-	batchlog.write
-	(
-		settings.popsize_arg,
-		settings.steps_arg,
-		settings.bits_arg,
-
-		settings.p_switch_arg,
-		settings.p_noise_arg,
-		stats.fitness_mean,
-		stats.bevo_mean,
-		stats.bind_mean,
-		stats.bsoc_mean,
-		stats.bmov_mean
-	);
-
-	if (settings.log_flag)
-	{
-		logger->close();
-	}
-
-	// free(settings.logfile_arg);
-}
-
 
 void log_states()
 {
@@ -161,7 +125,9 @@ void log_states()
 		stats.bevo_mean,
 		stats.bind_mean,
 		stats.bsoc_mean,
-		stats.bmov_mean,
+
+		stats.mrate_mean,
+		stats.mcoh_mean,
 
 		stats.fitness_min,
 		stats.fitness_mean,
@@ -178,6 +144,45 @@ void log_states()
 		printf("(%05d) %.4f %.4f %.4f (mean fitness = %.3f)\n", stats.step, stats.bevo_mean, stats.bind_mean, stats.bsoc_mean, stats.fitness_mean);
 	}
 }
+
+void close_logging()
+{
+	if (settings.batch_flag)
+	{
+		fflush(stdout);
+		dup2(stdout_orig, 1);
+		close(stdout_orig);
+	}
+
+	stats_t stats = env->stats();
+
+	csvwriter batchlog(stdout);
+	batchlog.format("iiiffffffff");
+	batchlog.write
+	(
+		settings.popsize_arg,
+		settings.steps_arg,
+		settings.bits_arg,
+
+		settings.p_switch_arg,
+		settings.p_noise_arg,
+		stats.fitness_mean,
+		stats.bevo_mean,
+		stats.bind_mean,
+		stats.bsoc_mean,
+		stats.mrate_mean,
+		stats.mcoh_mean
+	);
+
+	if (settings.log_flag)
+	{
+		logger->close();
+	}
+
+	// free(settings.logfile_arg);
+}
+
+
 
 /*
 void log_phenotypes()

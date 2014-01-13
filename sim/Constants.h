@@ -16,8 +16,7 @@ enum behaviour_t
 {
 	MODE_EVO,
 	MODE_IND,
-	MODE_SOC,
-    MODE_MOV
+	MODE_SOC
 };
 
 enum neighbourhood_type_t
@@ -33,8 +32,10 @@ struct stats_t
 
 	double bevo_mean,
 		   bind_mean,
-		   bsoc_mean,
-	       bmov_mean;
+		   bsoc_mean;
+
+	double mrate_mean,
+		   mcoh_mean;
 
 	double age_mean;
 

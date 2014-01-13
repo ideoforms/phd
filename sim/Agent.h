@@ -32,7 +32,6 @@ public:
 	virtual void 		reset();
 	virtual void 		update();
 	virtual void		mutate();
-    virtual void		move();
 	virtual Agent *		replicate();
     
     Task                learn_ind();

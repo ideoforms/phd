@@ -61,6 +61,7 @@ const char *settings_t_help[] = {
   "      --suppress-b-ind=INT      suppress b_ind  (default=`0')",
   "      --suppress-b-soc=INT      suppress b_soc  (default=`0')",
   "      --thoroughbred=INT        thoroughbred behaviours  (default=`0')",
+  "      --thoroughbred-mu=DOUBLE  thoroughbred mutation prob  (default=`0.0')",
   "      --perturbation            perturbation on/off  (default=off)",
   "      --perturbation-time=INT   perturbation timestep",
   "      --perturbation-size=DOUBLE\n                                perturbation magnitude  (default=`1.0')",
@@ -68,14 +69,20 @@ const char *settings_t_help[] = {
   "  -C, --conf-file=STRING        config file to read  (default=`settings.conf')",
   "  -w, --ca-width=INT            ca width  (default=`16')",
   "      --ca-non-adjacent-birth   ca: position offspring randomly  (default=off)",
+  "      --ca-colocated-birth=INT  ca: position offspring in the same cell as \n                                  parent  (default=`0')",
   "  -W, --abm-width=INT           abm width  (default=`512')",
   "      --abm-neighbourhood-type=INT\n                                neighbourhood type  (default=`0')",
   "      --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
   "      --spatial-variance=INT    spatial variance  (default=`0')",
   "      --spatial-patch-size=INT  spatial patch size  (default=`1')",
-  "      --movement                movement on/off  (default=off)",
-  "      --movement-cohesion-genetic\n                                movement cohesion governed by genes  \n                                  (default=off)",
-  "      --movement-rate-genetic   movement rate governed by genes  (default=off)",
+  "      --frequency-inverse-payoff=INT\n                                frequency inverse payoff  (default=`0')",
+  "      --movement=INT            movement on/off  (default=`0')",
+  "      --movement-cohesion-genetic=INT\n                                movement cohesion governed by genes  \n                                  (default=`0')",
+  "      --movement-rate-genetic=INT\n                                movement rate governed by genes  (default=`0')",
+  "      --payoff-distribution=STRING\n                                payoff distribution  (default=`uniform')",
+  "      --payoff-correlation-mu=DOUBLE\n                                payoff correlation mu  (default=`0.1')",
+  "      --payoff-depletion-rate=DOUBLE\n                                payoff depletion rate  (default=`0.0')",
+  "      --payoff-regeneration-rate=DOUBLE\n                                payoff regeneration rate  (default=`0.0')",
     0
 };
 
@@ -155,6 +162,7 @@ void clear_given (struct settings_t *args_info)
   args_info->suppress_b_ind_given = 0 ;
   args_info->suppress_b_soc_given = 0 ;
   args_info->thoroughbred_given = 0 ;
+  args_info->thoroughbred_mu_given = 0 ;
   args_info->perturbation_given = 0 ;
   args_info->perturbation_time_given = 0 ;
   args_info->perturbation_size_given = 0 ;
@@ -162,14 +170,20 @@ void clear_given (struct settings_t *args_info)
   args_info->conf_file_given = 0 ;
   args_info->ca_width_given = 0 ;
   args_info->ca_non_adjacent_birth_given = 0 ;
+  args_info->ca_colocated_birth_given = 0 ;
   args_info->abm_width_given = 0 ;
   args_info->abm_neighbourhood_type_given = 0 ;
   args_info->abm_neighbourhood_size_given = 0 ;
   args_info->spatial_variance_given = 0 ;
   args_info->spatial_patch_size_given = 0 ;
+  args_info->frequency_inverse_payoff_given = 0 ;
   args_info->movement_given = 0 ;
   args_info->movement_cohesion_genetic_given = 0 ;
   args_info->movement_rate_genetic_given = 0 ;
+  args_info->payoff_distribution_given = 0 ;
+  args_info->payoff_correlation_mu_given = 0 ;
+  args_info->payoff_depletion_rate_given = 0 ;
+  args_info->payoff_regeneration_rate_given = 0 ;
 }
 
 static
@@ -213,6 +227,8 @@ void clear_args (struct settings_t *args_info)
   args_info->suppress_b_soc_orig = NULL;
   args_info->thoroughbred_arg = 0;
   args_info->thoroughbred_orig = NULL;
+  args_info->thoroughbred_mu_arg = 0.0;
+  args_info->thoroughbred_mu_orig = NULL;
   args_info->perturbation_flag = 0;
   args_info->perturbation_time_orig = NULL;
   args_info->perturbation_size_arg = 1.0;
@@ -224,6 +240,8 @@ void clear_args (struct settings_t *args_info)
   args_info->ca_width_arg = 16;
   args_info->ca_width_orig = NULL;
   args_info->ca_non_adjacent_birth_flag = 0;
+  args_info->ca_colocated_birth_arg = 0;
+  args_info->ca_colocated_birth_orig = NULL;
   args_info->abm_width_arg = 512;
   args_info->abm_width_orig = NULL;
   args_info->abm_neighbourhood_type_arg = 0;
@@ -234,9 +252,22 @@ void clear_args (struct settings_t *args_info)
   args_info->spatial_variance_orig = NULL;
   args_info->spatial_patch_size_arg = 1;
   args_info->spatial_patch_size_orig = NULL;
-  args_info->movement_flag = 0;
-  args_info->movement_cohesion_genetic_flag = 0;
-  args_info->movement_rate_genetic_flag = 0;
+  args_info->frequency_inverse_payoff_arg = 0;
+  args_info->frequency_inverse_payoff_orig = NULL;
+  args_info->movement_arg = 0;
+  args_info->movement_orig = NULL;
+  args_info->movement_cohesion_genetic_arg = 0;
+  args_info->movement_cohesion_genetic_orig = NULL;
+  args_info->movement_rate_genetic_arg = 0;
+  args_info->movement_rate_genetic_orig = NULL;
+  args_info->payoff_distribution_arg = gengetopt_strdup ("uniform");
+  args_info->payoff_distribution_orig = NULL;
+  args_info->payoff_correlation_mu_arg = 0.1;
+  args_info->payoff_correlation_mu_orig = NULL;
+  args_info->payoff_depletion_rate_arg = 0.0;
+  args_info->payoff_depletion_rate_orig = NULL;
+  args_info->payoff_regeneration_rate_arg = 0.0;
+  args_info->payoff_regeneration_rate_orig = NULL;
   
 }
 
@@ -274,21 +305,28 @@ void init_args_info(struct settings_t *args_info)
   args_info->suppress_b_ind_help = settings_t_help[26] ;
   args_info->suppress_b_soc_help = settings_t_help[27] ;
   args_info->thoroughbred_help = settings_t_help[28] ;
-  args_info->perturbation_help = settings_t_help[29] ;
-  args_info->perturbation_time_help = settings_t_help[30] ;
-  args_info->perturbation_size_help = settings_t_help[31] ;
-  args_info->neighbourhood_size_help = settings_t_help[32] ;
-  args_info->conf_file_help = settings_t_help[33] ;
-  args_info->ca_width_help = settings_t_help[34] ;
-  args_info->ca_non_adjacent_birth_help = settings_t_help[35] ;
-  args_info->abm_width_help = settings_t_help[36] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[37] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[38] ;
-  args_info->spatial_variance_help = settings_t_help[39] ;
-  args_info->spatial_patch_size_help = settings_t_help[40] ;
-  args_info->movement_help = settings_t_help[41] ;
-  args_info->movement_cohesion_genetic_help = settings_t_help[42] ;
-  args_info->movement_rate_genetic_help = settings_t_help[43] ;
+  args_info->thoroughbred_mu_help = settings_t_help[29] ;
+  args_info->perturbation_help = settings_t_help[30] ;
+  args_info->perturbation_time_help = settings_t_help[31] ;
+  args_info->perturbation_size_help = settings_t_help[32] ;
+  args_info->neighbourhood_size_help = settings_t_help[33] ;
+  args_info->conf_file_help = settings_t_help[34] ;
+  args_info->ca_width_help = settings_t_help[35] ;
+  args_info->ca_non_adjacent_birth_help = settings_t_help[36] ;
+  args_info->ca_colocated_birth_help = settings_t_help[37] ;
+  args_info->abm_width_help = settings_t_help[38] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[39] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[40] ;
+  args_info->spatial_variance_help = settings_t_help[41] ;
+  args_info->spatial_patch_size_help = settings_t_help[42] ;
+  args_info->frequency_inverse_payoff_help = settings_t_help[43] ;
+  args_info->movement_help = settings_t_help[44] ;
+  args_info->movement_cohesion_genetic_help = settings_t_help[45] ;
+  args_info->movement_rate_genetic_help = settings_t_help[46] ;
+  args_info->payoff_distribution_help = settings_t_help[47] ;
+  args_info->payoff_correlation_mu_help = settings_t_help[48] ;
+  args_info->payoff_depletion_rate_help = settings_t_help[49] ;
+  args_info->payoff_regeneration_rate_help = settings_t_help[50] ;
   
 }
 
@@ -391,17 +429,28 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->suppress_b_ind_orig));
   free_string_field (&(args_info->suppress_b_soc_orig));
   free_string_field (&(args_info->thoroughbred_orig));
+  free_string_field (&(args_info->thoroughbred_mu_orig));
   free_string_field (&(args_info->perturbation_time_orig));
   free_string_field (&(args_info->perturbation_size_orig));
   free_string_field (&(args_info->neighbourhood_size_orig));
   free_string_field (&(args_info->conf_file_arg));
   free_string_field (&(args_info->conf_file_orig));
   free_string_field (&(args_info->ca_width_orig));
+  free_string_field (&(args_info->ca_colocated_birth_orig));
   free_string_field (&(args_info->abm_width_orig));
   free_string_field (&(args_info->abm_neighbourhood_type_orig));
   free_string_field (&(args_info->abm_neighbourhood_size_orig));
   free_string_field (&(args_info->spatial_variance_orig));
   free_string_field (&(args_info->spatial_patch_size_orig));
+  free_string_field (&(args_info->frequency_inverse_payoff_orig));
+  free_string_field (&(args_info->movement_orig));
+  free_string_field (&(args_info->movement_cohesion_genetic_orig));
+  free_string_field (&(args_info->movement_rate_genetic_orig));
+  free_string_field (&(args_info->payoff_distribution_arg));
+  free_string_field (&(args_info->payoff_distribution_orig));
+  free_string_field (&(args_info->payoff_correlation_mu_orig));
+  free_string_field (&(args_info->payoff_depletion_rate_orig));
+  free_string_field (&(args_info->payoff_regeneration_rate_orig));
   
   
 
@@ -490,6 +539,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "suppress-b-soc", args_info->suppress_b_soc_orig, 0);
   if (args_info->thoroughbred_given)
     write_into_file(outfile, "thoroughbred", args_info->thoroughbred_orig, 0);
+  if (args_info->thoroughbred_mu_given)
+    write_into_file(outfile, "thoroughbred-mu", args_info->thoroughbred_mu_orig, 0);
   if (args_info->perturbation_given)
     write_into_file(outfile, "perturbation", 0, 0 );
   if (args_info->perturbation_time_given)
@@ -504,6 +555,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "ca-width", args_info->ca_width_orig, 0);
   if (args_info->ca_non_adjacent_birth_given)
     write_into_file(outfile, "ca-non-adjacent-birth", 0, 0 );
+  if (args_info->ca_colocated_birth_given)
+    write_into_file(outfile, "ca-colocated-birth", args_info->ca_colocated_birth_orig, 0);
   if (args_info->abm_width_given)
     write_into_file(outfile, "abm-width", args_info->abm_width_orig, 0);
   if (args_info->abm_neighbourhood_type_given)
@@ -514,12 +567,22 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "spatial-variance", args_info->spatial_variance_orig, 0);
   if (args_info->spatial_patch_size_given)
     write_into_file(outfile, "spatial-patch-size", args_info->spatial_patch_size_orig, 0);
+  if (args_info->frequency_inverse_payoff_given)
+    write_into_file(outfile, "frequency-inverse-payoff", args_info->frequency_inverse_payoff_orig, 0);
   if (args_info->movement_given)
-    write_into_file(outfile, "movement", 0, 0 );
+    write_into_file(outfile, "movement", args_info->movement_orig, 0);
   if (args_info->movement_cohesion_genetic_given)
-    write_into_file(outfile, "movement-cohesion-genetic", 0, 0 );
+    write_into_file(outfile, "movement-cohesion-genetic", args_info->movement_cohesion_genetic_orig, 0);
   if (args_info->movement_rate_genetic_given)
-    write_into_file(outfile, "movement-rate-genetic", 0, 0 );
+    write_into_file(outfile, "movement-rate-genetic", args_info->movement_rate_genetic_orig, 0);
+  if (args_info->payoff_distribution_given)
+    write_into_file(outfile, "payoff-distribution", args_info->payoff_distribution_orig, 0);
+  if (args_info->payoff_correlation_mu_given)
+    write_into_file(outfile, "payoff-correlation-mu", args_info->payoff_correlation_mu_orig, 0);
+  if (args_info->payoff_depletion_rate_given)
+    write_into_file(outfile, "payoff-depletion-rate", args_info->payoff_depletion_rate_orig, 0);
+  if (args_info->payoff_regeneration_rate_given)
+    write_into_file(outfile, "payoff-regeneration-rate", args_info->payoff_regeneration_rate_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -807,6 +870,7 @@ config_parser_internal (
         { "suppress-b-ind",	1, NULL, 0 },
         { "suppress-b-soc",	1, NULL, 0 },
         { "thoroughbred",	1, NULL, 0 },
+        { "thoroughbred-mu",	1, NULL, 0 },
         { "perturbation",	0, NULL, 0 },
         { "perturbation-time",	1, NULL, 0 },
         { "perturbation-size",	1, NULL, 0 },
@@ -814,14 +878,20 @@ config_parser_internal (
         { "conf-file",	1, NULL, 'C' },
         { "ca-width",	1, NULL, 'w' },
         { "ca-non-adjacent-birth",	0, NULL, 0 },
+        { "ca-colocated-birth",	1, NULL, 0 },
         { "abm-width",	1, NULL, 'W' },
         { "abm-neighbourhood-type",	1, NULL, 0 },
         { "abm-neighbourhood-size",	1, NULL, 0 },
         { "spatial-variance",	1, NULL, 0 },
         { "spatial-patch-size",	1, NULL, 0 },
-        { "movement",	0, NULL, 0 },
-        { "movement-cohesion-genetic",	0, NULL, 0 },
-        { "movement-rate-genetic",	0, NULL, 0 },
+        { "frequency-inverse-payoff",	1, NULL, 0 },
+        { "movement",	1, NULL, 0 },
+        { "movement-cohesion-genetic",	1, NULL, 0 },
+        { "movement-rate-genetic",	1, NULL, 0 },
+        { "payoff-distribution",	1, NULL, 0 },
+        { "payoff-correlation-mu",	1, NULL, 0 },
+        { "payoff-depletion-rate",	1, NULL, 0 },
+        { "payoff-regeneration-rate",	1, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -1217,6 +1287,20 @@ config_parser_internal (
               goto failure;
           
           }
+          /* thoroughbred mutation prob.  */
+          else if (strcmp (long_options[option_index].name, "thoroughbred-mu") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->thoroughbred_mu_arg), 
+                 &(args_info->thoroughbred_mu_orig), &(args_info->thoroughbred_mu_given),
+                &(local_args_info.thoroughbred_mu_given), optarg, 0, "0.0", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "thoroughbred-mu", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* perturbation on/off.  */
           else if (strcmp (long_options[option_index].name, "perturbation") == 0)
           {
@@ -1283,6 +1367,20 @@ config_parser_internal (
               goto failure;
           
           }
+          /* ca: position offspring in the same cell as parent.  */
+          else if (strcmp (long_options[option_index].name, "ca-colocated-birth") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->ca_colocated_birth_arg), 
+                 &(args_info->ca_colocated_birth_orig), &(args_info->ca_colocated_birth_given),
+                &(local_args_info.ca_colocated_birth_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "ca-colocated-birth", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* neighbourhood type.  */
           else if (strcmp (long_options[option_index].name, "abm-neighbourhood-type") == 0)
           {
@@ -1339,14 +1437,30 @@ config_parser_internal (
               goto failure;
           
           }
+          /* frequency inverse payoff.  */
+          else if (strcmp (long_options[option_index].name, "frequency-inverse-payoff") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->frequency_inverse_payoff_arg), 
+                 &(args_info->frequency_inverse_payoff_orig), &(args_info->frequency_inverse_payoff_given),
+                &(local_args_info.frequency_inverse_payoff_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "frequency-inverse-payoff", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* movement on/off.  */
           else if (strcmp (long_options[option_index].name, "movement") == 0)
           {
           
           
-            if (update_arg((void *)&(args_info->movement_flag), 0, &(args_info->movement_given),
-                &(local_args_info.movement_given), optarg, 0, 0, ARG_FLAG,
-                check_ambiguity, override, 1, 0, "movement", '-',
+            if (update_arg( (void *)&(args_info->movement_arg), 
+                 &(args_info->movement_orig), &(args_info->movement_given),
+                &(local_args_info.movement_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "movement", '-',
                 additional_error))
               goto failure;
           
@@ -1356,9 +1470,11 @@ config_parser_internal (
           {
           
           
-            if (update_arg((void *)&(args_info->movement_cohesion_genetic_flag), 0, &(args_info->movement_cohesion_genetic_given),
-                &(local_args_info.movement_cohesion_genetic_given), optarg, 0, 0, ARG_FLAG,
-                check_ambiguity, override, 1, 0, "movement-cohesion-genetic", '-',
+            if (update_arg( (void *)&(args_info->movement_cohesion_genetic_arg), 
+                 &(args_info->movement_cohesion_genetic_orig), &(args_info->movement_cohesion_genetic_given),
+                &(local_args_info.movement_cohesion_genetic_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "movement-cohesion-genetic", '-',
                 additional_error))
               goto failure;
           
@@ -1368,9 +1484,67 @@ config_parser_internal (
           {
           
           
-            if (update_arg((void *)&(args_info->movement_rate_genetic_flag), 0, &(args_info->movement_rate_genetic_given),
-                &(local_args_info.movement_rate_genetic_given), optarg, 0, 0, ARG_FLAG,
-                check_ambiguity, override, 1, 0, "movement-rate-genetic", '-',
+            if (update_arg( (void *)&(args_info->movement_rate_genetic_arg), 
+                 &(args_info->movement_rate_genetic_orig), &(args_info->movement_rate_genetic_given),
+                &(local_args_info.movement_rate_genetic_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "movement-rate-genetic", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* payoff distribution.  */
+          else if (strcmp (long_options[option_index].name, "payoff-distribution") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->payoff_distribution_arg), 
+                 &(args_info->payoff_distribution_orig), &(args_info->payoff_distribution_given),
+                &(local_args_info.payoff_distribution_given), optarg, 0, "uniform", ARG_STRING,
+                check_ambiguity, override, 0, 0,
+                "payoff-distribution", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* payoff correlation mu.  */
+          else if (strcmp (long_options[option_index].name, "payoff-correlation-mu") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->payoff_correlation_mu_arg), 
+                 &(args_info->payoff_correlation_mu_orig), &(args_info->payoff_correlation_mu_given),
+                &(local_args_info.payoff_correlation_mu_given), optarg, 0, "0.1", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "payoff-correlation-mu", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* payoff depletion rate.  */
+          else if (strcmp (long_options[option_index].name, "payoff-depletion-rate") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->payoff_depletion_rate_arg), 
+                 &(args_info->payoff_depletion_rate_orig), &(args_info->payoff_depletion_rate_given),
+                &(local_args_info.payoff_depletion_rate_given), optarg, 0, "0.0", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "payoff-depletion-rate", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* payoff regeneration rate.  */
+          else if (strcmp (long_options[option_index].name, "payoff-regeneration-rate") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->payoff_regeneration_rate_arg), 
+                 &(args_info->payoff_regeneration_rate_orig), &(args_info->payoff_regeneration_rate_given),
+                &(local_args_info.payoff_regeneration_rate_given), optarg, 0, "0.0", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "payoff-regeneration-rate", '-',
                 additional_error))
               goto failure;
           

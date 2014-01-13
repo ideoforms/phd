@@ -99,7 +99,7 @@ void Agent::normalize()
 	if (settings.suppress_b_soc_arg)
 		this->mBSoc = 0;
 
-	if (!settings.movement_flag)
+	if (!settings.movement_arg)
 	{
 		this->mMRate = 0;
 		this->mMCoh = 0;
@@ -141,11 +141,7 @@ double Agent::get_fitness() const
 	// return this->mEnv->fitness(*this);
 	return this->mDelta;
 }
-    
-void Agent::move()
-{
-    this->mEnv->move(this);
-}
+
     
 Task Agent::learn_ind()
 {
@@ -295,32 +291,43 @@ void Agent::update()
 		}
 	}
 
-	if (settings.movement_flag)
+	if (settings.movement_arg)
 	{
-		if (settings.movement_rate_genetic_flag)
+		if (settings.movement_rate_genetic_arg)
 		{
 			bool move = rng_coin(this->mMRate);
+            // printf("move: %d (rate %f)\n", move, this->mMRate);
 			if (move)
 			{
-				this->move();
+				this->mEnv->move(this);
 			}
 		}
 		else
 		{
-			this->move();
+            // printf("move (i always move)\n");
+			this->mEnv->move(this);
 		}
 	}
 }
+    
 
 void Agent::mutate()
 {
 	this->mBEvo += rng_gaussian(0, settings.mu_arg);
 	this->mBEvo  = clip(this->mBEvo, 0, 1);
-	this->mBInd += rng_gaussian(0, settings.mu_arg);
+    if (settings.thoroughbred_mu_arg && rng_coin(settings.thoroughbred_mu_arg))
+        this->mBEvo  = 1 - this->mBEvo;
+
+    this->mBInd += rng_gaussian(0, settings.mu_arg);
 	this->mBInd  = clip(this->mBInd, 0, 1);
+    if (settings.thoroughbred_mu_arg && rng_coin(settings.thoroughbred_mu_arg))
+        this->mBInd  = 1 - this->mBInd;
+
 	this->mBSoc += rng_gaussian(0, settings.mu_arg);
 	this->mBSoc  = clip(this->mBSoc, 0, 1);
-
+    if (settings.thoroughbred_mu_arg && rng_coin(settings.thoroughbred_mu_arg))
+        this->mBSoc  = 1 - this->mBSoc;
+        
 	this->mMRate += rng_gaussian(0, settings.mu_arg);
 	this->mMRate = clip(this->mMRate, 0, 1);
 

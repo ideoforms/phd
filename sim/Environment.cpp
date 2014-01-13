@@ -142,7 +142,6 @@ void Environment::move(Agent *agent)
     /*-----------------------------------------------------------------------*
 	 * Movement is meaningless in this environment.
 	 *-----------------------------------------------------------------------*/
-    printf("null move (this shouldn't happen)\n");
     return;
 }
 
@@ -232,6 +231,9 @@ stats_t Environment::stats()
 	double 		total_bind = 0;
 	double 		total_bsoc = 0;
 
+	double 		total_mrate = 0;
+	double 		total_mcoh = 0;
+
 	double		total_geno_dist = 0.0;
 	double		total_pheno_dist = 0.0;
 
@@ -247,6 +249,9 @@ stats_t Environment::stats()
 		total_bevo		+= agent->mBEvo;
 		total_bind		+= agent->mBInd;
 		total_bsoc		+= agent->mBSoc;
+
+		total_mrate		+= agent->mMRate;
+		total_mcoh		+= agent->mMCoh;
 
 		Task task = this->goal_for(agent);
 		total_geno_dist += (task ^ agent->mGenotype).count();
@@ -265,6 +270,9 @@ stats_t Environment::stats()
 	stats.bevo_mean		= total_bevo / popsize;
 	stats.bind_mean		= total_bind / popsize;
 	stats.bsoc_mean		= total_bsoc / popsize;
+
+	stats.mrate_mean	= total_mrate / popsize;
+	stats.mcoh_mean		= total_mcoh / popsize;
 
 	stats.geno_mean_dist = total_geno_dist /= (settings.bits_arg * mAgents.size());
 	stats.pheno_mean_dist = total_pheno_dist /= (settings.bits_arg * mAgents.size());

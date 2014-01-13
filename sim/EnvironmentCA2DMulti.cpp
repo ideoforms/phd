@@ -64,6 +64,24 @@ vector <Agent *> EnvironmentCA2DMulti::get_neighbours(const Agent *agent)
 
 	return neighbours;
 }
+    
+void EnvironmentCA2DMulti::update()
+{
+    Environment::update();
+    
+    if (settings.payoff_depletion_rate_arg)
+    {
+        for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
+        {
+            Agent *agent = *it;
+            int index = agent->get_index();
+            Point2Di position = this->mPositions[index];
+            this->mLandscape->deplete_at(position.x, position.y);
+        }
+    }
+
+    this->mLandscape->regenerate();
+}
 
 void EnvironmentCA2DMulti::move(Agent *agent)
 {
@@ -74,7 +92,7 @@ void EnvironmentCA2DMulti::move(Agent *agent)
     int index = agent->get_index();
     Point2Di position = this->mPositions[index];
 
-	if (settings.movement_cohesion_genetic_flag)
+	if (settings.movement_cohesion_genetic_arg)
 	{
 		/*------------------------------------------------------------------------*
 		 * calculate neighbour counts (as doubles for roulette wheel algorithm)
@@ -118,6 +136,7 @@ void EnvironmentCA2DMulti::move(Agent *agent)
             // stay where we are
             break;
     }
+    // printf("position: (%d, %d)\n", this->mPositions[index].x, this->mPositions[index].y);
     
     /*--------------------------------------------------------------------*
 	 * re-add agent to grid in new position
@@ -155,7 +174,9 @@ void EnvironmentCA2DMulti::reproduce()
 
 	assert(!settings.ca_non_adjacent_birth_flag);
 
-		child_loc = parent_loc;
+	child_loc = parent_loc;
+	if (!settings.ca_colocated_birth_arg)
+	{
 		int location = rng_randint(4);
 		switch (location)
 		{
@@ -164,6 +185,7 @@ void EnvironmentCA2DMulti::reproduce()
 			case 2: child_loc.y = this->py(child_loc.y); break;
 			case 3: child_loc.y = this->ny(child_loc.y); break;
 		}
+	}
 
 	int dead_index = rng_randint(popsize);
 
@@ -204,14 +226,17 @@ Task EnvironmentCA2DMulti::goal_for(Agent *agent)
 double EnvironmentCA2DMulti::payoff(Agent *agent, Task phenotype)
 {
     double payoff = Environment::payoff(agent, phenotype);
-
-//    if (settings.frequency_inverse_payoff_flag)
-//    {
-//        int index = agent->get_index();
-//        Point2Di position = this->mPositions[index];
-//        vector <Agent *> cohabitors = this->mGrid[position.x][position.y];
-//        payoff /= cohabitors.size();
-//    }
+    
+    int index = agent->get_index();
+    Point2Di position = this->mPositions[index];
+    
+    if (settings.frequency_inverse_payoff_arg)
+    {
+        vector <Agent *> cohabitors = this->mGrid[position.x][position.y];
+        payoff /= cohabitors.size();
+    }
+    
+    payoff = payoff * mLandscape->payoffAt(position.x, position.y);
     
     return payoff;
 }

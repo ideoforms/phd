@@ -28,8 +28,12 @@ public:
 	 * all of these declared as virtual so that they can be overriden in
 	 *-----------------------------------------------------------------------*/
 	virtual Task				taskAt(unsigned x, unsigned y);
+    virtual float               payoffAt(unsigned x, unsigned y);
 	virtual void                fluctuate();
+    virtual void                deplete_at(unsigned x, unsigned y);
+    virtual void                regenerate();
 	virtual void                perturb(float perturbance);
+    virtual void                distribute_payoffs();
 	virtual void                distribute(unsigned heterogeneity);
 	virtual void                dump();
 
@@ -39,7 +43,8 @@ public:
 		return stream;
 	}
 
-	vector <vector < Task > > mGrid;
+	vector <vector < Task > > mObjective;
+    vector <vector < float > > mPayoff;
 
 	unsigned mWidth, mHeight;
 	unsigned mBits;

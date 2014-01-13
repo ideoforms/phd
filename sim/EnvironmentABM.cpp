@@ -173,10 +173,6 @@ void EnvironmentABM::reproduce()
 	mAgents[child_index] = child;
 }
 
-//Agent EnvironmentABM::agent_at(Point2Di &point)
-//{
-//	return *(this->mGrid[point.x][point.y]);
-//}
 
 
 } /* namespace sim */

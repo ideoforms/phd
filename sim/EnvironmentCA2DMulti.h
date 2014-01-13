@@ -22,6 +22,7 @@ public:
 
     virtual double              payoff(Agent *agent, Task genotype);
 	virtual void                reproduce();
+    virtual void                update();
     virtual void                move(Agent *agent);
 	virtual Task                goal_for(Agent *agent);
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);

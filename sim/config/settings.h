@@ -113,6 +113,9 @@ struct settings_t
   int thoroughbred_arg;	/**< @brief thoroughbred behaviours (default='0').  */
   char * thoroughbred_orig;	/**< @brief thoroughbred behaviours original value given at command line.  */
   const char *thoroughbred_help; /**< @brief thoroughbred behaviours help description.  */
+  double thoroughbred_mu_arg;	/**< @brief thoroughbred mutation prob (default='0.0').  */
+  char * thoroughbred_mu_orig;	/**< @brief thoroughbred mutation prob original value given at command line.  */
+  const char *thoroughbred_mu_help; /**< @brief thoroughbred mutation prob help description.  */
   int perturbation_flag;	/**< @brief perturbation on/off (default=off).  */
   const char *perturbation_help; /**< @brief perturbation on/off help description.  */
   int perturbation_time_arg;	/**< @brief perturbation timestep.  */
@@ -132,6 +135,9 @@ struct settings_t
   const char *ca_width_help; /**< @brief ca width help description.  */
   int ca_non_adjacent_birth_flag;	/**< @brief ca: position offspring randomly (default=off).  */
   const char *ca_non_adjacent_birth_help; /**< @brief ca: position offspring randomly help description.  */
+  int ca_colocated_birth_arg;	/**< @brief ca: position offspring in the same cell as parent (default='0').  */
+  char * ca_colocated_birth_orig;	/**< @brief ca: position offspring in the same cell as parent original value given at command line.  */
+  const char *ca_colocated_birth_help; /**< @brief ca: position offspring in the same cell as parent help description.  */
   int abm_width_arg;	/**< @brief abm width (default='512').  */
   char * abm_width_orig;	/**< @brief abm width original value given at command line.  */
   const char *abm_width_help; /**< @brief abm width help description.  */
@@ -147,12 +153,30 @@ struct settings_t
   int spatial_patch_size_arg;	/**< @brief spatial patch size (default='1').  */
   char * spatial_patch_size_orig;	/**< @brief spatial patch size original value given at command line.  */
   const char *spatial_patch_size_help; /**< @brief spatial patch size help description.  */
-  int movement_flag;	/**< @brief movement on/off (default=off).  */
+  int frequency_inverse_payoff_arg;	/**< @brief frequency inverse payoff (default='0').  */
+  char * frequency_inverse_payoff_orig;	/**< @brief frequency inverse payoff original value given at command line.  */
+  const char *frequency_inverse_payoff_help; /**< @brief frequency inverse payoff help description.  */
+  int movement_arg;	/**< @brief movement on/off (default='0').  */
+  char * movement_orig;	/**< @brief movement on/off original value given at command line.  */
   const char *movement_help; /**< @brief movement on/off help description.  */
-  int movement_cohesion_genetic_flag;	/**< @brief movement cohesion governed by genes (default=off).  */
+  int movement_cohesion_genetic_arg;	/**< @brief movement cohesion governed by genes (default='0').  */
+  char * movement_cohesion_genetic_orig;	/**< @brief movement cohesion governed by genes original value given at command line.  */
   const char *movement_cohesion_genetic_help; /**< @brief movement cohesion governed by genes help description.  */
-  int movement_rate_genetic_flag;	/**< @brief movement rate governed by genes (default=off).  */
+  int movement_rate_genetic_arg;	/**< @brief movement rate governed by genes (default='0').  */
+  char * movement_rate_genetic_orig;	/**< @brief movement rate governed by genes original value given at command line.  */
   const char *movement_rate_genetic_help; /**< @brief movement rate governed by genes help description.  */
+  char * payoff_distribution_arg;	/**< @brief payoff distribution (default='uniform').  */
+  char * payoff_distribution_orig;	/**< @brief payoff distribution original value given at command line.  */
+  const char *payoff_distribution_help; /**< @brief payoff distribution help description.  */
+  double payoff_correlation_mu_arg;	/**< @brief payoff correlation mu (default='0.1').  */
+  char * payoff_correlation_mu_orig;	/**< @brief payoff correlation mu original value given at command line.  */
+  const char *payoff_correlation_mu_help; /**< @brief payoff correlation mu help description.  */
+  double payoff_depletion_rate_arg;	/**< @brief payoff depletion rate (default='0.0').  */
+  char * payoff_depletion_rate_orig;	/**< @brief payoff depletion rate original value given at command line.  */
+  const char *payoff_depletion_rate_help; /**< @brief payoff depletion rate help description.  */
+  double payoff_regeneration_rate_arg;	/**< @brief payoff regeneration rate (default='0.0').  */
+  char * payoff_regeneration_rate_orig;	/**< @brief payoff regeneration rate original value given at command line.  */
+  const char *payoff_regeneration_rate_help; /**< @brief payoff regeneration rate help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -183,6 +207,7 @@ struct settings_t
   unsigned int suppress_b_ind_given ;	/**< @brief Whether suppress-b-ind was given.  */
   unsigned int suppress_b_soc_given ;	/**< @brief Whether suppress-b-soc was given.  */
   unsigned int thoroughbred_given ;	/**< @brief Whether thoroughbred was given.  */
+  unsigned int thoroughbred_mu_given ;	/**< @brief Whether thoroughbred-mu was given.  */
   unsigned int perturbation_given ;	/**< @brief Whether perturbation was given.  */
   unsigned int perturbation_time_given ;	/**< @brief Whether perturbation-time was given.  */
   unsigned int perturbation_size_given ;	/**< @brief Whether perturbation-size was given.  */
@@ -190,14 +215,20 @@ struct settings_t
   unsigned int conf_file_given ;	/**< @brief Whether conf-file was given.  */
   unsigned int ca_width_given ;	/**< @brief Whether ca-width was given.  */
   unsigned int ca_non_adjacent_birth_given ;	/**< @brief Whether ca-non-adjacent-birth was given.  */
+  unsigned int ca_colocated_birth_given ;	/**< @brief Whether ca-colocated-birth was given.  */
   unsigned int abm_width_given ;	/**< @brief Whether abm-width was given.  */
   unsigned int abm_neighbourhood_type_given ;	/**< @brief Whether abm-neighbourhood-type was given.  */
   unsigned int abm_neighbourhood_size_given ;	/**< @brief Whether abm-neighbourhood-size was given.  */
   unsigned int spatial_variance_given ;	/**< @brief Whether spatial-variance was given.  */
   unsigned int spatial_patch_size_given ;	/**< @brief Whether spatial-patch-size was given.  */
+  unsigned int frequency_inverse_payoff_given ;	/**< @brief Whether frequency-inverse-payoff was given.  */
   unsigned int movement_given ;	/**< @brief Whether movement was given.  */
   unsigned int movement_cohesion_genetic_given ;	/**< @brief Whether movement-cohesion-genetic was given.  */
   unsigned int movement_rate_genetic_given ;	/**< @brief Whether movement-rate-genetic was given.  */
+  unsigned int payoff_distribution_given ;	/**< @brief Whether payoff-distribution was given.  */
+  unsigned int payoff_correlation_mu_given ;	/**< @brief Whether payoff-correlation-mu was given.  */
+  unsigned int payoff_depletion_rate_given ;	/**< @brief Whether payoff-depletion-rate was given.  */
+  unsigned int payoff_regeneration_rate_given ;	/**< @brief Whether payoff-regeneration-rate was given.  */
 
 } ;
 

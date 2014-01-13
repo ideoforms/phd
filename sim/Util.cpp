@@ -156,6 +156,7 @@ int wroulette(double *values, int count, double weight)
 	}
 	else
 	{
+		/* fabs not needed as w is always < 0 - right ?? */
 		for (int i = 0; i < count; i++)
 			weights[i] = 1.0 / (1.0 + fabs(weight) * values[i]);
 	}
