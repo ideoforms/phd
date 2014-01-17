@@ -39,9 +39,9 @@ struct settings_t
 {
   const char *help_help; /**< @brief Print help and exit help description.  */
   const char *version_help; /**< @brief Print version and exit help description.  */
-  char * topology_arg;	/**< @brief topology: numeric, ca-1d, ca-2d, abm (default='numeric').  */
-  char * topology_orig;	/**< @brief topology: numeric, ca-1d, ca-2d, abm original value given at command line.  */
-  const char *topology_help; /**< @brief topology: numeric, ca-1d, ca-2d, abm help description.  */
+  char * topology_arg;	/**< @brief topology						 (default='numeric').  */
+  char * topology_orig;	/**< @brief topology						 original value given at command line.  */
+  const char *topology_help; /**< @brief topology						 help description.  */
   int popsize_arg;	/**< @brief population size.  */
   char * popsize_orig;	/**< @brief population size original value given at command line.  */
   const char *popsize_help; /**< @brief population size help description.  */
@@ -110,6 +110,15 @@ struct settings_t
   int suppress_b_soc_arg;	/**< @brief suppress b_soc (default='0').  */
   char * suppress_b_soc_orig;	/**< @brief suppress b_soc original value given at command line.  */
   const char *suppress_b_soc_help; /**< @brief suppress b_soc help description.  */
+  double fixed_b_evo_arg;	/**< @brief fixed b_evo.  */
+  char * fixed_b_evo_orig;	/**< @brief fixed b_evo original value given at command line.  */
+  const char *fixed_b_evo_help; /**< @brief fixed b_evo help description.  */
+  double fixed_b_ind_arg;	/**< @brief fixed b_ind.  */
+  char * fixed_b_ind_orig;	/**< @brief fixed b_ind original value given at command line.  */
+  const char *fixed_b_ind_help; /**< @brief fixed b_ind help description.  */
+  double fixed_b_soc_arg;	/**< @brief fixed b_soc.  */
+  char * fixed_b_soc_orig;	/**< @brief fixed b_soc original value given at command line.  */
+  const char *fixed_b_soc_help; /**< @brief fixed b_soc help description.  */
   int thoroughbred_arg;	/**< @brief thoroughbred behaviours (default='0').  */
   char * thoroughbred_orig;	/**< @brief thoroughbred behaviours original value given at command line.  */
   const char *thoroughbred_help; /**< @brief thoroughbred behaviours help description.  */
@@ -118,7 +127,7 @@ struct settings_t
   const char *thoroughbred_mu_help; /**< @brief thoroughbred mutation prob help description.  */
   int perturbation_flag;	/**< @brief perturbation on/off (default=off).  */
   const char *perturbation_help; /**< @brief perturbation on/off help description.  */
-  int perturbation_time_arg;	/**< @brief perturbation timestep.  */
+  int perturbation_time_arg;	/**< @brief perturbation timestep (default='0').  */
   char * perturbation_time_orig;	/**< @brief perturbation timestep original value given at command line.  */
   const char *perturbation_time_help; /**< @brief perturbation timestep help description.  */
   double perturbation_size_arg;	/**< @brief perturbation magnitude (default='1.0').  */
@@ -135,9 +144,9 @@ struct settings_t
   const char *ca_width_help; /**< @brief ca width help description.  */
   int ca_non_adjacent_birth_flag;	/**< @brief ca: position offspring randomly (default=off).  */
   const char *ca_non_adjacent_birth_help; /**< @brief ca: position offspring randomly help description.  */
-  int ca_colocated_birth_arg;	/**< @brief ca: position offspring in the same cell as parent (default='0').  */
-  char * ca_colocated_birth_orig;	/**< @brief ca: position offspring in the same cell as parent original value given at command line.  */
-  const char *ca_colocated_birth_help; /**< @brief ca: position offspring in the same cell as parent help description.  */
+  int ca_colocated_birth_arg;	/**< @brief ca: offspring in same cell as parent (default='0').  */
+  char * ca_colocated_birth_orig;	/**< @brief ca: offspring in same cell as parent original value given at command line.  */
+  const char *ca_colocated_birth_help; /**< @brief ca: offspring in same cell as parent help description.  */
   int abm_width_arg;	/**< @brief abm width (default='512').  */
   char * abm_width_orig;	/**< @brief abm width original value given at command line.  */
   const char *abm_width_help; /**< @brief abm width help description.  */
@@ -186,6 +195,12 @@ struct settings_t
   double structured_landscape_abundance_arg;	/**< @brief landscape abundance (default='0.5').  */
   char * structured_landscape_abundance_orig;	/**< @brief landscape abundance original value given at command line.  */
   const char *structured_landscape_abundance_help; /**< @brief landscape abundance help description.  */
+  double fitness_objective_bimodal_arg;	/**< @brief bimodal peak (default='0.0').  */
+  char * fitness_objective_bimodal_orig;	/**< @brief bimodal peak original value given at command line.  */
+  const char *fitness_objective_bimodal_help; /**< @brief bimodal peak help description.  */
+  int fitness_initial_zero_arg;	/**< @brief zero init genotype (default='0').  */
+  char * fitness_initial_zero_orig;	/**< @brief zero init genotype original value given at command line.  */
+  const char *fitness_initial_zero_help; /**< @brief zero init genotype help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -215,6 +230,9 @@ struct settings_t
   unsigned int suppress_b_evo_given ;	/**< @brief Whether suppress-b-evo was given.  */
   unsigned int suppress_b_ind_given ;	/**< @brief Whether suppress-b-ind was given.  */
   unsigned int suppress_b_soc_given ;	/**< @brief Whether suppress-b-soc was given.  */
+  unsigned int fixed_b_evo_given ;	/**< @brief Whether fixed-b-evo was given.  */
+  unsigned int fixed_b_ind_given ;	/**< @brief Whether fixed-b-ind was given.  */
+  unsigned int fixed_b_soc_given ;	/**< @brief Whether fixed-b-soc was given.  */
   unsigned int thoroughbred_given ;	/**< @brief Whether thoroughbred was given.  */
   unsigned int thoroughbred_mu_given ;	/**< @brief Whether thoroughbred-mu was given.  */
   unsigned int perturbation_given ;	/**< @brief Whether perturbation was given.  */
@@ -241,6 +259,8 @@ struct settings_t
   unsigned int structured_landscape_detail_given ;	/**< @brief Whether structured-landscape-detail was given.  */
   unsigned int structured_landscape_gradient_given ;	/**< @brief Whether structured-landscape-gradient was given.  */
   unsigned int structured_landscape_abundance_given ;	/**< @brief Whether structured-landscape-abundance was given.  */
+  unsigned int fitness_objective_bimodal_given ;	/**< @brief Whether fitness-objective-bimodal was given.  */
+  unsigned int fitness_initial_zero_given ;	/**< @brief Whether fitness-initial-zero was given.  */
 
 } ;
 

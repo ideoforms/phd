@@ -21,8 +21,11 @@ Agent::Agent(Environment *env)
 	this->mEnv = env;
 
 	this->mGenotype = Task(settings.bits_arg);
-	for (int i = 0; i < settings.bits_arg; i++)
-		this->mGenotype[i] = rng_coin(0.5);
+	if (settings.fitness_initial_zero_arg)
+		this->mGenotype.reset();
+	else
+		for (int i = 0; i < settings.bits_arg; i++)
+			this->mGenotype[i] = rng_coin(0.5);
 	
 	this->mPhenotype = Task(settings.bits_arg);
 
@@ -94,10 +97,18 @@ void Agent::normalize()
 	 *-----------------------------------------------------------------------*/
 	if (settings.suppress_b_evo_arg)
 		this->mBEvo = 0;
+	else if (settings.fixed_b_evo_given)
+		this->mBEvo = settings.fixed_b_evo_arg;
+
 	if (settings.suppress_b_ind_arg)
 		this->mBInd = 0;
+	else if (settings.fixed_b_ind_given)
+		this->mBInd = settings.fixed_b_ind_arg;
+
 	if (settings.suppress_b_soc_arg)
 		this->mBSoc = 0;
+	else if (settings.fixed_b_soc_given)
+		this->mBSoc = settings.fixed_b_soc_arg;
 
 	if (!settings.movement_arg)
 	{

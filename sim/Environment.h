@@ -31,6 +31,7 @@ public:
 	 * subclasses and then looked up successfully
 	 *-----------------------------------------------------------------------*/
 	virtual void                update();
+	virtual int                 select_parent();
 	virtual void                reproduce();
 	virtual void                fluctuate();
 	virtual void                dump() {};

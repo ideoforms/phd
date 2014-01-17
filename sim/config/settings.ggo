@@ -5,7 +5,7 @@
 package 				"imitation-cpp"
 version 				"1.0"
 
-option "topology"	t	"topology: numeric, ca-1d, ca-2d, abm" 	string	no default = "numeric"
+option "topology"	t	"topology						" 	string		no default = "numeric"
 
 option "popsize"	N	"population size" 					int			no
 option "bits"		B	"environmental bits"				int			no
@@ -22,59 +22,69 @@ option "p_switch"	-	"prob. of environment change"		double		no
 option "p_move"		-	"prob. of agent movement"			double		no
 option "p_noise"	-	"prob. of social learning noise"	double		no
 
-option "logdir"		L	"path to store log"					string		no default = "logs"
-option "log"		l	"logging on/off"					flag		on
-option "log-every"	i	"interval between logging"			int			no default = "1000"
-option "log-phenotypes-at"		-	"log all phenotypes at time N"		int	no	default = "0"
-option "debug"		d	"debug on/off"						flag		off
-option "batch"		b	"batch mode on/off"					flag		off
+option "logdir"					L	"path to store log"					string	no default = "logs"
+option "log"					l	"logging on/off"					flag	on
+option "log-every"				i	"interval between logging"			int		no default = "1000"
+option "log-phenotypes-at"		-	"log all phenotypes at time N"		int		no	default = "0"
+option "debug"					d	"debug on/off"						flag	off
+option "batch"					b	"batch mode on/off"					flag	off
 
-option "metabolism"		-	"metabolism on/off"				flag		off
-option "reproduction-count"		-	"number of reproduction events per step"				int no default = "1"
+option "metabolism"				-	"metabolism on/off"					flag		off
 
-option "strategy-copy-novel-trait"		-	"copy novel traits only"				flag		off
-option "strategy-copy-random-neighbour"	-	"copy random neighbour, not fittest"	flag		off
-option "strategy-always-assimilate"		-	"always assimilate newly-learned bits"	flag		off
+option "reproduction-count"					-	"number of reproduction events per step"				int no default = "1"
 
-option "suppress-b-evo"		-	"suppress b_evo"			int		no default = "0"
-option "suppress-b-ind"		-	"suppress b_ind"			int		no default = "0"
-option "suppress-b-soc"		-	"suppress b_soc"			int		no default = "0"
+option "strategy-copy-novel-trait"			-	"copy novel traits only"				flag		off
+option "strategy-copy-random-neighbour"		-	"copy random neighbour, not fittest"	flag		off
+option "strategy-always-assimilate"			-	"always assimilate newly-learned bits"	flag		off
 
-option "thoroughbred"		-	"thoroughbred behaviours"		int		no default = "0"
-option "thoroughbred-mu"	-	"thoroughbred mutation prob"	double	no default = "0.0"
+option "suppress-b-evo"						-	"suppress b_evo"						int		no default = "0"
+option "suppress-b-ind"						-	"suppress b_ind"						int		no default = "0"
+option "suppress-b-soc"						-	"suppress b_soc"						int		no default = "0"
 
-option "perturbation"		-	"perturbation on/off"		flag		off
-option "perturbation-time"	-	"perturbation timestep"		int			no
-option "perturbation-size"	-	"perturbation magnitude"	double		no		default = "1.0"
+option "fixed-b-evo"						-	"fixed b_evo"							double	no
+option "fixed-b-ind"						-	"fixed b_ind"							double	no
+option "fixed-b-soc"						-	"fixed b_soc"							double	no
 
-option "neighbourhood-size"	-	"neighbourhood size for numeric model"		int			no		default = "0"
+option "thoroughbred"						-	"thoroughbred behaviours"				int		no default = "0"
+option "thoroughbred-mu"					-	"thoroughbred mutation prob"			double	no default = "0.0"
 
-option "conf-file"	C	"config file to read"				string		no		default = "settings.conf"
+option "perturbation"						-	"perturbation on/off"					flag	off
+option "perturbation-time"					-	"perturbation timestep"					int		no	default = "0"
+option "perturbation-size"					-	"perturbation magnitude"				double	no	default = "1.0"
 
-option "ca-width"	w	"ca width" 							int			no		default = "16"
-option "ca-non-adjacent-birth"	-	"ca: position offspring randomly"			flag	off
-option "ca-colocated-birth"	-		"ca: position offspring in the same cell as parent"			int	no	default = "0"
+option "neighbourhood-size"					-	"neighbourhood size for numeric model"	int		no	default = "0"
 
-option "abm-width"	W	"abm width" 						int			no		default = "512"
-option "abm-neighbourhood-type"	-	"neighbourhood type" 			int			no		default = "0"
-option "abm-neighbourhood-size"	-	"neighbourhood size" 			int			no		default = "64"
+option "conf-file"							C	"config file to read"					string	no	default = "settings.conf"
 
-option "spatial-variance"	-	"spatial variance" 			int			no		default = "0"
-option "spatial-patch-size"	-	"spatial patch size" 		int			no		default = "1"
+option "ca-width"							w	"ca width" 								int		no	default = "16"
+option "ca-non-adjacent-birth"				-	"ca: position offspring randomly"		flag	off
+option "ca-colocated-birth"					-	"ca: offspring in same cell as parent"	int		no	default = "0"
 
-option "frequency-inverse-payoff"	 - "frequency inverse payoff"	int	no	default = "0"
+option "abm-width"							W	"abm width" 							int		no	default = "512"
+option "abm-neighbourhood-type"				-	"neighbourhood type" 					int		no	default = "0"
+option "abm-neighbourhood-size"				-	"neighbourhood size" 					int		no	default = "64"
 
-option "movement"       		- "movement on/off"                 int	no	default = "0"
-option "movement-cohesion-genetic"  - "movement cohesion governed by genes" int	no	default = "0"     
-option "movement-rate-genetic"  - "movement rate governed by genes" int	no	default = "0"
+option "spatial-variance"					-	"spatial variance" 						int		no	default = "0"
+option "spatial-patch-size"					-	"spatial patch size" 					int		no	default = "1"
 
-option "payoff-distribution"	-	"payoff distribution"			string	no	default = "uniform"
-option "payoff-correlation-mu"	-	"payoff correlation mu"			double no	default = "0.1"
+option "frequency-inverse-payoff"	 		- 	"frequency inverse payoff"				int		no	default = "0"
 
-option "payoff-depletion-rate"		-	"payoff depletion rate"			double no	default = "0.0"
-option "payoff-regeneration-rate"	-	"payoff regeneration rate"		double no	default = "0.0"
+option "movement"       					- 	"movement on/off"                 		int		no	default = "0"
+option "movement-cohesion-genetic"  		- 	"movement cohesion governed by genes" 	int		no	default = "0"     
+option "movement-rate-genetic"  			- 	"movement rate governed by genes" 		int		no	default = "0"
 
-option "structured-landscape-detail"		-	"landscape detail"		double	no	default = "0.5"
-option "structured-landscape-gradient"		-	"landscape gradient"	double	no	default = "0.5"
-option "structured-landscape-abundance"		-	"landscape abundance"	double	no	default = "0.5"
+option "payoff-distribution"				-	"payoff distribution"					string 	no	default = "uniform"
+option "payoff-correlation-mu"				-	"payoff correlation mu"					double 	no	default = "0.1"
+
+option "payoff-depletion-rate"				-	"payoff depletion rate"					double 	no	default = "0.0"
+option "payoff-regeneration-rate"			-	"payoff regeneration rate"				double 	no	default = "0.0"
+
+option "structured-landscape-detail"		-	"landscape detail"						double	no	default = "0.5"
+option "structured-landscape-gradient"		-	"landscape gradient"					double	no	default = "0.5"
+option "structured-landscape-abundance"		-	"landscape abundance"					double	no	default = "0.5"
+
+option "fitness-objective-bimodal"			-	"bimodal peak"							double	no	default = "0.0"
+option "fitness-initial-zero"				-	"zero init genotype"					int		no	default = "0"
+
+# option "selection-method"					-	"roulette or tournament"				string	no	default = "roulette"
 

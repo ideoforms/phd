@@ -20,7 +20,7 @@ int main (int argc, char *argv[])
 {
 	init_config(argc, argv);
 	init_simulator();
-
+	
 	if (!settings.batch_flag)
 	{
 		printf(" topology: %s\n",   settings.topology_arg);

@@ -49,6 +49,25 @@ void Environment::update()
 	this->fluctuate();
 }
 
+int Environment::select_parent()
+{
+	int parent_index;
+	int popsize = this->get_popsize();
+
+	double fitnesses[popsize];
+	for (int i = 0; i < popsize; i++)
+		fitnesses[i] = mAgents[i]->get_fitness();
+
+	parent_index = roulette(fitnesses, popsize);
+	if (parent_index < 0)
+	{
+		printf("couldn't find parent with non-zero fitness, selecting random...\n");
+		parent_index = rng_randint(popsize);
+	}
+
+	return parent_index;
+}
+
 void Environment::reproduce()
 {
 	/*--------------------------------------------------------------------*
@@ -59,17 +78,7 @@ void Environment::reproduce()
 		int popsize = this->get_popsize();
 		if (!settings.metabolism_flag)
 		{
-			double fitnesses[popsize];
-			for (int i = 0; i < popsize; i++)
-				fitnesses[i] = mAgents[i]->get_fitness();
-
-			int parent_index = roulette(fitnesses, popsize);
-			if (parent_index < 0)
-			{
-				printf("couldn't find parent with non-zero fitness, selecting random...\n");
-				parent_index = rng_randint(popsize);
-			}
-
+			int parent_index = this->select_parent();
 			int child_index = rng_randint(popsize);
 			// cout << "replacing " << child_index << " with " << parent_index << "( fitness = " << mAgents[parent_index]->get_fitness() << ")" << std::endl;
 
@@ -157,6 +166,20 @@ double Environment::payoff(Agent *agent, Task phenotype)
 	double distance = (double) (phenotype ^ goal).count() / settings.bits_arg;
 	double proximity = 1.0 - distance;
 	double fitness = pow(proximity, 1.0 / settings.alpha_arg);
+
+	/*-----------------------------------------------------------------------*
+	 * If we are using a bimodal distribution, create a secondary peak.
+	 *-----------------------------------------------------------------------*/
+	if (settings.fitness_objective_bimodal_arg)
+	{
+		Task mask = Task(settings.bits_arg, pow(2, settings.bits_arg / 2) - 1);
+		Task secondary = goal ^ mask;
+		// cout << "task = " << goal << ", secondary = " << secondary << std::endl;
+		proximity = 1.0 - (phenotype ^ goal).count() / settings.bits_arg;
+		double fitness_secondary = pow(proximity, 1.0 / settings.alpha_arg);
+		fitness_secondary *= settings.fitness_objective_bimodal_arg;
+		fitness = max(fitness, fitness_secondary);
+	}
 
 	// cout << "task = " << goal << ", distance = " << distance << ", proximity = " << proximity << ", fitness = " << fitness << std::endl;
 	return fitness;

@@ -27,7 +27,10 @@ Landscape::Landscape(unsigned bits, unsigned width, unsigned height)
 	{
 		this->mObjective[x].resize(this->mHeight);
 		for (int y = 0; y < this->mHeight; y++)
+		{
 			this->mObjective[x][y] = Task(this->mBits);
+			this->mObjective[x][y].set();
+		}
 	}
 	
 	this->mPayoff.resize(this->mWidth);

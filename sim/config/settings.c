@@ -34,7 +34,7 @@ const char *settings_t_description = "";
 const char *settings_t_help[] = {
   "  -h, --help                    Print help and exit",
   "  -V, --version                 Print version and exit",
-  "  -t, --topology=STRING         topology: numeric, ca-1d, ca-2d, abm  \n                                  (default=`numeric')",
+  "  -t, --topology=STRING         topology						  (default=`numeric')",
   "  -N, --popsize=INT             population size",
   "  -B, --bits=INT                environmental bits",
   "  -s, --steps=INT               steps to run",
@@ -60,16 +60,19 @@ const char *settings_t_help[] = {
   "      --suppress-b-evo=INT      suppress b_evo  (default=`0')",
   "      --suppress-b-ind=INT      suppress b_ind  (default=`0')",
   "      --suppress-b-soc=INT      suppress b_soc  (default=`0')",
+  "      --fixed-b-evo=DOUBLE      fixed b_evo",
+  "      --fixed-b-ind=DOUBLE      fixed b_ind",
+  "      --fixed-b-soc=DOUBLE      fixed b_soc",
   "      --thoroughbred=INT        thoroughbred behaviours  (default=`0')",
   "      --thoroughbred-mu=DOUBLE  thoroughbred mutation prob  (default=`0.0')",
   "      --perturbation            perturbation on/off  (default=off)",
-  "      --perturbation-time=INT   perturbation timestep",
+  "      --perturbation-time=INT   perturbation timestep  (default=`0')",
   "      --perturbation-size=DOUBLE\n                                perturbation magnitude  (default=`1.0')",
   "      --neighbourhood-size=INT  neighbourhood size for numeric model  \n                                  (default=`0')",
   "  -C, --conf-file=STRING        config file to read  (default=`settings.conf')",
   "  -w, --ca-width=INT            ca width  (default=`16')",
   "      --ca-non-adjacent-birth   ca: position offspring randomly  (default=off)",
-  "      --ca-colocated-birth=INT  ca: position offspring in the same cell as \n                                  parent  (default=`0')",
+  "      --ca-colocated-birth=INT  ca: offspring in same cell as parent  \n                                  (default=`0')",
   "  -W, --abm-width=INT           abm width  (default=`512')",
   "      --abm-neighbourhood-type=INT\n                                neighbourhood type  (default=`0')",
   "      --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
@@ -86,6 +89,8 @@ const char *settings_t_help[] = {
   "      --structured-landscape-detail=DOUBLE\n                                landscape detail  (default=`0.5')",
   "      --structured-landscape-gradient=DOUBLE\n                                landscape gradient  (default=`0.5')",
   "      --structured-landscape-abundance=DOUBLE\n                                landscape abundance  (default=`0.5')",
+  "      --fitness-objective-bimodal=DOUBLE\n                                bimodal peak  (default=`0.0')",
+  "      --fitness-initial-zero=INT\n                                zero init genotype  (default=`0')",
     0
 };
 
@@ -164,6 +169,9 @@ void clear_given (struct settings_t *args_info)
   args_info->suppress_b_evo_given = 0 ;
   args_info->suppress_b_ind_given = 0 ;
   args_info->suppress_b_soc_given = 0 ;
+  args_info->fixed_b_evo_given = 0 ;
+  args_info->fixed_b_ind_given = 0 ;
+  args_info->fixed_b_soc_given = 0 ;
   args_info->thoroughbred_given = 0 ;
   args_info->thoroughbred_mu_given = 0 ;
   args_info->perturbation_given = 0 ;
@@ -190,6 +198,8 @@ void clear_given (struct settings_t *args_info)
   args_info->structured_landscape_detail_given = 0 ;
   args_info->structured_landscape_gradient_given = 0 ;
   args_info->structured_landscape_abundance_given = 0 ;
+  args_info->fitness_objective_bimodal_given = 0 ;
+  args_info->fitness_initial_zero_given = 0 ;
 }
 
 static
@@ -231,11 +241,15 @@ void clear_args (struct settings_t *args_info)
   args_info->suppress_b_ind_orig = NULL;
   args_info->suppress_b_soc_arg = 0;
   args_info->suppress_b_soc_orig = NULL;
+  args_info->fixed_b_evo_orig = NULL;
+  args_info->fixed_b_ind_orig = NULL;
+  args_info->fixed_b_soc_orig = NULL;
   args_info->thoroughbred_arg = 0;
   args_info->thoroughbred_orig = NULL;
   args_info->thoroughbred_mu_arg = 0.0;
   args_info->thoroughbred_mu_orig = NULL;
   args_info->perturbation_flag = 0;
+  args_info->perturbation_time_arg = 0;
   args_info->perturbation_time_orig = NULL;
   args_info->perturbation_size_arg = 1.0;
   args_info->perturbation_size_orig = NULL;
@@ -280,6 +294,10 @@ void clear_args (struct settings_t *args_info)
   args_info->structured_landscape_gradient_orig = NULL;
   args_info->structured_landscape_abundance_arg = 0.5;
   args_info->structured_landscape_abundance_orig = NULL;
+  args_info->fitness_objective_bimodal_arg = 0.0;
+  args_info->fitness_objective_bimodal_orig = NULL;
+  args_info->fitness_initial_zero_arg = 0;
+  args_info->fitness_initial_zero_orig = NULL;
   
 }
 
@@ -316,32 +334,37 @@ void init_args_info(struct settings_t *args_info)
   args_info->suppress_b_evo_help = settings_t_help[25] ;
   args_info->suppress_b_ind_help = settings_t_help[26] ;
   args_info->suppress_b_soc_help = settings_t_help[27] ;
-  args_info->thoroughbred_help = settings_t_help[28] ;
-  args_info->thoroughbred_mu_help = settings_t_help[29] ;
-  args_info->perturbation_help = settings_t_help[30] ;
-  args_info->perturbation_time_help = settings_t_help[31] ;
-  args_info->perturbation_size_help = settings_t_help[32] ;
-  args_info->neighbourhood_size_help = settings_t_help[33] ;
-  args_info->conf_file_help = settings_t_help[34] ;
-  args_info->ca_width_help = settings_t_help[35] ;
-  args_info->ca_non_adjacent_birth_help = settings_t_help[36] ;
-  args_info->ca_colocated_birth_help = settings_t_help[37] ;
-  args_info->abm_width_help = settings_t_help[38] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[39] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[40] ;
-  args_info->spatial_variance_help = settings_t_help[41] ;
-  args_info->spatial_patch_size_help = settings_t_help[42] ;
-  args_info->frequency_inverse_payoff_help = settings_t_help[43] ;
-  args_info->movement_help = settings_t_help[44] ;
-  args_info->movement_cohesion_genetic_help = settings_t_help[45] ;
-  args_info->movement_rate_genetic_help = settings_t_help[46] ;
-  args_info->payoff_distribution_help = settings_t_help[47] ;
-  args_info->payoff_correlation_mu_help = settings_t_help[48] ;
-  args_info->payoff_depletion_rate_help = settings_t_help[49] ;
-  args_info->payoff_regeneration_rate_help = settings_t_help[50] ;
-  args_info->structured_landscape_detail_help = settings_t_help[51] ;
-  args_info->structured_landscape_gradient_help = settings_t_help[52] ;
-  args_info->structured_landscape_abundance_help = settings_t_help[53] ;
+  args_info->fixed_b_evo_help = settings_t_help[28] ;
+  args_info->fixed_b_ind_help = settings_t_help[29] ;
+  args_info->fixed_b_soc_help = settings_t_help[30] ;
+  args_info->thoroughbred_help = settings_t_help[31] ;
+  args_info->thoroughbred_mu_help = settings_t_help[32] ;
+  args_info->perturbation_help = settings_t_help[33] ;
+  args_info->perturbation_time_help = settings_t_help[34] ;
+  args_info->perturbation_size_help = settings_t_help[35] ;
+  args_info->neighbourhood_size_help = settings_t_help[36] ;
+  args_info->conf_file_help = settings_t_help[37] ;
+  args_info->ca_width_help = settings_t_help[38] ;
+  args_info->ca_non_adjacent_birth_help = settings_t_help[39] ;
+  args_info->ca_colocated_birth_help = settings_t_help[40] ;
+  args_info->abm_width_help = settings_t_help[41] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[42] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[43] ;
+  args_info->spatial_variance_help = settings_t_help[44] ;
+  args_info->spatial_patch_size_help = settings_t_help[45] ;
+  args_info->frequency_inverse_payoff_help = settings_t_help[46] ;
+  args_info->movement_help = settings_t_help[47] ;
+  args_info->movement_cohesion_genetic_help = settings_t_help[48] ;
+  args_info->movement_rate_genetic_help = settings_t_help[49] ;
+  args_info->payoff_distribution_help = settings_t_help[50] ;
+  args_info->payoff_correlation_mu_help = settings_t_help[51] ;
+  args_info->payoff_depletion_rate_help = settings_t_help[52] ;
+  args_info->payoff_regeneration_rate_help = settings_t_help[53] ;
+  args_info->structured_landscape_detail_help = settings_t_help[54] ;
+  args_info->structured_landscape_gradient_help = settings_t_help[55] ;
+  args_info->structured_landscape_abundance_help = settings_t_help[56] ;
+  args_info->fitness_objective_bimodal_help = settings_t_help[57] ;
+  args_info->fitness_initial_zero_help = settings_t_help[58] ;
   
 }
 
@@ -443,6 +466,9 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->suppress_b_evo_orig));
   free_string_field (&(args_info->suppress_b_ind_orig));
   free_string_field (&(args_info->suppress_b_soc_orig));
+  free_string_field (&(args_info->fixed_b_evo_orig));
+  free_string_field (&(args_info->fixed_b_ind_orig));
+  free_string_field (&(args_info->fixed_b_soc_orig));
   free_string_field (&(args_info->thoroughbred_orig));
   free_string_field (&(args_info->thoroughbred_mu_orig));
   free_string_field (&(args_info->perturbation_time_orig));
@@ -469,6 +495,8 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->structured_landscape_detail_orig));
   free_string_field (&(args_info->structured_landscape_gradient_orig));
   free_string_field (&(args_info->structured_landscape_abundance_orig));
+  free_string_field (&(args_info->fitness_objective_bimodal_orig));
+  free_string_field (&(args_info->fitness_initial_zero_orig));
   
   
 
@@ -555,6 +583,12 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "suppress-b-ind", args_info->suppress_b_ind_orig, 0);
   if (args_info->suppress_b_soc_given)
     write_into_file(outfile, "suppress-b-soc", args_info->suppress_b_soc_orig, 0);
+  if (args_info->fixed_b_evo_given)
+    write_into_file(outfile, "fixed-b-evo", args_info->fixed_b_evo_orig, 0);
+  if (args_info->fixed_b_ind_given)
+    write_into_file(outfile, "fixed-b-ind", args_info->fixed_b_ind_orig, 0);
+  if (args_info->fixed_b_soc_given)
+    write_into_file(outfile, "fixed-b-soc", args_info->fixed_b_soc_orig, 0);
   if (args_info->thoroughbred_given)
     write_into_file(outfile, "thoroughbred", args_info->thoroughbred_orig, 0);
   if (args_info->thoroughbred_mu_given)
@@ -607,6 +641,10 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "structured-landscape-gradient", args_info->structured_landscape_gradient_orig, 0);
   if (args_info->structured_landscape_abundance_given)
     write_into_file(outfile, "structured-landscape-abundance", args_info->structured_landscape_abundance_orig, 0);
+  if (args_info->fitness_objective_bimodal_given)
+    write_into_file(outfile, "fitness-objective-bimodal", args_info->fitness_objective_bimodal_orig, 0);
+  if (args_info->fitness_initial_zero_given)
+    write_into_file(outfile, "fitness-initial-zero", args_info->fitness_initial_zero_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -893,6 +931,9 @@ config_parser_internal (
         { "suppress-b-evo",	1, NULL, 0 },
         { "suppress-b-ind",	1, NULL, 0 },
         { "suppress-b-soc",	1, NULL, 0 },
+        { "fixed-b-evo",	1, NULL, 0 },
+        { "fixed-b-ind",	1, NULL, 0 },
+        { "fixed-b-soc",	1, NULL, 0 },
         { "thoroughbred",	1, NULL, 0 },
         { "thoroughbred-mu",	1, NULL, 0 },
         { "perturbation",	0, NULL, 0 },
@@ -919,6 +960,8 @@ config_parser_internal (
         { "structured-landscape-detail",	1, NULL, 0 },
         { "structured-landscape-gradient",	1, NULL, 0 },
         { "structured-landscape-abundance",	1, NULL, 0 },
+        { "fitness-objective-bimodal",	1, NULL, 0 },
+        { "fitness-initial-zero",	1, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -938,7 +981,7 @@ config_parser_internal (
           config_parser_free (&local_args_info);
           exit (EXIT_SUCCESS);
 
-        case 't':	/* topology: numeric, ca-1d, ca-2d, abm.  */
+        case 't':	/* topology						.  */
         
         
           if (update_arg( (void *)&(args_info->topology_arg), 
@@ -1300,6 +1343,48 @@ config_parser_internal (
               goto failure;
           
           }
+          /* fixed b_evo.  */
+          else if (strcmp (long_options[option_index].name, "fixed-b-evo") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->fixed_b_evo_arg), 
+                 &(args_info->fixed_b_evo_orig), &(args_info->fixed_b_evo_given),
+                &(local_args_info.fixed_b_evo_given), optarg, 0, 0, ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "fixed-b-evo", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* fixed b_ind.  */
+          else if (strcmp (long_options[option_index].name, "fixed-b-ind") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->fixed_b_ind_arg), 
+                 &(args_info->fixed_b_ind_orig), &(args_info->fixed_b_ind_given),
+                &(local_args_info.fixed_b_ind_given), optarg, 0, 0, ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "fixed-b-ind", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* fixed b_soc.  */
+          else if (strcmp (long_options[option_index].name, "fixed-b-soc") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->fixed_b_soc_arg), 
+                 &(args_info->fixed_b_soc_orig), &(args_info->fixed_b_soc_given),
+                &(local_args_info.fixed_b_soc_given), optarg, 0, 0, ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "fixed-b-soc", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* thoroughbred behaviours.  */
           else if (strcmp (long_options[option_index].name, "thoroughbred") == 0)
           {
@@ -1347,7 +1432,7 @@ config_parser_internal (
           
             if (update_arg( (void *)&(args_info->perturbation_time_arg), 
                  &(args_info->perturbation_time_orig), &(args_info->perturbation_time_given),
-                &(local_args_info.perturbation_time_given), optarg, 0, 0, ARG_INT,
+                &(local_args_info.perturbation_time_given), optarg, 0, "0", ARG_INT,
                 check_ambiguity, override, 0, 0,
                 "perturbation-time", '-',
                 additional_error))
@@ -1394,7 +1479,7 @@ config_parser_internal (
               goto failure;
           
           }
-          /* ca: position offspring in the same cell as parent.  */
+          /* ca: offspring in same cell as parent.  */
           else if (strcmp (long_options[option_index].name, "ca-colocated-birth") == 0)
           {
           
@@ -1614,6 +1699,34 @@ config_parser_internal (
                 &(local_args_info.structured_landscape_abundance_given), optarg, 0, "0.5", ARG_DOUBLE,
                 check_ambiguity, override, 0, 0,
                 "structured-landscape-abundance", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* bimodal peak.  */
+          else if (strcmp (long_options[option_index].name, "fitness-objective-bimodal") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->fitness_objective_bimodal_arg), 
+                 &(args_info->fitness_objective_bimodal_orig), &(args_info->fitness_objective_bimodal_given),
+                &(local_args_info.fitness_objective_bimodal_given), optarg, 0, "0.0", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "fitness-objective-bimodal", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* zero init genotype.  */
+          else if (strcmp (long_options[option_index].name, "fitness-initial-zero") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->fitness_initial_zero_arg), 
+                 &(args_info->fitness_initial_zero_orig), &(args_info->fitness_initial_zero_given),
+                &(local_args_info.fitness_initial_zero_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "fitness-initial-zero", '-',
                 additional_error))
               goto failure;
           
