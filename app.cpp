@@ -10,6 +10,7 @@ using namespace std;
 using namespace sim;
 
 /*-----------------------------------------------------------------------*
+ * Social learning and evolution model
  * (c) Daniel Jones 2013
  *-----------------------------------------------------------------------*/
 

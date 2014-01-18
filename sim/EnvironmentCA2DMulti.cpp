@@ -156,18 +156,7 @@ void EnvironmentCA2DMulti::reproduce()
 	/*--------------------------------------------------------------------*
 	 * birth-death reproduction
 	 *--------------------------------------------------------------------*/
-	int popsize = this->get_popsize();
-	double fitnesses[popsize];
-	for (int i = 0; i < popsize; i++)
-		fitnesses[i] = mAgents[i]->get_fitness();
-
-	int parent_index = roulette(fitnesses, popsize);
-	if (parent_index < 0)
-	{
-		printf("couldn't find parent with non-zero fitness, selecting random...\n");
-		parent_index = rng_randint(popsize);
-	}
-
+	int parent_index = this->select_parent();
 	Agent *parent = mAgents[parent_index];
 	Agent *child = parent->replicate();
 
@@ -193,6 +182,7 @@ void EnvironmentCA2DMulti::reproduce()
 		}
 	}
 
+	int popsize = this->get_popsize();
 	int dead_index = rng_randint(popsize);
 
 	// cout << "parent " << parent_index << " (" << parent_loc.x << ", " << parent_loc.y << "): " << *parent << " [" << parent << "]" << endl;
