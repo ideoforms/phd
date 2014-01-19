@@ -1,0 +1,4 @@
+# don't diff auto-generated files
+sim/config/settings.c -diff
+sim/config/settings.h -diff
+gui/xcode/ImitationCA.xcodeproj/* -diff
