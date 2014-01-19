@@ -63,8 +63,8 @@ int main (int argc, char *argv[])
 			if (settings.perturbation_flag && settings.perturbation_time_arg == step)
 				env->perturb(settings.perturbation_size_arg);
 
-			// if (settings.log_phenotypes_at_arg == step && step > 0)
-			//	log_phenotypes();
+			if (settings.log_agents_at_arg == step && step > 0)
+				log_agents();
 
 			/*---------------------------------------------------------------------*
 			 * update the environment, and generate stats.

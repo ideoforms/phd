@@ -15,7 +15,7 @@ option "trials"		T	"trials to run"						int			no default = "1"
 option "mu"			m	"s.d. of mutations"					double		no
 option "alpha"		a	"fitness rolloff"					double		no
 
-option "omega0"		O	"initial metabolism"				double		no
+option "omega0"		O	"initial metabolism"				double		no default = "4"
 
 option "p_mut"		-	"prob. of bit mutation"				double		no
 option "p_switch"	-	"prob. of environment change"		double		no
@@ -25,7 +25,7 @@ option "p_noise"	-	"prob. of social learning noise"	double		no
 option "logdir"					L	"path to store log"					string	no default = "logs"
 option "log"					l	"logging on/off"					flag	on
 option "log-every"				i	"interval between logging"			int		no default = "1000"
-option "log-phenotypes-at"		-	"log all phenotypes at time N"		int		no	default = "0"
+option "log-agents-at"			-	"log all phenotypes at time N"		int		no	default = "0"
 option "debug"					d	"debug on/off"						flag	off
 option "batch"					b	"batch mode on/off"					flag	off
 
@@ -57,7 +57,7 @@ option "neighbourhood-size"					-	"neighbourhood size for numeric model"	int		no
 option "conf-file"							C	"config file to read"					string	no	default = "settings.conf"
 
 option "ca-width"							w	"ca width" 								int		no	default = "16"
-option "ca-non-adjacent-birth"				-	"ca: position offspring randomly"		flag	off
+option "ca-non-adjacent-birth"				-	"ca: position offspring randomly"		int		no	default = "0"
 option "ca-colocated-birth"					-	"ca: offspring in same cell as parent"	int		no	default = "0"
 
 option "abm-width"							W	"abm width" 							int		no	default = "512"
@@ -86,5 +86,6 @@ option "structured-landscape-abundance"		-	"landscape abundance"					double	no	d
 option "fitness-objective-bimodal"			-	"bimodal peak"							double	no	default = "0.0"
 option "fitness-initial-zero"				-	"zero init genotype"					int		no	default = "0"
 
-# option "selection-method"					-	"roulette or tournament"				string	no	default = "roulette"
+option "selection-method"					-	"roulette or tournament"				string	no	default = "roulette"
+option "selection-tournament-size"			-	"tournament size"						int 	no	default = "8"
 

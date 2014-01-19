@@ -167,7 +167,7 @@ void EnvironmentCA2DMulti::reproduce()
 	Point2Di child_loc;
 	Point2Di parent_loc = mPositions[parent_index];
 
-	assert(!settings.ca_non_adjacent_birth_flag);
+	assert(!settings.ca_non_adjacent_birth_arg);
 
 	child_loc = parent_loc;
 	if (!settings.ca_colocated_birth_arg)

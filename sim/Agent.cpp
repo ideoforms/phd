@@ -62,6 +62,9 @@ Agent::Agent(Agent *parent)
 	this->mMRate = parent->mMRate;
 	this->mMCoh = parent->mMCoh;
 
+	if (settings.metabolism_flag)
+		this->mOmega = settings.omega0_arg;
+
 	this->normalize();
 
 	this->reset();
@@ -75,7 +78,7 @@ void Agent::reset()
 	 *--------------------------------------------------------------------*/
 	this->mPhenotype = this->mGenotype;
 	this->mAge = 0;
-	this->mDelta = 1;
+	this->mDelta = -1;
 	this->mLastAction = 0;
 }
 
@@ -197,7 +200,7 @@ Task Agent::learn_soc()
              * XXX: DOES THIS MAKE SENSE IN OUR MODEL?
              * SHOULDN'T WE STILL BE ABLE TO COPY FROM ZERO-FITNESS NEIGHBOURS?
              *------------------------------------------------------------*/
-            printf("got neighbours but non with non-zero fitness, bailing...\n");
+            // printf("got neighbours but non with non-zero fitness, bailing...\n");
             return action;
         }
         
@@ -257,6 +260,11 @@ Task Agent::learn_soc()
 void Agent::update()
 {
     this->mAge++;
+    int EPOCHS = 1;
+    
+    this->mDelta = 0;
+    for (int epoch = 0; epoch < EPOCHS; epoch++)
+    {
 
 	double modes[] = { this->mBEvo, this->mBInd, this->mBSoc };
 	int mode = roulette(modes, 3);
@@ -278,7 +286,9 @@ void Agent::update()
 	}
 
 	this->mLastAction = mode;
-	this->mDelta = mEnv->payoff(this, action);
+    
+    float payoff = mEnv->payoff(this, action);
+    this->mDelta += payoff;
     
 	if (mode == MODE_IND || mode == MODE_SOC)
 	{
@@ -297,7 +307,7 @@ void Agent::update()
 			 * modify our phenotype accordingly (learning).
 			 *--------------------------------------------------------------------*/
 			double curFitness = mEnv->payoff(this, mPhenotype);
-			if (mDelta > curFitness)
+			if (payoff > curFitness)
 				mPhenotype = action;
 		}
 	}
@@ -319,6 +329,11 @@ void Agent::update()
 			this->mEnv->move(this);
 		}
 	}
+    }
+    
+    this->mDelta /= EPOCHS;
+	if (settings.metabolism_flag)
+		this->mOmega += this->mDelta;
 }
     
 

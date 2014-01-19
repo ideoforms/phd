@@ -183,11 +183,9 @@ void close_logging()
 }
 
 
-
-/*
-void log_phenotypes()
+void log_agents()
 {
-	const char *logfile_format = "logs/phenotypes-%s.csv";
+	const char *logfile_format = "logs/agents-%s.csv";
 	char *logfile = (char *) malloc(64);
 	char timestr[32];
 	sprintf(timestr, "%ld", (long) time(NULL));
@@ -198,11 +196,9 @@ void log_phenotypes()
 	csvwriter logger(logfile);
 	logger.start
 	(
-		"iiifff",
+		"iffff",
 
 		"index",
-		"x",
-		"y",
 		"b_evo",
 		"b_ind",
 		"b_soc",
@@ -211,12 +207,10 @@ void log_phenotypes()
 	for (int i = 0; i < env->mAgents.size(); i++)
 	{
 		Agent *agent = env->mAgents[i];
-		logger.write(i, env->mPositions[i].x, env->mPositions[i].y,
-			agent->mBEvo, agent->mBInd, agent->mBSoc, agent->mDelta);
+		logger.write(i, agent->mBEvo, agent->mBInd, agent->mBSoc, agent->mDelta);
 	}
 	logger.close();
 }
-*/
 
 void print_elapsed_time(int trial_index, int trial_total)
 {

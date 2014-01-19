@@ -41,7 +41,7 @@ const char *settings_t_help[] = {
   "  -T, --trials=INT              trials to run  (default=`1')",
   "  -m, --mu=DOUBLE               s.d. of mutations",
   "  -a, --alpha=DOUBLE            fitness rolloff",
-  "  -O, --omega0=DOUBLE           initial metabolism",
+  "  -O, --omega0=DOUBLE           initial metabolism  (default=`4')",
   "      --p_mut=DOUBLE            prob. of bit mutation",
   "      --p_switch=DOUBLE         prob. of environment change",
   "      --p_move=DOUBLE           prob. of agent movement",
@@ -49,7 +49,7 @@ const char *settings_t_help[] = {
   "  -L, --logdir=STRING           path to store log  (default=`logs')",
   "  -l, --log                     logging on/off  (default=on)",
   "  -i, --log-every=INT           interval between logging  (default=`1000')",
-  "      --log-phenotypes-at=INT   log all phenotypes at time N  (default=`0')",
+  "      --log-agents-at=INT       log all phenotypes at time N  (default=`0')",
   "  -d, --debug                   debug on/off  (default=off)",
   "  -b, --batch                   batch mode on/off  (default=off)",
   "      --metabolism              metabolism on/off  (default=off)",
@@ -71,7 +71,7 @@ const char *settings_t_help[] = {
   "      --neighbourhood-size=INT  neighbourhood size for numeric model  \n                                  (default=`0')",
   "  -C, --conf-file=STRING        config file to read  (default=`settings.conf')",
   "  -w, --ca-width=INT            ca width  (default=`16')",
-  "      --ca-non-adjacent-birth   ca: position offspring randomly  (default=off)",
+  "      --ca-non-adjacent-birth=INT\n                                ca: position offspring randomly  (default=`0')",
   "      --ca-colocated-birth=INT  ca: offspring in same cell as parent  \n                                  (default=`0')",
   "  -W, --abm-width=INT           abm width  (default=`512')",
   "      --abm-neighbourhood-type=INT\n                                neighbourhood type  (default=`0')",
@@ -91,6 +91,8 @@ const char *settings_t_help[] = {
   "      --structured-landscape-abundance=DOUBLE\n                                landscape abundance  (default=`0.5')",
   "      --fitness-objective-bimodal=DOUBLE\n                                bimodal peak  (default=`0.0')",
   "      --fitness-initial-zero=INT\n                                zero init genotype  (default=`0')",
+  "      --selection-method=STRING roulette or tournament  (default=`roulette')",
+  "      --selection-tournament-size=INT\n                                tournament size  (default=`8')",
     0
 };
 
@@ -158,7 +160,7 @@ void clear_given (struct settings_t *args_info)
   args_info->logdir_given = 0 ;
   args_info->log_given = 0 ;
   args_info->log_every_given = 0 ;
-  args_info->log_phenotypes_at_given = 0 ;
+  args_info->log_agents_at_given = 0 ;
   args_info->debug_given = 0 ;
   args_info->batch_given = 0 ;
   args_info->metabolism_given = 0 ;
@@ -200,6 +202,8 @@ void clear_given (struct settings_t *args_info)
   args_info->structured_landscape_abundance_given = 0 ;
   args_info->fitness_objective_bimodal_given = 0 ;
   args_info->fitness_initial_zero_given = 0 ;
+  args_info->selection_method_given = 0 ;
+  args_info->selection_tournament_size_given = 0 ;
 }
 
 static
@@ -215,6 +219,7 @@ void clear_args (struct settings_t *args_info)
   args_info->trials_orig = NULL;
   args_info->mu_orig = NULL;
   args_info->alpha_orig = NULL;
+  args_info->omega0_arg = 4;
   args_info->omega0_orig = NULL;
   args_info->p_mut_orig = NULL;
   args_info->p_switch_orig = NULL;
@@ -225,8 +230,8 @@ void clear_args (struct settings_t *args_info)
   args_info->log_flag = 1;
   args_info->log_every_arg = 1000;
   args_info->log_every_orig = NULL;
-  args_info->log_phenotypes_at_arg = 0;
-  args_info->log_phenotypes_at_orig = NULL;
+  args_info->log_agents_at_arg = 0;
+  args_info->log_agents_at_orig = NULL;
   args_info->debug_flag = 0;
   args_info->batch_flag = 0;
   args_info->metabolism_flag = 0;
@@ -259,7 +264,8 @@ void clear_args (struct settings_t *args_info)
   args_info->conf_file_orig = NULL;
   args_info->ca_width_arg = 16;
   args_info->ca_width_orig = NULL;
-  args_info->ca_non_adjacent_birth_flag = 0;
+  args_info->ca_non_adjacent_birth_arg = 0;
+  args_info->ca_non_adjacent_birth_orig = NULL;
   args_info->ca_colocated_birth_arg = 0;
   args_info->ca_colocated_birth_orig = NULL;
   args_info->abm_width_arg = 512;
@@ -298,6 +304,10 @@ void clear_args (struct settings_t *args_info)
   args_info->fitness_objective_bimodal_orig = NULL;
   args_info->fitness_initial_zero_arg = 0;
   args_info->fitness_initial_zero_orig = NULL;
+  args_info->selection_method_arg = gengetopt_strdup ("roulette");
+  args_info->selection_method_orig = NULL;
+  args_info->selection_tournament_size_arg = 8;
+  args_info->selection_tournament_size_orig = NULL;
   
 }
 
@@ -323,7 +333,7 @@ void init_args_info(struct settings_t *args_info)
   args_info->logdir_help = settings_t_help[14] ;
   args_info->log_help = settings_t_help[15] ;
   args_info->log_every_help = settings_t_help[16] ;
-  args_info->log_phenotypes_at_help = settings_t_help[17] ;
+  args_info->log_agents_at_help = settings_t_help[17] ;
   args_info->debug_help = settings_t_help[18] ;
   args_info->batch_help = settings_t_help[19] ;
   args_info->metabolism_help = settings_t_help[20] ;
@@ -365,6 +375,8 @@ void init_args_info(struct settings_t *args_info)
   args_info->structured_landscape_abundance_help = settings_t_help[56] ;
   args_info->fitness_objective_bimodal_help = settings_t_help[57] ;
   args_info->fitness_initial_zero_help = settings_t_help[58] ;
+  args_info->selection_method_help = settings_t_help[59] ;
+  args_info->selection_tournament_size_help = settings_t_help[60] ;
   
 }
 
@@ -461,7 +473,7 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->logdir_arg));
   free_string_field (&(args_info->logdir_orig));
   free_string_field (&(args_info->log_every_orig));
-  free_string_field (&(args_info->log_phenotypes_at_orig));
+  free_string_field (&(args_info->log_agents_at_orig));
   free_string_field (&(args_info->reproduction_count_orig));
   free_string_field (&(args_info->suppress_b_evo_orig));
   free_string_field (&(args_info->suppress_b_ind_orig));
@@ -477,6 +489,7 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->conf_file_arg));
   free_string_field (&(args_info->conf_file_orig));
   free_string_field (&(args_info->ca_width_orig));
+  free_string_field (&(args_info->ca_non_adjacent_birth_orig));
   free_string_field (&(args_info->ca_colocated_birth_orig));
   free_string_field (&(args_info->abm_width_orig));
   free_string_field (&(args_info->abm_neighbourhood_type_orig));
@@ -497,6 +510,9 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->structured_landscape_abundance_orig));
   free_string_field (&(args_info->fitness_objective_bimodal_orig));
   free_string_field (&(args_info->fitness_initial_zero_orig));
+  free_string_field (&(args_info->selection_method_arg));
+  free_string_field (&(args_info->selection_method_orig));
+  free_string_field (&(args_info->selection_tournament_size_orig));
   
   
 
@@ -561,8 +577,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "log", 0, 0 );
   if (args_info->log_every_given)
     write_into_file(outfile, "log-every", args_info->log_every_orig, 0);
-  if (args_info->log_phenotypes_at_given)
-    write_into_file(outfile, "log-phenotypes-at", args_info->log_phenotypes_at_orig, 0);
+  if (args_info->log_agents_at_given)
+    write_into_file(outfile, "log-agents-at", args_info->log_agents_at_orig, 0);
   if (args_info->debug_given)
     write_into_file(outfile, "debug", 0, 0 );
   if (args_info->batch_given)
@@ -606,7 +622,7 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
   if (args_info->ca_width_given)
     write_into_file(outfile, "ca-width", args_info->ca_width_orig, 0);
   if (args_info->ca_non_adjacent_birth_given)
-    write_into_file(outfile, "ca-non-adjacent-birth", 0, 0 );
+    write_into_file(outfile, "ca-non-adjacent-birth", args_info->ca_non_adjacent_birth_orig, 0);
   if (args_info->ca_colocated_birth_given)
     write_into_file(outfile, "ca-colocated-birth", args_info->ca_colocated_birth_orig, 0);
   if (args_info->abm_width_given)
@@ -645,6 +661,10 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "fitness-objective-bimodal", args_info->fitness_objective_bimodal_orig, 0);
   if (args_info->fitness_initial_zero_given)
     write_into_file(outfile, "fitness-initial-zero", args_info->fitness_initial_zero_orig, 0);
+  if (args_info->selection_method_given)
+    write_into_file(outfile, "selection-method", args_info->selection_method_orig, 0);
+  if (args_info->selection_tournament_size_given)
+    write_into_file(outfile, "selection-tournament-size", args_info->selection_tournament_size_orig, 0);
   
 
   i = EXIT_SUCCESS;
@@ -920,7 +940,7 @@ config_parser_internal (
         { "logdir",	1, NULL, 'L' },
         { "log",	0, NULL, 'l' },
         { "log-every",	1, NULL, 'i' },
-        { "log-phenotypes-at",	1, NULL, 0 },
+        { "log-agents-at",	1, NULL, 0 },
         { "debug",	0, NULL, 'd' },
         { "batch",	0, NULL, 'b' },
         { "metabolism",	0, NULL, 0 },
@@ -942,7 +962,7 @@ config_parser_internal (
         { "neighbourhood-size",	1, NULL, 0 },
         { "conf-file",	1, NULL, 'C' },
         { "ca-width",	1, NULL, 'w' },
-        { "ca-non-adjacent-birth",	0, NULL, 0 },
+        { "ca-non-adjacent-birth",	1, NULL, 0 },
         { "ca-colocated-birth",	1, NULL, 0 },
         { "abm-width",	1, NULL, 'W' },
         { "abm-neighbourhood-type",	1, NULL, 0 },
@@ -962,6 +982,8 @@ config_parser_internal (
         { "structured-landscape-abundance",	1, NULL, 0 },
         { "fitness-objective-bimodal",	1, NULL, 0 },
         { "fitness-initial-zero",	1, NULL, 0 },
+        { "selection-method",	1, NULL, 0 },
+        { "selection-tournament-size",	1, NULL, 0 },
         { 0,  0, 0, 0 }
       };
 
@@ -1070,7 +1092,7 @@ config_parser_internal (
         
           if (update_arg( (void *)&(args_info->omega0_arg), 
                &(args_info->omega0_orig), &(args_info->omega0_given),
-              &(local_args_info.omega0_given), optarg, 0, 0, ARG_DOUBLE,
+              &(local_args_info.omega0_given), optarg, 0, "4", ARG_DOUBLE,
               check_ambiguity, override, 0, 0,
               "omega0", 'O',
               additional_error))
@@ -1226,15 +1248,15 @@ config_parser_internal (
           
           }
           /* log all phenotypes at time N.  */
-          else if (strcmp (long_options[option_index].name, "log-phenotypes-at") == 0)
+          else if (strcmp (long_options[option_index].name, "log-agents-at") == 0)
           {
           
           
-            if (update_arg( (void *)&(args_info->log_phenotypes_at_arg), 
-                 &(args_info->log_phenotypes_at_orig), &(args_info->log_phenotypes_at_given),
-                &(local_args_info.log_phenotypes_at_given), optarg, 0, "0", ARG_INT,
+            if (update_arg( (void *)&(args_info->log_agents_at_arg), 
+                 &(args_info->log_agents_at_orig), &(args_info->log_agents_at_given),
+                &(local_args_info.log_agents_at_given), optarg, 0, "0", ARG_INT,
                 check_ambiguity, override, 0, 0,
-                "log-phenotypes-at", '-',
+                "log-agents-at", '-',
                 additional_error))
               goto failure;
           
@@ -1472,9 +1494,11 @@ config_parser_internal (
           {
           
           
-            if (update_arg((void *)&(args_info->ca_non_adjacent_birth_flag), 0, &(args_info->ca_non_adjacent_birth_given),
-                &(local_args_info.ca_non_adjacent_birth_given), optarg, 0, 0, ARG_FLAG,
-                check_ambiguity, override, 1, 0, "ca-non-adjacent-birth", '-',
+            if (update_arg( (void *)&(args_info->ca_non_adjacent_birth_arg), 
+                 &(args_info->ca_non_adjacent_birth_orig), &(args_info->ca_non_adjacent_birth_given),
+                &(local_args_info.ca_non_adjacent_birth_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "ca-non-adjacent-birth", '-',
                 additional_error))
               goto failure;
           
@@ -1727,6 +1751,34 @@ config_parser_internal (
                 &(local_args_info.fitness_initial_zero_given), optarg, 0, "0", ARG_INT,
                 check_ambiguity, override, 0, 0,
                 "fitness-initial-zero", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* roulette or tournament.  */
+          else if (strcmp (long_options[option_index].name, "selection-method") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->selection_method_arg), 
+                 &(args_info->selection_method_orig), &(args_info->selection_method_given),
+                &(local_args_info.selection_method_given), optarg, 0, "roulette", ARG_STRING,
+                check_ambiguity, override, 0, 0,
+                "selection-method", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* tournament size.  */
+          else if (strcmp (long_options[option_index].name, "selection-tournament-size") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->selection_tournament_size_arg), 
+                 &(args_info->selection_tournament_size_orig), &(args_info->selection_tournament_size_given),
+                &(local_args_info.selection_tournament_size_given), optarg, 0, "8", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "selection-tournament-size", '-',
                 additional_error))
               goto failure;
           

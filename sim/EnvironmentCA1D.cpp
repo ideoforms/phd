@@ -45,11 +45,12 @@ void EnvironmentCA1D::reproduce()
 	 *--------------------------------------------------------------------*/
 	int parent_index = this->select_parent();
 	Agent *parent = mAgents[parent_index];
+    // printf("selected parent %d, fitness %.3f\n", parent_index, parent->get_fitness());
 	Agent *child = parent->replicate();
 
 	int child_index;
 
-	if (settings.ca_non_adjacent_birth_flag)
+	if (settings.ca_non_adjacent_birth_arg)
 	{
 		child_index = rng_randint(0, this->mWidth);
 	}

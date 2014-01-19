@@ -60,7 +60,7 @@ struct settings_t
   double alpha_arg;	/**< @brief fitness rolloff.  */
   char * alpha_orig;	/**< @brief fitness rolloff original value given at command line.  */
   const char *alpha_help; /**< @brief fitness rolloff help description.  */
-  double omega0_arg;	/**< @brief initial metabolism.  */
+  double omega0_arg;	/**< @brief initial metabolism (default='4').  */
   char * omega0_orig;	/**< @brief initial metabolism original value given at command line.  */
   const char *omega0_help; /**< @brief initial metabolism help description.  */
   double p_mut_arg;	/**< @brief prob. of bit mutation.  */
@@ -83,9 +83,9 @@ struct settings_t
   int log_every_arg;	/**< @brief interval between logging (default='1000').  */
   char * log_every_orig;	/**< @brief interval between logging original value given at command line.  */
   const char *log_every_help; /**< @brief interval between logging help description.  */
-  int log_phenotypes_at_arg;	/**< @brief log all phenotypes at time N (default='0').  */
-  char * log_phenotypes_at_orig;	/**< @brief log all phenotypes at time N original value given at command line.  */
-  const char *log_phenotypes_at_help; /**< @brief log all phenotypes at time N help description.  */
+  int log_agents_at_arg;	/**< @brief log all phenotypes at time N (default='0').  */
+  char * log_agents_at_orig;	/**< @brief log all phenotypes at time N original value given at command line.  */
+  const char *log_agents_at_help; /**< @brief log all phenotypes at time N help description.  */
   int debug_flag;	/**< @brief debug on/off (default=off).  */
   const char *debug_help; /**< @brief debug on/off help description.  */
   int batch_flag;	/**< @brief batch mode on/off (default=off).  */
@@ -142,7 +142,8 @@ struct settings_t
   int ca_width_arg;	/**< @brief ca width (default='16').  */
   char * ca_width_orig;	/**< @brief ca width original value given at command line.  */
   const char *ca_width_help; /**< @brief ca width help description.  */
-  int ca_non_adjacent_birth_flag;	/**< @brief ca: position offspring randomly (default=off).  */
+  int ca_non_adjacent_birth_arg;	/**< @brief ca: position offspring randomly (default='0').  */
+  char * ca_non_adjacent_birth_orig;	/**< @brief ca: position offspring randomly original value given at command line.  */
   const char *ca_non_adjacent_birth_help; /**< @brief ca: position offspring randomly help description.  */
   int ca_colocated_birth_arg;	/**< @brief ca: offspring in same cell as parent (default='0').  */
   char * ca_colocated_birth_orig;	/**< @brief ca: offspring in same cell as parent original value given at command line.  */
@@ -201,6 +202,12 @@ struct settings_t
   int fitness_initial_zero_arg;	/**< @brief zero init genotype (default='0').  */
   char * fitness_initial_zero_orig;	/**< @brief zero init genotype original value given at command line.  */
   const char *fitness_initial_zero_help; /**< @brief zero init genotype help description.  */
+  char * selection_method_arg;	/**< @brief roulette or tournament (default='roulette').  */
+  char * selection_method_orig;	/**< @brief roulette or tournament original value given at command line.  */
+  const char *selection_method_help; /**< @brief roulette or tournament help description.  */
+  int selection_tournament_size_arg;	/**< @brief tournament size (default='8').  */
+  char * selection_tournament_size_orig;	/**< @brief tournament size original value given at command line.  */
+  const char *selection_tournament_size_help; /**< @brief tournament size help description.  */
   
   unsigned int help_given ;	/**< @brief Whether help was given.  */
   unsigned int version_given ;	/**< @brief Whether version was given.  */
@@ -219,7 +226,7 @@ struct settings_t
   unsigned int logdir_given ;	/**< @brief Whether logdir was given.  */
   unsigned int log_given ;	/**< @brief Whether log was given.  */
   unsigned int log_every_given ;	/**< @brief Whether log-every was given.  */
-  unsigned int log_phenotypes_at_given ;	/**< @brief Whether log-phenotypes-at was given.  */
+  unsigned int log_agents_at_given ;	/**< @brief Whether log-agents-at was given.  */
   unsigned int debug_given ;	/**< @brief Whether debug was given.  */
   unsigned int batch_given ;	/**< @brief Whether batch was given.  */
   unsigned int metabolism_given ;	/**< @brief Whether metabolism was given.  */
@@ -261,6 +268,8 @@ struct settings_t
   unsigned int structured_landscape_abundance_given ;	/**< @brief Whether structured-landscape-abundance was given.  */
   unsigned int fitness_objective_bimodal_given ;	/**< @brief Whether fitness-objective-bimodal was given.  */
   unsigned int fitness_initial_zero_given ;	/**< @brief Whether fitness-initial-zero was given.  */
+  unsigned int selection_method_given ;	/**< @brief Whether selection-method was given.  */
+  unsigned int selection_tournament_size_given ;	/**< @brief Whether selection-tournament-size was given.  */
 
 } ;
 

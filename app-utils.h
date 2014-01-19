@@ -5,7 +5,7 @@ void init_simulator();
 void init_logging();
 
 void log_states();
-void log_phenotypes();
+void log_agents();
 
 void close_logging();
 

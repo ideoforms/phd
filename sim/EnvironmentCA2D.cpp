@@ -80,7 +80,7 @@ void EnvironmentCA2D::reproduce()
 	Point2Di child_loc;
 	Point2Di parent_loc = mPositions[parent_index];
 
-	if (!settings.ca_non_adjacent_birth_flag)
+	if (!settings.ca_non_adjacent_birth_arg)
 	{
 		child_loc = parent_loc;
 		int location = rng_randint(4);

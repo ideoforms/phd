@@ -58,15 +58,42 @@ int Environment::select_parent()
 	for (int i = 0; i < popsize; i++)
 		fitnesses[i] = mAgents[i]->get_fitness();
 
-	parent_index = roulette(fitnesses, popsize);
-	if (parent_index < 0)
+	if (strcmp(settings.selection_method_arg, "roulette") == 0)
 	{
-		printf("couldn't find parent with non-zero fitness, selecting random...\n");
-		parent_index = rng_randint(popsize);
+		/*--------------------------------------------------------------------*
+		 * fitness proportionate selection (roulette wheel)
+		 *--------------------------------------------------------------------*/
+		parent_index = roulette(fitnesses, popsize);
+		if (parent_index < 0)
+		{
+			printf("couldn't find parent with non-zero fitness, selecting random...\n");
+			parent_index = rng_randint(popsize);
+		}
+	}
+	else
+	{
+		/*--------------------------------------------------------------------*
+		 * tournament selection (fixed at size = 2, p = 0.75 for now)
+		 *--------------------------------------------------------------------*/
+		int size = settings.selection_tournament_size_arg;
+		// float p = settings.selection_tournament_p_arg;
+		float max_fitness = -1;
+		for (int i = 0; i < size; i++)
+		{
+			int index = rng_randint(popsize);
+			Agent *agent = mAgents[index];
+			float fitness = agent->get_fitness();
+			if (fitness > max_fitness)
+			{
+				parent_index = index;
+				max_fitness = fitness;
+			}
+		}
 	}
 
 	return parent_index;
 }
+
 
 void Environment::reproduce()
 {
