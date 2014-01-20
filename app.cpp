@@ -43,6 +43,8 @@ int main (int argc, char *argv[])
 			env = new sim::EnvironmentCA2D();
 		else if (strcmp(settings.topology_arg, "ca-2d-multi") == 0)
 			env = new sim::EnvironmentCA2DMulti();
+		else if (strcmp(settings.topology_arg, "graph") == 0)
+			env = new sim::EnvironmentGraph();
 		else if (strcmp(settings.topology_arg, "abm") == 0)
 			env = new sim::EnvironmentABM();
 		else

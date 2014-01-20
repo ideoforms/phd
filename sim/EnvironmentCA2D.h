@@ -45,6 +45,7 @@ public:
 
 	/*-----------------------------------------------------------------------*
 	 * Methods to return the next/previous X/Y values, wrapping around grid
+	 * TODO: Can these be phased out in favour of the ones in Landscape?
 	 *-----------------------------------------------------------------------*/
 	unsigned					px(unsigned x) { return (x == 0) ? this->mWidth - 1 : x - 1; }
 	unsigned					nx(unsigned x) { return (x == mWidth - 1) ? 0 : x + 1; }

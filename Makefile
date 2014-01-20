@@ -10,3 +10,7 @@ CFLAGS=/usr/local/lib/libgsl-10.5.a -O3 -Wall -isysroot /Developer/SDKs/MacOSX10
 all:
 	gengetopt --output-dir=sim/config -f config_parser -F settings -a settings_t -C < sim/config/settings.ggo
 	$(CPP) $(INCLUDE) $(SIM) $(CFLAGS) app.cpp -o app
+
+.PHONY : landscape-analysis
+landscape-analysis:
+	$(CPP) $(INCLUDE) $(SIM) $(CFLAGS) landscape-analysis.cpp -o landscape-analysis

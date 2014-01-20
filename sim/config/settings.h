@@ -119,6 +119,15 @@ struct settings_t
   double fixed_b_soc_arg;	/**< @brief fixed b_soc.  */
   char * fixed_b_soc_orig;	/**< @brief fixed b_soc original value given at command line.  */
   const char *fixed_b_soc_help; /**< @brief fixed b_soc help description.  */
+  double initial_b_evo_arg;	/**< @brief initial b_evo.  */
+  char * initial_b_evo_orig;	/**< @brief initial b_evo original value given at command line.  */
+  const char *initial_b_evo_help; /**< @brief initial b_evo help description.  */
+  double initial_b_ind_arg;	/**< @brief initial b_ind.  */
+  char * initial_b_ind_orig;	/**< @brief initial b_ind original value given at command line.  */
+  const char *initial_b_ind_help; /**< @brief initial b_ind help description.  */
+  double initial_b_soc_arg;	/**< @brief initial b_soc.  */
+  char * initial_b_soc_orig;	/**< @brief initial b_soc original value given at command line.  */
+  const char *initial_b_soc_help; /**< @brief initial b_soc help description.  */
   int thoroughbred_arg;	/**< @brief thoroughbred behaviours (default='0').  */
   char * thoroughbred_orig;	/**< @brief thoroughbred behaviours original value given at command line.  */
   const char *thoroughbred_help; /**< @brief thoroughbred behaviours help description.  */
@@ -148,6 +157,9 @@ struct settings_t
   int ca_colocated_birth_arg;	/**< @brief ca: offspring in same cell as parent (default='0').  */
   char * ca_colocated_birth_orig;	/**< @brief ca: offspring in same cell as parent original value given at command line.  */
   const char *ca_colocated_birth_help; /**< @brief ca: offspring in same cell as parent help description.  */
+  int graph_degree_arg;	/**< @brief graph: degree (default='2').  */
+  char * graph_degree_orig;	/**< @brief graph: degree original value given at command line.  */
+  const char *graph_degree_help; /**< @brief graph: degree help description.  */
   int abm_width_arg;	/**< @brief abm width (default='512').  */
   char * abm_width_orig;	/**< @brief abm width original value given at command line.  */
   const char *abm_width_help; /**< @brief abm width help description.  */
@@ -169,10 +181,10 @@ struct settings_t
   int movement_arg;	/**< @brief movement on/off (default='0').  */
   char * movement_orig;	/**< @brief movement on/off original value given at command line.  */
   const char *movement_help; /**< @brief movement on/off help description.  */
-  int movement_cohesion_genetic_arg;	/**< @brief movement cohesion governed by genes (default='0').  */
+  int movement_cohesion_genetic_arg;	/**< @brief movement cohesion governed by genes (default='1').  */
   char * movement_cohesion_genetic_orig;	/**< @brief movement cohesion governed by genes original value given at command line.  */
   const char *movement_cohesion_genetic_help; /**< @brief movement cohesion governed by genes help description.  */
-  int movement_rate_genetic_arg;	/**< @brief movement rate governed by genes (default='0').  */
+  int movement_rate_genetic_arg;	/**< @brief movement rate governed by genes (default='1').  */
   char * movement_rate_genetic_orig;	/**< @brief movement rate governed by genes original value given at command line.  */
   const char *movement_rate_genetic_help; /**< @brief movement rate governed by genes help description.  */
   char * payoff_distribution_arg;	/**< @brief payoff distribution (default='uniform').  */
@@ -240,6 +252,9 @@ struct settings_t
   unsigned int fixed_b_evo_given ;	/**< @brief Whether fixed-b-evo was given.  */
   unsigned int fixed_b_ind_given ;	/**< @brief Whether fixed-b-ind was given.  */
   unsigned int fixed_b_soc_given ;	/**< @brief Whether fixed-b-soc was given.  */
+  unsigned int initial_b_evo_given ;	/**< @brief Whether initial-b-evo was given.  */
+  unsigned int initial_b_ind_given ;	/**< @brief Whether initial-b-ind was given.  */
+  unsigned int initial_b_soc_given ;	/**< @brief Whether initial-b-soc was given.  */
   unsigned int thoroughbred_given ;	/**< @brief Whether thoroughbred was given.  */
   unsigned int thoroughbred_mu_given ;	/**< @brief Whether thoroughbred-mu was given.  */
   unsigned int perturbation_given ;	/**< @brief Whether perturbation was given.  */
@@ -250,6 +265,7 @@ struct settings_t
   unsigned int ca_width_given ;	/**< @brief Whether ca-width was given.  */
   unsigned int ca_non_adjacent_birth_given ;	/**< @brief Whether ca-non-adjacent-birth was given.  */
   unsigned int ca_colocated_birth_given ;	/**< @brief Whether ca-colocated-birth was given.  */
+  unsigned int graph_degree_given ;	/**< @brief Whether graph-degree was given.  */
   unsigned int abm_width_given ;	/**< @brief Whether abm-width was given.  */
   unsigned int abm_neighbourhood_type_given ;	/**< @brief Whether abm-neighbourhood-type was given.  */
   unsigned int abm_neighbourhood_size_given ;	/**< @brief Whether abm-neighbourhood-size was given.  */

@@ -63,6 +63,9 @@ const char *settings_t_help[] = {
   "      --fixed-b-evo=DOUBLE      fixed b_evo",
   "      --fixed-b-ind=DOUBLE      fixed b_ind",
   "      --fixed-b-soc=DOUBLE      fixed b_soc",
+  "      --initial-b-evo=DOUBLE    initial b_evo",
+  "      --initial-b-ind=DOUBLE    initial b_ind",
+  "      --initial-b-soc=DOUBLE    initial b_soc",
   "      --thoroughbred=INT        thoroughbred behaviours  (default=`0')",
   "      --thoroughbred-mu=DOUBLE  thoroughbred mutation prob  (default=`0.0')",
   "      --perturbation            perturbation on/off  (default=off)",
@@ -73,6 +76,7 @@ const char *settings_t_help[] = {
   "  -w, --ca-width=INT            ca width  (default=`16')",
   "      --ca-non-adjacent-birth=INT\n                                ca: position offspring randomly  (default=`0')",
   "      --ca-colocated-birth=INT  ca: offspring in same cell as parent  \n                                  (default=`0')",
+  "      --graph-degree=INT        graph: degree  (default=`2')",
   "  -W, --abm-width=INT           abm width  (default=`512')",
   "      --abm-neighbourhood-type=INT\n                                neighbourhood type  (default=`0')",
   "      --abm-neighbourhood-size=INT\n                                neighbourhood size  (default=`64')",
@@ -80,8 +84,8 @@ const char *settings_t_help[] = {
   "      --spatial-patch-size=INT  spatial patch size  (default=`1')",
   "      --frequency-inverse-payoff=INT\n                                frequency inverse payoff  (default=`0')",
   "      --movement=INT            movement on/off  (default=`0')",
-  "      --movement-cohesion-genetic=INT\n                                movement cohesion governed by genes  \n                                  (default=`0')",
-  "      --movement-rate-genetic=INT\n                                movement rate governed by genes  (default=`0')",
+  "      --movement-cohesion-genetic=INT\n                                movement cohesion governed by genes  \n                                  (default=`1')",
+  "      --movement-rate-genetic=INT\n                                movement rate governed by genes  (default=`1')",
   "      --payoff-distribution=STRING\n                                payoff distribution  (default=`uniform')",
   "      --payoff-correlation-mu=DOUBLE\n                                payoff correlation mu  (default=`0.1')",
   "      --payoff-depletion-rate=DOUBLE\n                                payoff depletion rate  (default=`0.0')",
@@ -174,6 +178,9 @@ void clear_given (struct settings_t *args_info)
   args_info->fixed_b_evo_given = 0 ;
   args_info->fixed_b_ind_given = 0 ;
   args_info->fixed_b_soc_given = 0 ;
+  args_info->initial_b_evo_given = 0 ;
+  args_info->initial_b_ind_given = 0 ;
+  args_info->initial_b_soc_given = 0 ;
   args_info->thoroughbred_given = 0 ;
   args_info->thoroughbred_mu_given = 0 ;
   args_info->perturbation_given = 0 ;
@@ -184,6 +191,7 @@ void clear_given (struct settings_t *args_info)
   args_info->ca_width_given = 0 ;
   args_info->ca_non_adjacent_birth_given = 0 ;
   args_info->ca_colocated_birth_given = 0 ;
+  args_info->graph_degree_given = 0 ;
   args_info->abm_width_given = 0 ;
   args_info->abm_neighbourhood_type_given = 0 ;
   args_info->abm_neighbourhood_size_given = 0 ;
@@ -249,6 +257,9 @@ void clear_args (struct settings_t *args_info)
   args_info->fixed_b_evo_orig = NULL;
   args_info->fixed_b_ind_orig = NULL;
   args_info->fixed_b_soc_orig = NULL;
+  args_info->initial_b_evo_orig = NULL;
+  args_info->initial_b_ind_orig = NULL;
+  args_info->initial_b_soc_orig = NULL;
   args_info->thoroughbred_arg = 0;
   args_info->thoroughbred_orig = NULL;
   args_info->thoroughbred_mu_arg = 0.0;
@@ -268,6 +279,8 @@ void clear_args (struct settings_t *args_info)
   args_info->ca_non_adjacent_birth_orig = NULL;
   args_info->ca_colocated_birth_arg = 0;
   args_info->ca_colocated_birth_orig = NULL;
+  args_info->graph_degree_arg = 2;
+  args_info->graph_degree_orig = NULL;
   args_info->abm_width_arg = 512;
   args_info->abm_width_orig = NULL;
   args_info->abm_neighbourhood_type_arg = 0;
@@ -282,9 +295,9 @@ void clear_args (struct settings_t *args_info)
   args_info->frequency_inverse_payoff_orig = NULL;
   args_info->movement_arg = 0;
   args_info->movement_orig = NULL;
-  args_info->movement_cohesion_genetic_arg = 0;
+  args_info->movement_cohesion_genetic_arg = 1;
   args_info->movement_cohesion_genetic_orig = NULL;
-  args_info->movement_rate_genetic_arg = 0;
+  args_info->movement_rate_genetic_arg = 1;
   args_info->movement_rate_genetic_orig = NULL;
   args_info->payoff_distribution_arg = gengetopt_strdup ("uniform");
   args_info->payoff_distribution_orig = NULL;
@@ -347,36 +360,40 @@ void init_args_info(struct settings_t *args_info)
   args_info->fixed_b_evo_help = settings_t_help[28] ;
   args_info->fixed_b_ind_help = settings_t_help[29] ;
   args_info->fixed_b_soc_help = settings_t_help[30] ;
-  args_info->thoroughbred_help = settings_t_help[31] ;
-  args_info->thoroughbred_mu_help = settings_t_help[32] ;
-  args_info->perturbation_help = settings_t_help[33] ;
-  args_info->perturbation_time_help = settings_t_help[34] ;
-  args_info->perturbation_size_help = settings_t_help[35] ;
-  args_info->neighbourhood_size_help = settings_t_help[36] ;
-  args_info->conf_file_help = settings_t_help[37] ;
-  args_info->ca_width_help = settings_t_help[38] ;
-  args_info->ca_non_adjacent_birth_help = settings_t_help[39] ;
-  args_info->ca_colocated_birth_help = settings_t_help[40] ;
-  args_info->abm_width_help = settings_t_help[41] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[42] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[43] ;
-  args_info->spatial_variance_help = settings_t_help[44] ;
-  args_info->spatial_patch_size_help = settings_t_help[45] ;
-  args_info->frequency_inverse_payoff_help = settings_t_help[46] ;
-  args_info->movement_help = settings_t_help[47] ;
-  args_info->movement_cohesion_genetic_help = settings_t_help[48] ;
-  args_info->movement_rate_genetic_help = settings_t_help[49] ;
-  args_info->payoff_distribution_help = settings_t_help[50] ;
-  args_info->payoff_correlation_mu_help = settings_t_help[51] ;
-  args_info->payoff_depletion_rate_help = settings_t_help[52] ;
-  args_info->payoff_regeneration_rate_help = settings_t_help[53] ;
-  args_info->structured_landscape_detail_help = settings_t_help[54] ;
-  args_info->structured_landscape_gradient_help = settings_t_help[55] ;
-  args_info->structured_landscape_abundance_help = settings_t_help[56] ;
-  args_info->fitness_objective_bimodal_help = settings_t_help[57] ;
-  args_info->fitness_initial_zero_help = settings_t_help[58] ;
-  args_info->selection_method_help = settings_t_help[59] ;
-  args_info->selection_tournament_size_help = settings_t_help[60] ;
+  args_info->initial_b_evo_help = settings_t_help[31] ;
+  args_info->initial_b_ind_help = settings_t_help[32] ;
+  args_info->initial_b_soc_help = settings_t_help[33] ;
+  args_info->thoroughbred_help = settings_t_help[34] ;
+  args_info->thoroughbred_mu_help = settings_t_help[35] ;
+  args_info->perturbation_help = settings_t_help[36] ;
+  args_info->perturbation_time_help = settings_t_help[37] ;
+  args_info->perturbation_size_help = settings_t_help[38] ;
+  args_info->neighbourhood_size_help = settings_t_help[39] ;
+  args_info->conf_file_help = settings_t_help[40] ;
+  args_info->ca_width_help = settings_t_help[41] ;
+  args_info->ca_non_adjacent_birth_help = settings_t_help[42] ;
+  args_info->ca_colocated_birth_help = settings_t_help[43] ;
+  args_info->graph_degree_help = settings_t_help[44] ;
+  args_info->abm_width_help = settings_t_help[45] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[46] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[47] ;
+  args_info->spatial_variance_help = settings_t_help[48] ;
+  args_info->spatial_patch_size_help = settings_t_help[49] ;
+  args_info->frequency_inverse_payoff_help = settings_t_help[50] ;
+  args_info->movement_help = settings_t_help[51] ;
+  args_info->movement_cohesion_genetic_help = settings_t_help[52] ;
+  args_info->movement_rate_genetic_help = settings_t_help[53] ;
+  args_info->payoff_distribution_help = settings_t_help[54] ;
+  args_info->payoff_correlation_mu_help = settings_t_help[55] ;
+  args_info->payoff_depletion_rate_help = settings_t_help[56] ;
+  args_info->payoff_regeneration_rate_help = settings_t_help[57] ;
+  args_info->structured_landscape_detail_help = settings_t_help[58] ;
+  args_info->structured_landscape_gradient_help = settings_t_help[59] ;
+  args_info->structured_landscape_abundance_help = settings_t_help[60] ;
+  args_info->fitness_objective_bimodal_help = settings_t_help[61] ;
+  args_info->fitness_initial_zero_help = settings_t_help[62] ;
+  args_info->selection_method_help = settings_t_help[63] ;
+  args_info->selection_tournament_size_help = settings_t_help[64] ;
   
 }
 
@@ -481,6 +498,9 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->fixed_b_evo_orig));
   free_string_field (&(args_info->fixed_b_ind_orig));
   free_string_field (&(args_info->fixed_b_soc_orig));
+  free_string_field (&(args_info->initial_b_evo_orig));
+  free_string_field (&(args_info->initial_b_ind_orig));
+  free_string_field (&(args_info->initial_b_soc_orig));
   free_string_field (&(args_info->thoroughbred_orig));
   free_string_field (&(args_info->thoroughbred_mu_orig));
   free_string_field (&(args_info->perturbation_time_orig));
@@ -491,6 +511,7 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->ca_width_orig));
   free_string_field (&(args_info->ca_non_adjacent_birth_orig));
   free_string_field (&(args_info->ca_colocated_birth_orig));
+  free_string_field (&(args_info->graph_degree_orig));
   free_string_field (&(args_info->abm_width_orig));
   free_string_field (&(args_info->abm_neighbourhood_type_orig));
   free_string_field (&(args_info->abm_neighbourhood_size_orig));
@@ -605,6 +626,12 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "fixed-b-ind", args_info->fixed_b_ind_orig, 0);
   if (args_info->fixed_b_soc_given)
     write_into_file(outfile, "fixed-b-soc", args_info->fixed_b_soc_orig, 0);
+  if (args_info->initial_b_evo_given)
+    write_into_file(outfile, "initial-b-evo", args_info->initial_b_evo_orig, 0);
+  if (args_info->initial_b_ind_given)
+    write_into_file(outfile, "initial-b-ind", args_info->initial_b_ind_orig, 0);
+  if (args_info->initial_b_soc_given)
+    write_into_file(outfile, "initial-b-soc", args_info->initial_b_soc_orig, 0);
   if (args_info->thoroughbred_given)
     write_into_file(outfile, "thoroughbred", args_info->thoroughbred_orig, 0);
   if (args_info->thoroughbred_mu_given)
@@ -625,6 +652,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "ca-non-adjacent-birth", args_info->ca_non_adjacent_birth_orig, 0);
   if (args_info->ca_colocated_birth_given)
     write_into_file(outfile, "ca-colocated-birth", args_info->ca_colocated_birth_orig, 0);
+  if (args_info->graph_degree_given)
+    write_into_file(outfile, "graph-degree", args_info->graph_degree_orig, 0);
   if (args_info->abm_width_given)
     write_into_file(outfile, "abm-width", args_info->abm_width_orig, 0);
   if (args_info->abm_neighbourhood_type_given)
@@ -954,6 +983,9 @@ config_parser_internal (
         { "fixed-b-evo",	1, NULL, 0 },
         { "fixed-b-ind",	1, NULL, 0 },
         { "fixed-b-soc",	1, NULL, 0 },
+        { "initial-b-evo",	1, NULL, 0 },
+        { "initial-b-ind",	1, NULL, 0 },
+        { "initial-b-soc",	1, NULL, 0 },
         { "thoroughbred",	1, NULL, 0 },
         { "thoroughbred-mu",	1, NULL, 0 },
         { "perturbation",	0, NULL, 0 },
@@ -964,6 +996,7 @@ config_parser_internal (
         { "ca-width",	1, NULL, 'w' },
         { "ca-non-adjacent-birth",	1, NULL, 0 },
         { "ca-colocated-birth",	1, NULL, 0 },
+        { "graph-degree",	1, NULL, 0 },
         { "abm-width",	1, NULL, 'W' },
         { "abm-neighbourhood-type",	1, NULL, 0 },
         { "abm-neighbourhood-size",	1, NULL, 0 },
@@ -1407,6 +1440,48 @@ config_parser_internal (
               goto failure;
           
           }
+          /* initial b_evo.  */
+          else if (strcmp (long_options[option_index].name, "initial-b-evo") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->initial_b_evo_arg), 
+                 &(args_info->initial_b_evo_orig), &(args_info->initial_b_evo_given),
+                &(local_args_info.initial_b_evo_given), optarg, 0, 0, ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "initial-b-evo", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* initial b_ind.  */
+          else if (strcmp (long_options[option_index].name, "initial-b-ind") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->initial_b_ind_arg), 
+                 &(args_info->initial_b_ind_orig), &(args_info->initial_b_ind_given),
+                &(local_args_info.initial_b_ind_given), optarg, 0, 0, ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "initial-b-ind", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* initial b_soc.  */
+          else if (strcmp (long_options[option_index].name, "initial-b-soc") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->initial_b_soc_arg), 
+                 &(args_info->initial_b_soc_orig), &(args_info->initial_b_soc_given),
+                &(local_args_info.initial_b_soc_given), optarg, 0, 0, ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "initial-b-soc", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* thoroughbred behaviours.  */
           else if (strcmp (long_options[option_index].name, "thoroughbred") == 0)
           {
@@ -1517,6 +1592,20 @@ config_parser_internal (
               goto failure;
           
           }
+          /* graph: degree.  */
+          else if (strcmp (long_options[option_index].name, "graph-degree") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->graph_degree_arg), 
+                 &(args_info->graph_degree_orig), &(args_info->graph_degree_given),
+                &(local_args_info.graph_degree_given), optarg, 0, "2", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "graph-degree", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* neighbourhood type.  */
           else if (strcmp (long_options[option_index].name, "abm-neighbourhood-type") == 0)
           {
@@ -1608,7 +1697,7 @@ config_parser_internal (
           
             if (update_arg( (void *)&(args_info->movement_cohesion_genetic_arg), 
                  &(args_info->movement_cohesion_genetic_orig), &(args_info->movement_cohesion_genetic_given),
-                &(local_args_info.movement_cohesion_genetic_given), optarg, 0, "0", ARG_INT,
+                &(local_args_info.movement_cohesion_genetic_given), optarg, 0, "1", ARG_INT,
                 check_ambiguity, override, 0, 0,
                 "movement-cohesion-genetic", '-',
                 additional_error))
@@ -1622,7 +1711,7 @@ config_parser_internal (
           
             if (update_arg( (void *)&(args_info->movement_rate_genetic_arg), 
                  &(args_info->movement_rate_genetic_orig), &(args_info->movement_rate_genetic_given),
-                &(local_args_info.movement_rate_genetic_given), optarg, 0, "0", ARG_INT,
+                &(local_args_info.movement_rate_genetic_given), optarg, 0, "1", ARG_INT,
                 check_ambiguity, override, 0, 0,
                 "movement-rate-genetic", '-',
                 additional_error))

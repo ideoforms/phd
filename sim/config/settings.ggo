@@ -45,6 +45,10 @@ option "fixed-b-evo"						-	"fixed b_evo"							double	no
 option "fixed-b-ind"						-	"fixed b_ind"							double	no
 option "fixed-b-soc"						-	"fixed b_soc"							double	no
 
+option "initial-b-evo"						-	"initial b_evo"							double	no
+option "initial-b-ind"						-	"initial b_ind"							double	no
+option "initial-b-soc"						-	"initial b_soc"							double	no
+
 option "thoroughbred"						-	"thoroughbred behaviours"				int		no default = "0"
 option "thoroughbred-mu"					-	"thoroughbred mutation prob"			double	no default = "0.0"
 
@@ -60,6 +64,8 @@ option "ca-width"							w	"ca width" 								int		no	default = "16"
 option "ca-non-adjacent-birth"				-	"ca: position offspring randomly"		int		no	default = "0"
 option "ca-colocated-birth"					-	"ca: offspring in same cell as parent"	int		no	default = "0"
 
+option "graph-degree"						-	"graph: degree"							int		no	default	= "2"
+
 option "abm-width"							W	"abm width" 							int		no	default = "512"
 option "abm-neighbourhood-type"				-	"neighbourhood type" 					int		no	default = "0"
 option "abm-neighbourhood-size"				-	"neighbourhood size" 					int		no	default = "64"
@@ -70,8 +76,8 @@ option "spatial-patch-size"					-	"spatial patch size" 					int		no	default = "1
 option "frequency-inverse-payoff"	 		- 	"frequency inverse payoff"				int		no	default = "0"
 
 option "movement"       					- 	"movement on/off"                 		int		no	default = "0"
-option "movement-cohesion-genetic"  		- 	"movement cohesion governed by genes" 	int		no	default = "0"     
-option "movement-rate-genetic"  			- 	"movement rate governed by genes" 		int		no	default = "0"
+option "movement-cohesion-genetic"  		- 	"movement cohesion governed by genes" 	int		no	default = "1"
+option "movement-rate-genetic"  			- 	"movement rate governed by genes" 		int		no	default = "1"
 
 option "payoff-distribution"				-	"payoff distribution"					string 	no	default = "uniform"
 option "payoff-correlation-mu"				-	"payoff correlation mu"					double 	no	default = "0.1"

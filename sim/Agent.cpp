@@ -29,9 +29,9 @@ Agent::Agent(Environment *env)
 	
 	this->mPhenotype = Task(settings.bits_arg);
 
-	this->mBEvo = rng_uniformuf();
-	this->mBInd = rng_uniformuf();
-	this->mBSoc = rng_uniformuf();
+	this->mBEvo = settings.initial_b_evo_given ? settings.initial_b_evo_arg : rng_uniformuf();
+	this->mBInd = settings.initial_b_ind_given ? settings.initial_b_ind_arg : rng_uniformuf();
+	this->mBSoc = settings.initial_b_soc_given ? settings.initial_b_soc_arg : rng_uniformuf();
 
 	this->mMRate = rng_uniformuf();
 	this->mMCoh = rng_uniform(-1, 1);

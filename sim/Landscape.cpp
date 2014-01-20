@@ -63,6 +63,13 @@ void Landscape::distribute_payoffs()
 		{
 			this->mPayoff[x][y] = rng_uniform(0, 1);
 		}
+		else if (strcmp(settings.payoff_distribution_arg, "anticorrelated") == 0)
+		{
+			/*-----------------------------------------------------------------------*
+			 * Chequerboard pattern -- pairwise correlation is -1
+			 *-----------------------------------------------------------------------*/
+			this->mPayoff[x][y] = (x + y) % 2;
+		}
 		else if (strcmp(settings.payoff_distribution_arg, "correlated") == 0)
 		{
 			if (x == 0)

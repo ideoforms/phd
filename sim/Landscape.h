@@ -37,6 +37,14 @@ public:
 	virtual void                distribute(unsigned heterogeneity);
 	virtual void                dump();
 
+    /*-----------------------------------------------------------------------*
+	 * Methods to return the next/previous X/Y values, wrapping around grid
+	 *-----------------------------------------------------------------------*/
+    unsigned                    px(unsigned x) { return (x == 0) ? this->mWidth - 1 : x - 1; }
+    unsigned                    nx(unsigned x) { return (x == mWidth - 1) ? 0 : x + 1; }
+    unsigned                    py(unsigned y) { return (y == 0) ? this->mHeight - 1 : y - 1; }
+    unsigned                    ny(unsigned y) { return (y == mHeight - 1) ? 0 : y + 1; }
+
 	friend ostream & operator<< (ostream &stream, const Landscape &object)
 	{
 		stream << "[landscape: " << object.mWidth << ", " << object.mHeight << "]";
