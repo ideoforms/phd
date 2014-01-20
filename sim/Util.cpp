@@ -108,9 +108,9 @@ unsigned long rng_randint(unsigned long from, unsigned long to)
  *--------------------------------------------------------------------*/
 void rng_shuffle(int *values, int count)
 {
-	for (int i = 0; i < count; i++)
+	for (int i = count - 1; i >= 0; i--)
 	{
-		int j = rng_randint(count);
+		int j = rng_randint(i + 1);
 		if (i == j)
 			continue;
 
