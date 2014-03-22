@@ -42,6 +42,10 @@ void Environment::update()
 	{
 		Agent *agent = *it;
 		agent->update();
+
+		// Task goal = this->goal_for(agent);
+		// int distance = (agent->mPhenotype ^ goal).count();
+		// printf("[%d] dist: %d\n", agent->get_index(), distance);
 		// cout << "fitness: " << it->fitness() << std::endl;
 	}
 
@@ -107,10 +111,17 @@ void Environment::reproduce()
 		{
 			int parent_index = this->select_parent();
 			int child_index = rng_randint(popsize);
-			// cout << "replacing " << child_index << " with " << parent_index << "( fitness = " << mAgents[parent_index]->get_fitness() << ")" << std::endl;
 
 			Agent *parent = mAgents[parent_index];
 			Agent *child = parent->replicate();
+
+			if (settings.debug_flag)
+			{
+				cout << "reproducing:" << *parent << ", child index " << child_index << " <- " << parent_index << "( fitness = " << mAgents[parent_index]->get_fitness() << ")" << std::endl;
+				Task goal = this->goal_for(parent);
+				int distance = (parent->mPhenotype ^ goal).count();
+				cout << "hamming distance = " << distance << endl;
+			}
 
 			// TODO: check if we're handling memory OK here
 			delete mAgents[child_index];
@@ -161,6 +172,33 @@ void Environment::perturb(double amount)
 	 * with a probability of _amount_
 	 *-----------------------------------------------------------------------*/
 	this->mLandscape->perturb(amount);
+}
+
+void Environment::invade(unsigned mode, float mode_value)
+{
+	int index = rng_randint(mAgents.size());
+	Agent *agent= mAgents[index];
+
+	if (mode >= 0)
+	{
+		if (mode == MODE_SOC)
+		{
+			agent->mBSoc = mode_value;
+			agent->mBEvo = agent->mBInd = (1 - mode_value) / 2;
+		}
+		else if (mode == MODE_IND)
+		{
+			agent->mBInd = mode_value;
+			agent->mBEvo = agent->mBSoc = (1 - mode_value) / 2;
+		}
+		else if (mode == MODE_EVO)
+		{
+			agent->mBEvo = mode_value;
+			agent->mBInd = agent->mBSoc = (1 - mode_value) / 2;
+		}
+	}
+	agent->normalize();
+	cout << "invaded: " << *agent << endl;
 }
 
 
@@ -326,6 +364,8 @@ stats_t Environment::stats()
 
 	stats.geno_mean_dist = total_geno_dist /= (settings.bits_arg * mAgents.size());
 	stats.pheno_mean_dist = total_pheno_dist /= (settings.bits_arg * mAgents.size());
+
+	stats.dispersion	= 0.0;
 
 	return stats;
 }

@@ -89,7 +89,7 @@ void Landscape::distribute_payoffs()
 		}
 		else if (strcmp(settings.payoff_distribution_arg, "structured") == 0)
 		{
-			this->mPayoff[x][y] = generator->get((float) x / mWidth, (float) y / mHeight);
+			this->mPayoff[x][y] = generator->get((float) x / 16, (float) y / 16);
 		}
 		else
 		{

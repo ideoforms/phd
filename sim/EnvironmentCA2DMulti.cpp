@@ -237,5 +237,29 @@ double EnvironmentCA2DMulti::payoff(Agent *agent, Task phenotype)
     return payoff;
 }
 
+stats_t EnvironmentCA2DMulti::stats()
+{
+	stats_t stats = Environment::stats();
+
+	if (settings.log_dispersion_flag)
+	{
+		double dispersion = 0.0;
+		double N = settings.popsize_arg;
+		double NN = N * (N - 1);
+
+		for (int x = 0; x < this->mWidth; x++)
+		for (int y = 0; y < this->mWidth; y++)
+		{
+			int count = this->mGrid[x][y].size();
+			dispersion += (double) (count * (count - 1)) / NN;
+		}
+
+		double q = this->mWidth * this->mWidth;
+		stats.dispersion = dispersion * q;
+	}
+
+	return stats;
+}
+
 
 } /* namespace sim */

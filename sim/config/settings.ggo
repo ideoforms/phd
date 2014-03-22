@@ -25,6 +25,7 @@ option "p_noise"	-	"prob. of social learning noise"	double		no
 option "logdir"					L	"path to store log"					string	no default = "logs"
 option "log"					l	"logging on/off"					flag	on
 option "log-every"				i	"interval between logging"			int		no default = "1000"
+option "log-dispersion"			-	"log morisita's dispersion index"	flag	off
 option "log-agents-at"			-	"log all phenotypes at time N"		int		no	default = "0"
 option "debug"					d	"debug on/off"						flag	off
 option "batch"					b	"batch mode on/off"					flag	off
@@ -33,9 +34,10 @@ option "metabolism"				-	"metabolism on/off"					flag		off
 
 option "reproduction-count"					-	"number of reproduction events per step"				int no default = "1"
 
-option "strategy-copy-novel-trait"			-	"copy novel traits only"				flag		off
-option "strategy-copy-random-neighbour"		-	"copy random neighbour, not fittest"	flag		off
-option "strategy-always-assimilate"			-	"always assimilate newly-learned bits"	flag		off
+option "strategy-copy-novel-trait"			-	"copy novel traits only"				int     no default = "0"
+option "strategy-copy-random-neighbour"		-	"copy random neighbour, not fittest"	int     no default = "0"
+option "strategy-copy-best-neighbour"		-	"copy only the most fit neighbour"		int     no default = "0"
+option "strategy-always-assimilate"			-	"always assimilate newly-learned bits"	int     no default = "0"
 
 option "suppress-b-evo"						-	"suppress b_evo"						int		no default = "0"
 option "suppress-b-ind"						-	"suppress b_ind"						int		no default = "0"
@@ -49,12 +51,17 @@ option "initial-b-evo"						-	"initial b_evo"							double	no
 option "initial-b-ind"						-	"initial b_ind"							double	no
 option "initial-b-soc"						-	"initial b_soc"							double	no
 
+option "initial-geno-bits"					-	"# bits to set to 1"					double	no
+
 option "thoroughbred"						-	"thoroughbred behaviours"				int		no default = "0"
 option "thoroughbred-mu"					-	"thoroughbred mutation prob"			double	no default = "0.0"
 
 option "perturbation"						-	"perturbation on/off"					flag	off
 option "perturbation-time"					-	"perturbation timestep"					int		no	default = "0"
 option "perturbation-size"					-	"perturbation magnitude"				double	no	default = "1.0"
+
+option "invasion-time"						-	"invasion time"							int		no	default = "0"
+option "invasion-ratio"						-	"% of population to invade"				double	no	default = "0.125"
 
 option "neighbourhood-size"					-	"neighbourhood size for numeric model"	int		no	default = "0"
 

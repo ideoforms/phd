@@ -65,6 +65,13 @@ int main (int argc, char *argv[])
 			if (settings.perturbation_flag && settings.perturbation_time_arg == step)
 				env->perturb(settings.perturbation_size_arg);
 
+			if (settings.invasion_time_arg and settings.invasion_time_arg == step)
+			{
+				int invasion_count = (int) (settings.popsize_arg * settings.invasion_ratio_arg);
+				for (int n = 0; n < invasion_count; n++)
+					env->invade(MODE_EVO, 1);
+			}
+
 			if (settings.log_agents_at_arg == step && step > 0)
 				log_agents();
 

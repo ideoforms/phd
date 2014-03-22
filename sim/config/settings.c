@@ -49,14 +49,16 @@ const char *settings_t_help[] = {
   "  -L, --logdir=STRING           path to store log  (default=`logs')",
   "  -l, --log                     logging on/off  (default=on)",
   "  -i, --log-every=INT           interval between logging  (default=`1000')",
+  "      --log-dispersion          log morisita's dispersion index  (default=off)",
   "      --log-agents-at=INT       log all phenotypes at time N  (default=`0')",
   "  -d, --debug                   debug on/off  (default=off)",
   "  -b, --batch                   batch mode on/off  (default=off)",
   "      --metabolism              metabolism on/off  (default=off)",
   "      --reproduction-count=INT  number of reproduction events per step  \n                                  (default=`1')",
-  "      --strategy-copy-novel-trait\n                                copy novel traits only  (default=off)",
-  "      --strategy-copy-random-neighbour\n                                copy random neighbour, not fittest  \n                                  (default=off)",
-  "      --strategy-always-assimilate\n                                always assimilate newly-learned bits  \n                                  (default=off)",
+  "      --strategy-copy-novel-trait=INT\n                                copy novel traits only  (default=`0')",
+  "      --strategy-copy-random-neighbour=INT\n                                copy random neighbour, not fittest  \n                                  (default=`0')",
+  "      --strategy-copy-best-neighbour=INT\n                                copy only the most fit neighbour  (default=`0')",
+  "      --strategy-always-assimilate=INT\n                                always assimilate newly-learned bits  \n                                  (default=`0')",
   "      --suppress-b-evo=INT      suppress b_evo  (default=`0')",
   "      --suppress-b-ind=INT      suppress b_ind  (default=`0')",
   "      --suppress-b-soc=INT      suppress b_soc  (default=`0')",
@@ -66,11 +68,14 @@ const char *settings_t_help[] = {
   "      --initial-b-evo=DOUBLE    initial b_evo",
   "      --initial-b-ind=DOUBLE    initial b_ind",
   "      --initial-b-soc=DOUBLE    initial b_soc",
+  "      --initial-geno-bits=DOUBLE\n                                # bits to set to 1",
   "      --thoroughbred=INT        thoroughbred behaviours  (default=`0')",
   "      --thoroughbred-mu=DOUBLE  thoroughbred mutation prob  (default=`0.0')",
   "      --perturbation            perturbation on/off  (default=off)",
   "      --perturbation-time=INT   perturbation timestep  (default=`0')",
   "      --perturbation-size=DOUBLE\n                                perturbation magnitude  (default=`1.0')",
+  "      --invasion-time=INT       invasion time  (default=`0')",
+  "      --invasion-ratio=DOUBLE   % of population to invade  (default=`0.125')",
   "      --neighbourhood-size=INT  neighbourhood size for numeric model  \n                                  (default=`0')",
   "  -C, --conf-file=STRING        config file to read  (default=`settings.conf')",
   "  -w, --ca-width=INT            ca width  (default=`16')",
@@ -164,6 +169,7 @@ void clear_given (struct settings_t *args_info)
   args_info->logdir_given = 0 ;
   args_info->log_given = 0 ;
   args_info->log_every_given = 0 ;
+  args_info->log_dispersion_given = 0 ;
   args_info->log_agents_at_given = 0 ;
   args_info->debug_given = 0 ;
   args_info->batch_given = 0 ;
@@ -171,6 +177,7 @@ void clear_given (struct settings_t *args_info)
   args_info->reproduction_count_given = 0 ;
   args_info->strategy_copy_novel_trait_given = 0 ;
   args_info->strategy_copy_random_neighbour_given = 0 ;
+  args_info->strategy_copy_best_neighbour_given = 0 ;
   args_info->strategy_always_assimilate_given = 0 ;
   args_info->suppress_b_evo_given = 0 ;
   args_info->suppress_b_ind_given = 0 ;
@@ -181,11 +188,14 @@ void clear_given (struct settings_t *args_info)
   args_info->initial_b_evo_given = 0 ;
   args_info->initial_b_ind_given = 0 ;
   args_info->initial_b_soc_given = 0 ;
+  args_info->initial_geno_bits_given = 0 ;
   args_info->thoroughbred_given = 0 ;
   args_info->thoroughbred_mu_given = 0 ;
   args_info->perturbation_given = 0 ;
   args_info->perturbation_time_given = 0 ;
   args_info->perturbation_size_given = 0 ;
+  args_info->invasion_time_given = 0 ;
+  args_info->invasion_ratio_given = 0 ;
   args_info->neighbourhood_size_given = 0 ;
   args_info->conf_file_given = 0 ;
   args_info->ca_width_given = 0 ;
@@ -238,6 +248,7 @@ void clear_args (struct settings_t *args_info)
   args_info->log_flag = 1;
   args_info->log_every_arg = 1000;
   args_info->log_every_orig = NULL;
+  args_info->log_dispersion_flag = 0;
   args_info->log_agents_at_arg = 0;
   args_info->log_agents_at_orig = NULL;
   args_info->debug_flag = 0;
@@ -245,9 +256,14 @@ void clear_args (struct settings_t *args_info)
   args_info->metabolism_flag = 0;
   args_info->reproduction_count_arg = 1;
   args_info->reproduction_count_orig = NULL;
-  args_info->strategy_copy_novel_trait_flag = 0;
-  args_info->strategy_copy_random_neighbour_flag = 0;
-  args_info->strategy_always_assimilate_flag = 0;
+  args_info->strategy_copy_novel_trait_arg = 0;
+  args_info->strategy_copy_novel_trait_orig = NULL;
+  args_info->strategy_copy_random_neighbour_arg = 0;
+  args_info->strategy_copy_random_neighbour_orig = NULL;
+  args_info->strategy_copy_best_neighbour_arg = 0;
+  args_info->strategy_copy_best_neighbour_orig = NULL;
+  args_info->strategy_always_assimilate_arg = 0;
+  args_info->strategy_always_assimilate_orig = NULL;
   args_info->suppress_b_evo_arg = 0;
   args_info->suppress_b_evo_orig = NULL;
   args_info->suppress_b_ind_arg = 0;
@@ -260,6 +276,7 @@ void clear_args (struct settings_t *args_info)
   args_info->initial_b_evo_orig = NULL;
   args_info->initial_b_ind_orig = NULL;
   args_info->initial_b_soc_orig = NULL;
+  args_info->initial_geno_bits_orig = NULL;
   args_info->thoroughbred_arg = 0;
   args_info->thoroughbred_orig = NULL;
   args_info->thoroughbred_mu_arg = 0.0;
@@ -269,6 +286,10 @@ void clear_args (struct settings_t *args_info)
   args_info->perturbation_time_orig = NULL;
   args_info->perturbation_size_arg = 1.0;
   args_info->perturbation_size_orig = NULL;
+  args_info->invasion_time_arg = 0;
+  args_info->invasion_time_orig = NULL;
+  args_info->invasion_ratio_arg = 0.125;
+  args_info->invasion_ratio_orig = NULL;
   args_info->neighbourhood_size_arg = 0;
   args_info->neighbourhood_size_orig = NULL;
   args_info->conf_file_arg = gengetopt_strdup ("settings.conf");
@@ -346,54 +367,59 @@ void init_args_info(struct settings_t *args_info)
   args_info->logdir_help = settings_t_help[14] ;
   args_info->log_help = settings_t_help[15] ;
   args_info->log_every_help = settings_t_help[16] ;
-  args_info->log_agents_at_help = settings_t_help[17] ;
-  args_info->debug_help = settings_t_help[18] ;
-  args_info->batch_help = settings_t_help[19] ;
-  args_info->metabolism_help = settings_t_help[20] ;
-  args_info->reproduction_count_help = settings_t_help[21] ;
-  args_info->strategy_copy_novel_trait_help = settings_t_help[22] ;
-  args_info->strategy_copy_random_neighbour_help = settings_t_help[23] ;
-  args_info->strategy_always_assimilate_help = settings_t_help[24] ;
-  args_info->suppress_b_evo_help = settings_t_help[25] ;
-  args_info->suppress_b_ind_help = settings_t_help[26] ;
-  args_info->suppress_b_soc_help = settings_t_help[27] ;
-  args_info->fixed_b_evo_help = settings_t_help[28] ;
-  args_info->fixed_b_ind_help = settings_t_help[29] ;
-  args_info->fixed_b_soc_help = settings_t_help[30] ;
-  args_info->initial_b_evo_help = settings_t_help[31] ;
-  args_info->initial_b_ind_help = settings_t_help[32] ;
-  args_info->initial_b_soc_help = settings_t_help[33] ;
-  args_info->thoroughbred_help = settings_t_help[34] ;
-  args_info->thoroughbred_mu_help = settings_t_help[35] ;
-  args_info->perturbation_help = settings_t_help[36] ;
-  args_info->perturbation_time_help = settings_t_help[37] ;
-  args_info->perturbation_size_help = settings_t_help[38] ;
-  args_info->neighbourhood_size_help = settings_t_help[39] ;
-  args_info->conf_file_help = settings_t_help[40] ;
-  args_info->ca_width_help = settings_t_help[41] ;
-  args_info->ca_non_adjacent_birth_help = settings_t_help[42] ;
-  args_info->ca_colocated_birth_help = settings_t_help[43] ;
-  args_info->graph_degree_help = settings_t_help[44] ;
-  args_info->abm_width_help = settings_t_help[45] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[46] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[47] ;
-  args_info->spatial_variance_help = settings_t_help[48] ;
-  args_info->spatial_patch_size_help = settings_t_help[49] ;
-  args_info->frequency_inverse_payoff_help = settings_t_help[50] ;
-  args_info->movement_help = settings_t_help[51] ;
-  args_info->movement_cohesion_genetic_help = settings_t_help[52] ;
-  args_info->movement_rate_genetic_help = settings_t_help[53] ;
-  args_info->payoff_distribution_help = settings_t_help[54] ;
-  args_info->payoff_correlation_mu_help = settings_t_help[55] ;
-  args_info->payoff_depletion_rate_help = settings_t_help[56] ;
-  args_info->payoff_regeneration_rate_help = settings_t_help[57] ;
-  args_info->structured_landscape_detail_help = settings_t_help[58] ;
-  args_info->structured_landscape_gradient_help = settings_t_help[59] ;
-  args_info->structured_landscape_abundance_help = settings_t_help[60] ;
-  args_info->fitness_objective_bimodal_help = settings_t_help[61] ;
-  args_info->fitness_initial_zero_help = settings_t_help[62] ;
-  args_info->selection_method_help = settings_t_help[63] ;
-  args_info->selection_tournament_size_help = settings_t_help[64] ;
+  args_info->log_dispersion_help = settings_t_help[17] ;
+  args_info->log_agents_at_help = settings_t_help[18] ;
+  args_info->debug_help = settings_t_help[19] ;
+  args_info->batch_help = settings_t_help[20] ;
+  args_info->metabolism_help = settings_t_help[21] ;
+  args_info->reproduction_count_help = settings_t_help[22] ;
+  args_info->strategy_copy_novel_trait_help = settings_t_help[23] ;
+  args_info->strategy_copy_random_neighbour_help = settings_t_help[24] ;
+  args_info->strategy_copy_best_neighbour_help = settings_t_help[25] ;
+  args_info->strategy_always_assimilate_help = settings_t_help[26] ;
+  args_info->suppress_b_evo_help = settings_t_help[27] ;
+  args_info->suppress_b_ind_help = settings_t_help[28] ;
+  args_info->suppress_b_soc_help = settings_t_help[29] ;
+  args_info->fixed_b_evo_help = settings_t_help[30] ;
+  args_info->fixed_b_ind_help = settings_t_help[31] ;
+  args_info->fixed_b_soc_help = settings_t_help[32] ;
+  args_info->initial_b_evo_help = settings_t_help[33] ;
+  args_info->initial_b_ind_help = settings_t_help[34] ;
+  args_info->initial_b_soc_help = settings_t_help[35] ;
+  args_info->initial_geno_bits_help = settings_t_help[36] ;
+  args_info->thoroughbred_help = settings_t_help[37] ;
+  args_info->thoroughbred_mu_help = settings_t_help[38] ;
+  args_info->perturbation_help = settings_t_help[39] ;
+  args_info->perturbation_time_help = settings_t_help[40] ;
+  args_info->perturbation_size_help = settings_t_help[41] ;
+  args_info->invasion_time_help = settings_t_help[42] ;
+  args_info->invasion_ratio_help = settings_t_help[43] ;
+  args_info->neighbourhood_size_help = settings_t_help[44] ;
+  args_info->conf_file_help = settings_t_help[45] ;
+  args_info->ca_width_help = settings_t_help[46] ;
+  args_info->ca_non_adjacent_birth_help = settings_t_help[47] ;
+  args_info->ca_colocated_birth_help = settings_t_help[48] ;
+  args_info->graph_degree_help = settings_t_help[49] ;
+  args_info->abm_width_help = settings_t_help[50] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[51] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[52] ;
+  args_info->spatial_variance_help = settings_t_help[53] ;
+  args_info->spatial_patch_size_help = settings_t_help[54] ;
+  args_info->frequency_inverse_payoff_help = settings_t_help[55] ;
+  args_info->movement_help = settings_t_help[56] ;
+  args_info->movement_cohesion_genetic_help = settings_t_help[57] ;
+  args_info->movement_rate_genetic_help = settings_t_help[58] ;
+  args_info->payoff_distribution_help = settings_t_help[59] ;
+  args_info->payoff_correlation_mu_help = settings_t_help[60] ;
+  args_info->payoff_depletion_rate_help = settings_t_help[61] ;
+  args_info->payoff_regeneration_rate_help = settings_t_help[62] ;
+  args_info->structured_landscape_detail_help = settings_t_help[63] ;
+  args_info->structured_landscape_gradient_help = settings_t_help[64] ;
+  args_info->structured_landscape_abundance_help = settings_t_help[65] ;
+  args_info->fitness_objective_bimodal_help = settings_t_help[66] ;
+  args_info->fitness_initial_zero_help = settings_t_help[67] ;
+  args_info->selection_method_help = settings_t_help[68] ;
+  args_info->selection_tournament_size_help = settings_t_help[69] ;
   
 }
 
@@ -492,6 +518,10 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->log_every_orig));
   free_string_field (&(args_info->log_agents_at_orig));
   free_string_field (&(args_info->reproduction_count_orig));
+  free_string_field (&(args_info->strategy_copy_novel_trait_orig));
+  free_string_field (&(args_info->strategy_copy_random_neighbour_orig));
+  free_string_field (&(args_info->strategy_copy_best_neighbour_orig));
+  free_string_field (&(args_info->strategy_always_assimilate_orig));
   free_string_field (&(args_info->suppress_b_evo_orig));
   free_string_field (&(args_info->suppress_b_ind_orig));
   free_string_field (&(args_info->suppress_b_soc_orig));
@@ -501,10 +531,13 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->initial_b_evo_orig));
   free_string_field (&(args_info->initial_b_ind_orig));
   free_string_field (&(args_info->initial_b_soc_orig));
+  free_string_field (&(args_info->initial_geno_bits_orig));
   free_string_field (&(args_info->thoroughbred_orig));
   free_string_field (&(args_info->thoroughbred_mu_orig));
   free_string_field (&(args_info->perturbation_time_orig));
   free_string_field (&(args_info->perturbation_size_orig));
+  free_string_field (&(args_info->invasion_time_orig));
+  free_string_field (&(args_info->invasion_ratio_orig));
   free_string_field (&(args_info->neighbourhood_size_orig));
   free_string_field (&(args_info->conf_file_arg));
   free_string_field (&(args_info->conf_file_orig));
@@ -598,6 +631,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "log", 0, 0 );
   if (args_info->log_every_given)
     write_into_file(outfile, "log-every", args_info->log_every_orig, 0);
+  if (args_info->log_dispersion_given)
+    write_into_file(outfile, "log-dispersion", 0, 0 );
   if (args_info->log_agents_at_given)
     write_into_file(outfile, "log-agents-at", args_info->log_agents_at_orig, 0);
   if (args_info->debug_given)
@@ -609,11 +644,13 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
   if (args_info->reproduction_count_given)
     write_into_file(outfile, "reproduction-count", args_info->reproduction_count_orig, 0);
   if (args_info->strategy_copy_novel_trait_given)
-    write_into_file(outfile, "strategy-copy-novel-trait", 0, 0 );
+    write_into_file(outfile, "strategy-copy-novel-trait", args_info->strategy_copy_novel_trait_orig, 0);
   if (args_info->strategy_copy_random_neighbour_given)
-    write_into_file(outfile, "strategy-copy-random-neighbour", 0, 0 );
+    write_into_file(outfile, "strategy-copy-random-neighbour", args_info->strategy_copy_random_neighbour_orig, 0);
+  if (args_info->strategy_copy_best_neighbour_given)
+    write_into_file(outfile, "strategy-copy-best-neighbour", args_info->strategy_copy_best_neighbour_orig, 0);
   if (args_info->strategy_always_assimilate_given)
-    write_into_file(outfile, "strategy-always-assimilate", 0, 0 );
+    write_into_file(outfile, "strategy-always-assimilate", args_info->strategy_always_assimilate_orig, 0);
   if (args_info->suppress_b_evo_given)
     write_into_file(outfile, "suppress-b-evo", args_info->suppress_b_evo_orig, 0);
   if (args_info->suppress_b_ind_given)
@@ -632,6 +669,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "initial-b-ind", args_info->initial_b_ind_orig, 0);
   if (args_info->initial_b_soc_given)
     write_into_file(outfile, "initial-b-soc", args_info->initial_b_soc_orig, 0);
+  if (args_info->initial_geno_bits_given)
+    write_into_file(outfile, "initial-geno-bits", args_info->initial_geno_bits_orig, 0);
   if (args_info->thoroughbred_given)
     write_into_file(outfile, "thoroughbred", args_info->thoroughbred_orig, 0);
   if (args_info->thoroughbred_mu_given)
@@ -642,6 +681,10 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "perturbation-time", args_info->perturbation_time_orig, 0);
   if (args_info->perturbation_size_given)
     write_into_file(outfile, "perturbation-size", args_info->perturbation_size_orig, 0);
+  if (args_info->invasion_time_given)
+    write_into_file(outfile, "invasion-time", args_info->invasion_time_orig, 0);
+  if (args_info->invasion_ratio_given)
+    write_into_file(outfile, "invasion-ratio", args_info->invasion_ratio_orig, 0);
   if (args_info->neighbourhood_size_given)
     write_into_file(outfile, "neighbourhood-size", args_info->neighbourhood_size_orig, 0);
   if (args_info->conf_file_given)
@@ -969,14 +1012,16 @@ config_parser_internal (
         { "logdir",	1, NULL, 'L' },
         { "log",	0, NULL, 'l' },
         { "log-every",	1, NULL, 'i' },
+        { "log-dispersion",	0, NULL, 0 },
         { "log-agents-at",	1, NULL, 0 },
         { "debug",	0, NULL, 'd' },
         { "batch",	0, NULL, 'b' },
         { "metabolism",	0, NULL, 0 },
         { "reproduction-count",	1, NULL, 0 },
-        { "strategy-copy-novel-trait",	0, NULL, 0 },
-        { "strategy-copy-random-neighbour",	0, NULL, 0 },
-        { "strategy-always-assimilate",	0, NULL, 0 },
+        { "strategy-copy-novel-trait",	1, NULL, 0 },
+        { "strategy-copy-random-neighbour",	1, NULL, 0 },
+        { "strategy-copy-best-neighbour",	1, NULL, 0 },
+        { "strategy-always-assimilate",	1, NULL, 0 },
         { "suppress-b-evo",	1, NULL, 0 },
         { "suppress-b-ind",	1, NULL, 0 },
         { "suppress-b-soc",	1, NULL, 0 },
@@ -986,11 +1031,14 @@ config_parser_internal (
         { "initial-b-evo",	1, NULL, 0 },
         { "initial-b-ind",	1, NULL, 0 },
         { "initial-b-soc",	1, NULL, 0 },
+        { "initial-geno-bits",	1, NULL, 0 },
         { "thoroughbred",	1, NULL, 0 },
         { "thoroughbred-mu",	1, NULL, 0 },
         { "perturbation",	0, NULL, 0 },
         { "perturbation-time",	1, NULL, 0 },
         { "perturbation-size",	1, NULL, 0 },
+        { "invasion-time",	1, NULL, 0 },
+        { "invasion-ratio",	1, NULL, 0 },
         { "neighbourhood-size",	1, NULL, 0 },
         { "conf-file",	1, NULL, 'C' },
         { "ca-width",	1, NULL, 'w' },
@@ -1280,6 +1328,18 @@ config_parser_internal (
               goto failure;
           
           }
+          /* log morisita's dispersion index.  */
+          else if (strcmp (long_options[option_index].name, "log-dispersion") == 0)
+          {
+          
+          
+            if (update_arg((void *)&(args_info->log_dispersion_flag), 0, &(args_info->log_dispersion_given),
+                &(local_args_info.log_dispersion_given), optarg, 0, 0, ARG_FLAG,
+                check_ambiguity, override, 1, 0, "log-dispersion", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* log all phenotypes at time N.  */
           else if (strcmp (long_options[option_index].name, "log-agents-at") == 0)
           {
@@ -1325,9 +1385,11 @@ config_parser_internal (
           {
           
           
-            if (update_arg((void *)&(args_info->strategy_copy_novel_trait_flag), 0, &(args_info->strategy_copy_novel_trait_given),
-                &(local_args_info.strategy_copy_novel_trait_given), optarg, 0, 0, ARG_FLAG,
-                check_ambiguity, override, 1, 0, "strategy-copy-novel-trait", '-',
+            if (update_arg( (void *)&(args_info->strategy_copy_novel_trait_arg), 
+                 &(args_info->strategy_copy_novel_trait_orig), &(args_info->strategy_copy_novel_trait_given),
+                &(local_args_info.strategy_copy_novel_trait_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "strategy-copy-novel-trait", '-',
                 additional_error))
               goto failure;
           
@@ -1337,9 +1399,25 @@ config_parser_internal (
           {
           
           
-            if (update_arg((void *)&(args_info->strategy_copy_random_neighbour_flag), 0, &(args_info->strategy_copy_random_neighbour_given),
-                &(local_args_info.strategy_copy_random_neighbour_given), optarg, 0, 0, ARG_FLAG,
-                check_ambiguity, override, 1, 0, "strategy-copy-random-neighbour", '-',
+            if (update_arg( (void *)&(args_info->strategy_copy_random_neighbour_arg), 
+                 &(args_info->strategy_copy_random_neighbour_orig), &(args_info->strategy_copy_random_neighbour_given),
+                &(local_args_info.strategy_copy_random_neighbour_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "strategy-copy-random-neighbour", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* copy only the most fit neighbour.  */
+          else if (strcmp (long_options[option_index].name, "strategy-copy-best-neighbour") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->strategy_copy_best_neighbour_arg), 
+                 &(args_info->strategy_copy_best_neighbour_orig), &(args_info->strategy_copy_best_neighbour_given),
+                &(local_args_info.strategy_copy_best_neighbour_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "strategy-copy-best-neighbour", '-',
                 additional_error))
               goto failure;
           
@@ -1349,9 +1427,11 @@ config_parser_internal (
           {
           
           
-            if (update_arg((void *)&(args_info->strategy_always_assimilate_flag), 0, &(args_info->strategy_always_assimilate_given),
-                &(local_args_info.strategy_always_assimilate_given), optarg, 0, 0, ARG_FLAG,
-                check_ambiguity, override, 1, 0, "strategy-always-assimilate", '-',
+            if (update_arg( (void *)&(args_info->strategy_always_assimilate_arg), 
+                 &(args_info->strategy_always_assimilate_orig), &(args_info->strategy_always_assimilate_given),
+                &(local_args_info.strategy_always_assimilate_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "strategy-always-assimilate", '-',
                 additional_error))
               goto failure;
           
@@ -1482,6 +1562,20 @@ config_parser_internal (
               goto failure;
           
           }
+          /* # bits to set to 1.  */
+          else if (strcmp (long_options[option_index].name, "initial-geno-bits") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->initial_geno_bits_arg), 
+                 &(args_info->initial_geno_bits_orig), &(args_info->initial_geno_bits_given),
+                &(local_args_info.initial_geno_bits_given), optarg, 0, 0, ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "initial-geno-bits", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* thoroughbred behaviours.  */
           else if (strcmp (long_options[option_index].name, "thoroughbred") == 0)
           {
@@ -1546,6 +1640,34 @@ config_parser_internal (
                 &(local_args_info.perturbation_size_given), optarg, 0, "1.0", ARG_DOUBLE,
                 check_ambiguity, override, 0, 0,
                 "perturbation-size", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* invasion time.  */
+          else if (strcmp (long_options[option_index].name, "invasion-time") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->invasion_time_arg), 
+                 &(args_info->invasion_time_orig), &(args_info->invasion_time_given),
+                &(local_args_info.invasion_time_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "invasion-time", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* % of population to invade.  */
+          else if (strcmp (long_options[option_index].name, "invasion-ratio") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->invasion_ratio_arg), 
+                 &(args_info->invasion_ratio_orig), &(args_info->invasion_ratio_given),
+                &(local_args_info.invasion_ratio_given), optarg, 0, "0.125", ARG_DOUBLE,
+                check_ambiguity, override, 0, 0,
+                "invasion-ratio", '-',
                 additional_error))
               goto failure;
           

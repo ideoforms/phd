@@ -18,7 +18,7 @@ LandscapeGenerator::LandscapeGenerator(float detail, float gradient, float abund
     this->mGradient = gradient;
     this->mAbundance = abundance;
     
-    this->mPerlin = new Perlin2D(16);
+    this->mPerlin = new Perlin2D(64);
     this->mPerlin->mOctaves = 1;
     this->mPerlin->mRolloff = 0.5;
     this->generate();
@@ -31,11 +31,16 @@ void LandscapeGenerator::generate()
 
 float LandscapeGenerator::get(float x, float y)
 {
-    float value = mPerlin->get((float) x * 16.0 * mDetail, (float) y * 16.0 * mDetail);
-    if (value < -0.5) value = -0.5;
-    if (value > 0.5) value = 0.5;
+    float value = mPerlin->get(x * 16.0 * mDetail, y * 16.0 * mDetail, this->mGradient);
+    // if (value < -0.5) value = -0.5;
+    // if (value > 0.5) value = 0.5;
     // value = tanh(value * (1 + 5 * (1 - mGradient))) + mAbundance;
-    value = tanh(value * pow(10, mGradient * 2 - 1)) + mAbundance;
+    
+    // 2014-02-10
+    value = tanh(value * pow(10, map(mGradient, 0, 1, -1, 1)));
+    value = value + mAbundance;
+    printf("pos: %d, %d = %f\n", (int) (x * 16.0 * mDetail), (int) (y * 16.0 * mDetail), value);
+    
     return value;
 }
 
@@ -65,7 +70,7 @@ void Perlin2D::init()
     }
 }
 
-float Perlin2D::get(float x, float y)
+float Perlin2D::get(float x, float y, float interpolation)
 {
     float value = 0;
     
@@ -83,6 +88,10 @@ float Perlin2D::get(float x, float y)
         float lerpy0 = interpolate(x0y0, x1y0, fx);
         float lerpy1 = interpolate(x0y1, x1y1, fx);
         float lerpx = interpolate(lerpy0, lerpy1, fy);
+        
+        // testing alternative gradient function
+        // lerpx = (interpolation * lerpx) + ((1 - interpolation) * x0y0);
+        
         float v = lerpx * pow(this->mRolloff, octave);
         
         // cool glitchy gfx

@@ -36,7 +36,9 @@ public:
 	virtual void                fluctuate();
 	virtual void                dump() {};
 	virtual void                perturb(double amount = 0.5);
-	stats_t                     stats();
+	virtual void 				invade(unsigned mode, float mode_value);
+
+	virtual stats_t             stats();
 
 	int                         get_popsize();
 

@@ -26,6 +26,7 @@ public:
     virtual void                move(Agent *agent);
 	virtual Task                goal_for(Agent *agent);
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
+	virtual stats_t				stats();
 
 	friend class Agent;
 

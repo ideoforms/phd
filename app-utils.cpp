@@ -94,7 +94,7 @@ void init_logging()
 		logger = new csvwriter(logpath);
 		logger->start
 		(
-		 	"iffffffffff",
+		 	"iffffffffffff",
 
 			"t",
 			"evo",
@@ -107,7 +107,8 @@ void init_logging()
 			"d_max",
 			"geno",
 			"pheno",
-			"age"
+			"age",
+			"dispersion"
 		);
 	}
 }
@@ -136,7 +137,8 @@ void log_states()
 		stats.geno_mean_dist,
 		stats.pheno_mean_dist,
 
-		stats.age_mean
+		stats.age_mean,
+		stats.dispersion
 	);
 
 	if (settings.debug_flag)

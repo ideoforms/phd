@@ -21,12 +21,32 @@ Agent::Agent(Environment *env)
 	this->mEnv = env;
 
 	this->mGenotype = Task(settings.bits_arg);
-	if (settings.fitness_initial_zero_arg)
+	if (settings.initial_geno_bits_given)
+	{
 		this->mGenotype.reset();
+
+		/*--------------------------------------------------------------------*
+		 * Set first bits to 1, then shuffle whole genome
+		 * so that exactly initial-geno-bits are set to 1
+		 *--------------------------------------------------------------------*/
+		this->mGenotype |= Task(settings.bits_arg, pow(2, (int) (settings.bits_arg * settings.initial_geno_bits_arg)) - 1);
+		if (settings.initial_geno_bits_arg == 1)
+			this->mGenotype.set();
+
+		for (int i = settings.bits_arg - 1; i >= 0; i--)
+		{
+			int j = rng_randint(i + 1);
+			int tmp = this->mGenotype[i];
+			this->mGenotype[i] = this->mGenotype[j];
+			this->mGenotype[j] = tmp;
+		}
+	}
 	else
+	{
 		for (int i = 0; i < settings.bits_arg; i++)
 			this->mGenotype[i] = rng_coin(0.5);
-	
+	}
+
 	this->mPhenotype = Task(settings.bits_arg);
 
 	this->mBEvo = settings.initial_b_evo_given ? settings.initial_b_evo_arg : rng_uniformuf();
@@ -52,7 +72,7 @@ Agent::Agent(Agent *parent)
 	this->mGenotype = parent->mGenotype;
 	// printf("created new agent with %d bits (parent has %d)\n", this->mGenotype.size(), parent->mGenotype.size());
 	// printf("(my geno ptr = %p, parent geno ptr = %p)\n", &this->mGenotype, &parent->mGenotype);
-	
+
 	this->mPhenotype = Task(settings.bits_arg);
 
 	this->mBEvo = parent->mBEvo;
@@ -78,7 +98,7 @@ void Agent::reset()
 	 *--------------------------------------------------------------------*/
 	this->mPhenotype = this->mGenotype;
 	this->mAge = 0;
-	this->mDelta = -1;
+	this->mDelta = 0;
 	this->mLastAction = 0;
 }
 
@@ -156,210 +176,225 @@ double Agent::get_fitness() const
 	return this->mDelta;
 }
 
-    
+
 Task Agent::learn_ind()
 {
-    Task action = this->mPhenotype;
-    int bit = rng_randint(settings.bits_arg);
-    action.flip(bit);
-    return action;
+	Task action = this->mPhenotype;
+	int bit = rng_randint(settings.bits_arg);
+	action.flip(bit);
+	return action;
 }
-    
+
 Task Agent::learn_soc()
 {
-    int bit, index;
-    Task action = this->mPhenotype;
-    
-    vector <Agent *> neighbours = this->mEnv->get_neighbours(this);
-
-    if (neighbours.size() > 0)
-    {
-        if (!settings.strategy_copy_random_neighbour_flag)
-        {
-            /*------------------------------------------------------------*
-             * Strategy: By default, copy a neighbour weighted by their
-             * fitness.
-             *------------------------------------------------------------*/
-            double fitnesses[neighbours.size()];
-            for (unsigned int i = 0; i < neighbours.size(); i++)
-                fitnesses[i] = neighbours[i]->get_fitness();
-            index = roulette(fitnesses, neighbours.size());
-        }
-        else
-        {
-            /*------------------------------------------------------------*
-             * Strategy: Alternatively, pick a neighbour at random.
-             *------------------------------------------------------------*/
-            index = rng_randint(neighbours.size());
-        }
-        
-        if (index < 0)
-        {
-            /*------------------------------------------------------------*
-             * Couldn't find a single non-zero-fitness neighbour -- bail.
-             * XXX: DOES THIS MAKE SENSE IN OUR MODEL?
-             * SHOULDN'T WE STILL BE ABLE TO COPY FROM ZERO-FITNESS NEIGHBOURS?
-             *------------------------------------------------------------*/
-            // printf("got neighbours but non with non-zero fitness, bailing...\n");
-            return action;
-        }
-        
-        Agent *exemplar = neighbours[index];
-        Task exemplar_pheno = exemplar->mPhenotype;
-        
-        if (!settings.strategy_copy_novel_trait_flag)
-        {
-            /*------------------------------------------------------------*
-             * Strategy: By default, copy a random trait.
-             *------------------------------------------------------------*/
-            bit = rng_randint(settings.bits_arg);
-            action.set(bit, exemplar_pheno.test(bit));
-            if (rng_coin(settings.p_noise_arg))
-            {
-                action.flip(bit);
-            }
-        }
-        else
-        {
-            /*------------------------------------------------------------*
-             * Alternate strategy: search for a novel trait and copy that.
-             *------------------------------------------------------------*/
-            bool found = false;
-            int indices[settings.bits_arg];
-            for (int i = 0; i < settings.bits_arg; i++)
-                indices[i] = i;
-                rng_shuffle(indices, settings.bits_arg);
-                
-                for (int i = 0; i < settings.bits_arg && !found; i++)
-                {
-                    bit = indices[i];
-                    if (action.test(bit) != exemplar_pheno.test(bit))
-                    {
-                        // cout << "copying bit " << bit << " (mine = " << action << ", theirs = " << exemplar_pheno << ")" << std::endl;
-                        found = true;
-                        action.set(bit, exemplar_pheno.test(bit));
-                        if (rng_coin(settings.p_noise_arg))
-                            action.flip(bit);
-                    }
-                }
-            
-            if (!found)
-            {
-                if (rng_coin(settings.p_noise_arg))
-                {
-                    bit = rng_randint(settings.bits_arg);
-                    action.flip(bit);
-                }
-            }
-        }
-    }
-    
-    return action;
-}
-
-void Agent::update()
-{
-    this->mAge++;
-    int EPOCHS = 1;
-    
-    this->mDelta = 0;
-    for (int epoch = 0; epoch < EPOCHS; epoch++)
-    {
-
-	double modes[] = { this->mBEvo, this->mBInd, this->mBSoc };
-	int mode = roulette(modes, 3);
-
+	int bit, index;
 	Task action = this->mPhenotype;
 
-	switch (mode)
-	{
-		case MODE_EVO:
-			break;
-            
-		case MODE_IND:
-            action = this->learn_ind();
-			break;
-            
-		case MODE_SOC:
-            action = this->learn_soc();
-			break;
-	}
+	vector <Agent *> neighbours = this->mEnv->get_neighbours(this);
 
-	this->mLastAction = mode;
-    
-    float payoff = mEnv->payoff(this, action);
-    this->mDelta += payoff;
-    
-	if (mode == MODE_IND || mode == MODE_SOC)
+	if (neighbours.size() > 0)
 	{
-		if (settings.strategy_always_assimilate_flag)
+		if (settings.strategy_copy_random_neighbour_arg)
 		{
-			/*--------------------------------------------------------------------*
-			 * Strategy: If we're set to always assimilate newly-learned bits, 
-			 * modify our phenotype accordingly.
-			 *--------------------------------------------------------------------*/
-			mPhenotype = action;
+			/*------------------------------------------------------------*
+			 * Strategy: Alternatively, pick a neighbour at random.
+			 *------------------------------------------------------------*/
+			index = rng_randint(neighbours.size());
+		}
+		else if (settings.strategy_copy_best_neighbour_arg)
+		{
+			double max_fitness = -1;
+			double max_fitness_idx = 0;
+			for (unsigned int i = 0; i < neighbours.size(); i++)
+			{
+				double fitness = neighbours[i]->get_fitness();
+				if (fitness > max_fitness)
+				{
+					max_fitness = fitness;
+					max_fitness_idx = i;
+				}
+			}
+			index = max_fitness_idx;
 		}
 		else
 		{
-			/*--------------------------------------------------------------------*
-			 * if this action gives a better payoff than our current phenotype,
-			 * modify our phenotype accordingly (learning).
-			 *--------------------------------------------------------------------*/
-			double curFitness = mEnv->payoff(this, mPhenotype);
-			if (payoff > curFitness)
-				mPhenotype = action;
+			/*------------------------------------------------------------*
+			 * Strategy: By default, copy a neighbour weighted by their
+			 * fitness.
+			 *------------------------------------------------------------*/
+			double fitnesses[neighbours.size()];
+			for (unsigned int i = 0; i < neighbours.size(); i++)
+				fitnesses[i] = neighbours[i]->get_fitness();
+			index = roulette(fitnesses, neighbours.size());
 		}
-	}
 
-	if (settings.movement_arg)
-	{
-		if (settings.movement_rate_genetic_arg)
+		if (index < 0)
 		{
-			bool move = rng_coin(this->mMRate);
-            // printf("move: %d (rate %f)\n", move, this->mMRate);
-			if (move)
+			/*------------------------------------------------------------*
+			 * Couldn't find a single non-zero-fitness neighbour -- bail.
+			 * XXX: DOES THIS MAKE SENSE IN OUR MODEL?
+			 * SHOULDN'T WE STILL BE ABLE TO COPY FROM ZERO-FITNESS NEIGHBOURS?
+			 *------------------------------------------------------------*/
+			// printf("got neighbours but non with non-zero fitness, bailing...\n");
+			return action;
+		}
+
+		Agent *exemplar = neighbours[index];
+		Task exemplar_pheno = exemplar->mPhenotype;
+
+		if (!settings.strategy_copy_novel_trait_arg)
+		{
+			/*------------------------------------------------------------*
+			 * Strategy: By default, copy a random trait.
+			 *------------------------------------------------------------*/
+			bit = rng_randint(settings.bits_arg);
+			action.set(bit, exemplar_pheno.test(bit));
+			if (rng_coin(settings.p_noise_arg))
 			{
-				this->mEnv->move(this);
+				action.flip(bit);
 			}
 		}
 		else
 		{
-            // printf("move (i always move)\n");
-			this->mEnv->move(this);
+			/*------------------------------------------------------------*
+			 * Alternate strategy: search for a novel trait and copy that.
+			 *------------------------------------------------------------*/
+			bool found = false;
+			int indices[settings.bits_arg];
+			for (int i = 0; i < settings.bits_arg; i++)
+				indices[i] = i;
+			rng_shuffle(indices, settings.bits_arg);
+
+			for (int i = 0; i < settings.bits_arg && !found; i++)
+			{
+				bit = indices[i];
+				if (action.test(bit) != exemplar_pheno.test(bit))
+				{
+					// cout << "copying bit " << bit << " (mine = " << action << ", theirs = " << exemplar_pheno << ")" << std::endl;
+					found = true;
+					action.set(bit, exemplar_pheno.test(bit));
+					if (rng_coin(settings.p_noise_arg))
+						action.flip(bit);
+				}
+			}
+
+			if (!found)
+			{
+				if (rng_coin(settings.p_noise_arg))
+				{
+					bit = rng_randint(settings.bits_arg);
+					action.flip(bit);
+				}
+			}
 		}
 	}
-    }
-    
-    this->mDelta /= EPOCHS;
+
+	return action;
+}
+
+void Agent::update()
+{
+	this->mAge++;
+	int EPOCHS = 1;
+
+	this->mDelta = 0;
+	for (int epoch = 0; epoch < EPOCHS; epoch++)
+	{
+
+		double modes[] = { this->mBEvo, this->mBInd, this->mBSoc };
+		int mode = roulette(modes, 3);
+
+		Task action = this->mPhenotype;
+
+		switch (mode)
+		{
+			case MODE_EVO:
+				break;
+
+			case MODE_IND:
+				action = this->learn_ind();
+				break;
+
+			case MODE_SOC:
+				action = this->learn_soc();
+				break;
+		}
+
+		this->mLastAction = mode;
+
+		float payoff = mEnv->payoff(this, action);
+		this->mDelta += payoff;
+
+		if (mode == MODE_IND || mode == MODE_SOC)
+		{
+			if (settings.strategy_always_assimilate_arg)
+			{
+				/*--------------------------------------------------------------------*
+				 * Strategy: If we're set to always assimilate newly-learned bits, 
+				 * modify our phenotype accordingly.
+				 *--------------------------------------------------------------------*/
+				mPhenotype = action;
+			}
+			else
+			{
+				/*--------------------------------------------------------------------*
+				 * if this action gives a better payoff than our current phenotype,
+				 * modify our phenotype accordingly (learning).
+				 *--------------------------------------------------------------------*/
+				double curFitness = mEnv->payoff(this, mPhenotype);
+				if (payoff > curFitness)
+					mPhenotype = action;
+			}
+		}
+
+		if (settings.movement_arg)
+		{
+			if (settings.movement_rate_genetic_arg)
+			{
+				bool move = rng_coin(this->mMRate);
+				// printf("move: %d (rate %f)\n", move, this->mMRate);
+				if (move)
+				{
+					this->mEnv->move(this);
+				}
+			}
+			else
+			{
+				// printf("move (i always move)\n");
+				this->mEnv->move(this);
+			}
+		}
+	}
+
+	this->mDelta /= EPOCHS;
 	if (settings.metabolism_flag)
 		this->mOmega += this->mDelta;
 }
-    
+
 
 void Agent::mutate()
 {
 	this->mBEvo += rng_gaussian(0, settings.mu_arg);
 	this->mBEvo  = clip(this->mBEvo, 0, 1);
-    if (settings.thoroughbred_mu_arg && rng_coin(settings.thoroughbred_mu_arg))
-        this->mBEvo  = 1 - this->mBEvo;
+	if (settings.thoroughbred_mu_arg && rng_coin(settings.thoroughbred_mu_arg))
+		this->mBEvo  = 1 - this->mBEvo;
 
-    this->mBInd += rng_gaussian(0, settings.mu_arg);
+	this->mBInd += rng_gaussian(0, settings.mu_arg);
 	this->mBInd  = clip(this->mBInd, 0, 1);
-    if (settings.thoroughbred_mu_arg && rng_coin(settings.thoroughbred_mu_arg))
-        this->mBInd  = 1 - this->mBInd;
+	if (settings.thoroughbred_mu_arg && rng_coin(settings.thoroughbred_mu_arg))
+		this->mBInd  = 1 - this->mBInd;
 
 	this->mBSoc += rng_gaussian(0, settings.mu_arg);
 	this->mBSoc  = clip(this->mBSoc, 0, 1);
-    if (settings.thoroughbred_mu_arg && rng_coin(settings.thoroughbred_mu_arg))
-        this->mBSoc  = 1 - this->mBSoc;
-        
+	if (settings.thoroughbred_mu_arg && rng_coin(settings.thoroughbred_mu_arg))
+		this->mBSoc  = 1 - this->mBSoc;
+
 	this->mMRate += rng_gaussian(0, settings.mu_arg);
 	this->mMRate = clip(this->mMRate, 0, 1);
 
 	this->mMCoh += rng_gaussian(0, settings.mu_arg);
 	this->mMCoh = clip(this->mMCoh, -1, 1);
-    
+
 	for (int i = 0; i < settings.bits_arg; i++)
 	{
 		if (rng_coin(settings.p_mut_arg))
@@ -382,7 +417,7 @@ Agent *Agent::replicate()
 
 ostream& operator<< (ostream &stream, Agent &object)
 {
-	stream << setprecision(4) << fixed;
+	// stream << setprecision(16) << fixed;
 	stream << "[agent ([ " << object.mBEvo << ", " << object.mBInd << ", " << object.mBSoc << " | " << object.mLastAction << ": " << object.get_fitness() << " | " << object.mGenotype << " | " << object.mPhenotype << "]) ]";
 	return stream;
 }

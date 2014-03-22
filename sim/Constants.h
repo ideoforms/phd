@@ -45,6 +45,8 @@ struct stats_t
 
 	double geno_mean_dist,
 		   pheno_mean_dist;
+
+	double dispersion;
 };
 
 typedef boost::dynamic_bitset <> Task;

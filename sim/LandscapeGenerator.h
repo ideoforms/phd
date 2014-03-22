@@ -17,7 +17,7 @@ public:
     Perlin2D(int width);
     
     void init();
-    float get(float x, float y);
+    float get(float x, float y, float interpolate);
     float interpolate(float y1, float y2, float x);
     
     int mWidth;

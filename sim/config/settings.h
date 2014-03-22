@@ -83,6 +83,8 @@ struct settings_t
   int log_every_arg;	/**< @brief interval between logging (default='1000').  */
   char * log_every_orig;	/**< @brief interval between logging original value given at command line.  */
   const char *log_every_help; /**< @brief interval between logging help description.  */
+  int log_dispersion_flag;	/**< @brief log morisita's dispersion index (default=off).  */
+  const char *log_dispersion_help; /**< @brief log morisita's dispersion index help description.  */
   int log_agents_at_arg;	/**< @brief log all phenotypes at time N (default='0').  */
   char * log_agents_at_orig;	/**< @brief log all phenotypes at time N original value given at command line.  */
   const char *log_agents_at_help; /**< @brief log all phenotypes at time N help description.  */
@@ -95,11 +97,17 @@ struct settings_t
   int reproduction_count_arg;	/**< @brief number of reproduction events per step (default='1').  */
   char * reproduction_count_orig;	/**< @brief number of reproduction events per step original value given at command line.  */
   const char *reproduction_count_help; /**< @brief number of reproduction events per step help description.  */
-  int strategy_copy_novel_trait_flag;	/**< @brief copy novel traits only (default=off).  */
+  int strategy_copy_novel_trait_arg;	/**< @brief copy novel traits only (default='0').  */
+  char * strategy_copy_novel_trait_orig;	/**< @brief copy novel traits only original value given at command line.  */
   const char *strategy_copy_novel_trait_help; /**< @brief copy novel traits only help description.  */
-  int strategy_copy_random_neighbour_flag;	/**< @brief copy random neighbour, not fittest (default=off).  */
+  int strategy_copy_random_neighbour_arg;	/**< @brief copy random neighbour, not fittest (default='0').  */
+  char * strategy_copy_random_neighbour_orig;	/**< @brief copy random neighbour, not fittest original value given at command line.  */
   const char *strategy_copy_random_neighbour_help; /**< @brief copy random neighbour, not fittest help description.  */
-  int strategy_always_assimilate_flag;	/**< @brief always assimilate newly-learned bits (default=off).  */
+  int strategy_copy_best_neighbour_arg;	/**< @brief copy only the most fit neighbour (default='0').  */
+  char * strategy_copy_best_neighbour_orig;	/**< @brief copy only the most fit neighbour original value given at command line.  */
+  const char *strategy_copy_best_neighbour_help; /**< @brief copy only the most fit neighbour help description.  */
+  int strategy_always_assimilate_arg;	/**< @brief always assimilate newly-learned bits (default='0').  */
+  char * strategy_always_assimilate_orig;	/**< @brief always assimilate newly-learned bits original value given at command line.  */
   const char *strategy_always_assimilate_help; /**< @brief always assimilate newly-learned bits help description.  */
   int suppress_b_evo_arg;	/**< @brief suppress b_evo (default='0').  */
   char * suppress_b_evo_orig;	/**< @brief suppress b_evo original value given at command line.  */
@@ -128,6 +136,9 @@ struct settings_t
   double initial_b_soc_arg;	/**< @brief initial b_soc.  */
   char * initial_b_soc_orig;	/**< @brief initial b_soc original value given at command line.  */
   const char *initial_b_soc_help; /**< @brief initial b_soc help description.  */
+  double initial_geno_bits_arg;	/**< @brief # bits to set to 1.  */
+  char * initial_geno_bits_orig;	/**< @brief # bits to set to 1 original value given at command line.  */
+  const char *initial_geno_bits_help; /**< @brief # bits to set to 1 help description.  */
   int thoroughbred_arg;	/**< @brief thoroughbred behaviours (default='0').  */
   char * thoroughbred_orig;	/**< @brief thoroughbred behaviours original value given at command line.  */
   const char *thoroughbred_help; /**< @brief thoroughbred behaviours help description.  */
@@ -142,6 +153,12 @@ struct settings_t
   double perturbation_size_arg;	/**< @brief perturbation magnitude (default='1.0').  */
   char * perturbation_size_orig;	/**< @brief perturbation magnitude original value given at command line.  */
   const char *perturbation_size_help; /**< @brief perturbation magnitude help description.  */
+  int invasion_time_arg;	/**< @brief invasion time (default='0').  */
+  char * invasion_time_orig;	/**< @brief invasion time original value given at command line.  */
+  const char *invasion_time_help; /**< @brief invasion time help description.  */
+  double invasion_ratio_arg;	/**< @brief % of population to invade (default='0.125').  */
+  char * invasion_ratio_orig;	/**< @brief % of population to invade original value given at command line.  */
+  const char *invasion_ratio_help; /**< @brief % of population to invade help description.  */
   int neighbourhood_size_arg;	/**< @brief neighbourhood size for numeric model (default='0').  */
   char * neighbourhood_size_orig;	/**< @brief neighbourhood size for numeric model original value given at command line.  */
   const char *neighbourhood_size_help; /**< @brief neighbourhood size for numeric model help description.  */
@@ -238,6 +255,7 @@ struct settings_t
   unsigned int logdir_given ;	/**< @brief Whether logdir was given.  */
   unsigned int log_given ;	/**< @brief Whether log was given.  */
   unsigned int log_every_given ;	/**< @brief Whether log-every was given.  */
+  unsigned int log_dispersion_given ;	/**< @brief Whether log-dispersion was given.  */
   unsigned int log_agents_at_given ;	/**< @brief Whether log-agents-at was given.  */
   unsigned int debug_given ;	/**< @brief Whether debug was given.  */
   unsigned int batch_given ;	/**< @brief Whether batch was given.  */
@@ -245,6 +263,7 @@ struct settings_t
   unsigned int reproduction_count_given ;	/**< @brief Whether reproduction-count was given.  */
   unsigned int strategy_copy_novel_trait_given ;	/**< @brief Whether strategy-copy-novel-trait was given.  */
   unsigned int strategy_copy_random_neighbour_given ;	/**< @brief Whether strategy-copy-random-neighbour was given.  */
+  unsigned int strategy_copy_best_neighbour_given ;	/**< @brief Whether strategy-copy-best-neighbour was given.  */
   unsigned int strategy_always_assimilate_given ;	/**< @brief Whether strategy-always-assimilate was given.  */
   unsigned int suppress_b_evo_given ;	/**< @brief Whether suppress-b-evo was given.  */
   unsigned int suppress_b_ind_given ;	/**< @brief Whether suppress-b-ind was given.  */
@@ -255,11 +274,14 @@ struct settings_t
   unsigned int initial_b_evo_given ;	/**< @brief Whether initial-b-evo was given.  */
   unsigned int initial_b_ind_given ;	/**< @brief Whether initial-b-ind was given.  */
   unsigned int initial_b_soc_given ;	/**< @brief Whether initial-b-soc was given.  */
+  unsigned int initial_geno_bits_given ;	/**< @brief Whether initial-geno-bits was given.  */
   unsigned int thoroughbred_given ;	/**< @brief Whether thoroughbred was given.  */
   unsigned int thoroughbred_mu_given ;	/**< @brief Whether thoroughbred-mu was given.  */
   unsigned int perturbation_given ;	/**< @brief Whether perturbation was given.  */
   unsigned int perturbation_time_given ;	/**< @brief Whether perturbation-time was given.  */
   unsigned int perturbation_size_given ;	/**< @brief Whether perturbation-size was given.  */
+  unsigned int invasion_time_given ;	/**< @brief Whether invasion-time was given.  */
+  unsigned int invasion_ratio_given ;	/**< @brief Whether invasion-ratio was given.  */
   unsigned int neighbourhood_size_given ;	/**< @brief Whether neighbourhood-size was given.  */
   unsigned int conf_file_given ;	/**< @brief Whether conf-file was given.  */
   unsigned int ca_width_given ;	/**< @brief Whether ca-width was given.  */
