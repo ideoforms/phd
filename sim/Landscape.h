@@ -25,10 +25,10 @@ public:
 	~Landscape() {};
 
 	/*-----------------------------------------------------------------------*
-	 * all of these declared as virtual so that they can be overriden in
+	 * all of these declared as virtual so that they can be overridden
 	 *-----------------------------------------------------------------------*/
-	virtual Task				taskAt(unsigned x, unsigned y);
-    virtual float               payoffAt(unsigned x, unsigned y);
+	virtual TaskVector			tasks_at(unsigned x, unsigned y);
+    virtual PayoffVector		payoffs_at(unsigned x, unsigned y);
 	virtual void                fluctuate();
     virtual void                deplete_at(unsigned x, unsigned y);
     virtual void                regenerate();
@@ -51,8 +51,8 @@ public:
 		return stream;
 	}
 
-	vector <vector < Task > > mObjective;
-    vector <vector < float > > mPayoff;
+	vector <vector < TaskVector > > mObjective;
+    vector <vector < PayoffVector > > mPayoff;
 
 	unsigned mWidth, mHeight;
 	unsigned mBits;

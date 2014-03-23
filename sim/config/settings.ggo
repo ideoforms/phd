@@ -12,6 +12,8 @@ option "bits"		B	"environmental bits"				int			no
 option "steps"		s	"steps to run"						int			no
 option "trials"		T	"trials to run"						int			no default = "1"
 
+option "tasks"		-	"environmental tasks"				int			no default = "1"
+
 option "mu"			m	"s.d. of mutations"					double		no
 option "alpha"		a	"fitness rolloff"					double		no
 
@@ -25,6 +27,7 @@ option "p_noise"	-	"prob. of social learning noise"	double		no
 option "logdir"					L	"path to store log"					string	no default = "logs"
 option "log"					l	"logging on/off"					flag	on
 option "log-every"				i	"interval between logging"			int		no default = "1000"
+option "dump-every"				-	"interval between dumping agents"	int		no default = "0"
 option "log-dispersion"			-	"log morisita's dispersion index"	flag	off
 option "log-agents-at"			-	"log all phenotypes at time N"		int		no	default = "0"
 option "debug"					d	"debug on/off"						flag	off

@@ -22,7 +22,7 @@ Environment::Environment()
 	this->mLandscape = new Landscape(settings.bits_arg, 1, 1);
 
 	int population = settings.popsize_arg;
-	printf("creating %d agents\n", population);
+	// printf("creating %d agents\n", population);
 	for (int i = 0; i < population; i++)
 	{
 		Agent *agent = new Agent(this);
@@ -38,9 +38,11 @@ void Environment::update()
 	if (settings.debug_flag)
 		cout << *this << std::endl;
 
-	for (agent_iterator it = mAgents.begin(); it != mAgents.end(); ++it)
+	for (Agent *agent : mAgents)
 	{
-		Agent *agent = *it;
+		if (settings.dump_every_arg > 0 && (this->mAge % settings.dump_every_arg) == 0)
+			agent->dump();
+
 		agent->update();
 
 		// Task goal = this->goal_for(agent);
@@ -118,8 +120,10 @@ void Environment::reproduce()
 			if (settings.debug_flag)
 			{
 				cout << "reproducing:" << *parent << ", child index " << child_index << " <- " << parent_index << "( fitness = " << mAgents[parent_index]->get_fitness() << ")" << std::endl;
-				Task goal = this->goal_for(parent);
-				int distance = (parent->mPhenotype ^ goal).count();
+				TaskVector tasks = this->tasks_for(parent);
+				int distance = 0;
+				for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+					distance += (parent->mPhenotype[taskIndex] ^ tasks[taskIndex]).count();
 				cout << "hamming distance = " << distance << endl;
 			}
 
@@ -179,36 +183,43 @@ void Environment::invade(unsigned mode, float mode_value)
 	int index = rng_randint(mAgents.size());
 	Agent *agent= mAgents[index];
 
-	if (mode >= 0)
+	if (mode == MODE_SOC)
 	{
-		if (mode == MODE_SOC)
-		{
-			agent->mBSoc = mode_value;
-			agent->mBEvo = agent->mBInd = (1 - mode_value) / 2;
-		}
-		else if (mode == MODE_IND)
-		{
-			agent->mBInd = mode_value;
-			agent->mBEvo = agent->mBSoc = (1 - mode_value) / 2;
-		}
-		else if (mode == MODE_EVO)
-		{
-			agent->mBEvo = mode_value;
-			agent->mBInd = agent->mBSoc = (1 - mode_value) / 2;
-		}
+		agent->mBSoc = mode_value;
+		agent->mBEvo = agent->mBInd = (1 - mode_value) / 2;
 	}
+	else if (mode == MODE_IND)
+	{
+		agent->mBInd = mode_value;
+		agent->mBEvo = agent->mBSoc = (1 - mode_value) / 2;
+	}
+	else if (mode == MODE_EVO)
+	{
+		agent->mBEvo = mode_value;
+		agent->mBInd = agent->mBSoc = (1 - mode_value) / 2;
+	}
+
 	agent->normalize();
 	cout << "invaded: " << *agent << endl;
 }
 
 
-Task Environment::goal_for(Agent *agent)
+TaskVector Environment::tasks_for(Agent *agent)
 {
 	/*-----------------------------------------------------------------------*
 	 * In a well-mixed environment, the goal is the same for every agent.
 	 * Subclasses should override this with a topography-specific method.
 	 *-----------------------------------------------------------------------*/
-	return this->mLandscape->taskAt(0, 0);
+	return this->mLandscape->tasks_at(0, 0);
+}
+    
+PayoffVector Environment::payoffs_for(Agent *agent)
+{
+	/*-----------------------------------------------------------------------*
+	 * In a well-mixed environment, the goal is the same for every agent.
+	 * Subclasses should override this with a topography-specific method.
+	 *-----------------------------------------------------------------------*/
+	return this->mLandscape->payoffs_at(0, 0);
 }
     
 void Environment::move(Agent *agent)
@@ -220,21 +231,31 @@ void Environment::move(Agent *agent)
 }
 
 
-double Environment::payoff(Agent *agent, Task phenotype)
+double Environment::payoff(Agent *agent, TaskVector phenotype)
 {
 	/*-----------------------------------------------------------------------*
 	 * returns the fitness for a given phenotype.
 	 * alpha_arg is used for a rapid falloff from peak, to create a sharper
 	 * fitness differential.
 	 *-----------------------------------------------------------------------*/
-	Task goal = this->goal_for(agent);
-	double distance = (double) (phenotype ^ goal).count() / settings.bits_arg;
-	double proximity = 1.0 - distance;
-	double fitness = pow(proximity, 1.0 / settings.alpha_arg);
+	TaskVector tasks = this->tasks_for(agent);
+	PayoffVector payoffs = this->payoffs_for(agent);
+
+	double payoff = 0.0;
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+	{
+		double taskDistance = (phenotype[taskIndex] ^ tasks[taskIndex]).count();
+		taskDistance /= settings.bits_arg;
+		double taskProximity = 1.0 - taskDistance;
+		double taskFitness = pow(taskProximity, 1.0 / settings.alpha_arg) * payoffs[taskIndex];
+		payoff += taskFitness;
+	}
+	payoff /= settings.tasks_arg;
 
 	/*-----------------------------------------------------------------------*
 	 * If we are using a bimodal distribution, create a secondary peak.
 	 *-----------------------------------------------------------------------*/
+    /*
 	if (settings.fitness_objective_bimodal_arg)
 	{
 		Task mask = Task(settings.bits_arg, pow(2, settings.bits_arg / 2) - 1);
@@ -245,9 +266,10 @@ double Environment::payoff(Agent *agent, Task phenotype)
 		fitness_secondary *= settings.fitness_objective_bimodal_arg;
 		fitness = max(fitness, fitness_secondary);
 	}
+    */
 
 	// cout << "task = " << goal << ", distance = " << distance << ", proximity = " << proximity << ", fitness = " << fitness << std::endl;
-	return fitness;
+	return payoff;
 }
 
 int Environment::get_popsize()
@@ -341,9 +363,12 @@ stats_t Environment::stats()
 		total_mrate		+= agent->mMRate;
 		total_mcoh		+= agent->mMCoh;
 
-		Task task = this->goal_for(agent);
-		total_geno_dist += (task ^ agent->mGenotype).count();
-		total_pheno_dist += (task ^ agent->mPhenotype).count();
+		TaskVector tasks = this->tasks_for(agent);
+		for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+		{
+			total_geno_dist += (tasks[taskIndex] ^ agent->mGenotype[taskIndex]).count();
+			total_pheno_dist += (tasks[taskIndex] ^ agent->mPhenotype[taskIndex]).count();
+		}
 		// cout << "Phenotype " << agent->mPhenotype << ", task " << task << ", distance: " << pheno_dist << endl;
 	}
 
@@ -362,8 +387,8 @@ stats_t Environment::stats()
 	stats.mrate_mean	= total_mrate / popsize;
 	stats.mcoh_mean		= total_mcoh / popsize;
 
-	stats.geno_mean_dist = total_geno_dist /= (settings.bits_arg * mAgents.size());
-	stats.pheno_mean_dist = total_pheno_dist /= (settings.bits_arg * mAgents.size());
+	stats.geno_mean_dist = total_geno_dist /= (settings.bits_arg * settings.tasks_arg * mAgents.size());
+	stats.pheno_mean_dist = total_pheno_dist /= (settings.bits_arg * settings.tasks_arg * mAgents.size());
 
 	stats.dispersion	= 0.0;
 

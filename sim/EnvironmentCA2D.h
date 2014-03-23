@@ -21,7 +21,7 @@ public:
 	~EnvironmentCA2D();
 
 	virtual void                reproduce();
-	virtual Task                goal_for(Agent *agent);
+	virtual TaskVector          tasks_for(Agent *agent);
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	friend class Agent;

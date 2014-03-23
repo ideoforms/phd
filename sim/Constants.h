@@ -50,6 +50,8 @@ struct stats_t
 };
 
 typedef boost::dynamic_bitset <> Task;
+typedef std::vector<Task> TaskVector;
+typedef std::vector<double> PayoffVector;
 
 typedef std::vector<Agent *>::iterator agent_iterator;
 

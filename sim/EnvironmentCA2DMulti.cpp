@@ -206,20 +206,23 @@ void EnvironmentCA2DMulti::reproduce()
 	// printf("cell now has %d agents\n", mGrid[child_loc.x][child_loc.y].size());
 }
 
-Task EnvironmentCA2DMulti::goal_for(Agent *agent)
+PayoffVector EnvironmentCA2DMulti::payoffs_for(Agent *agent)
 {
-    /*-----------------------------------------------------------------------*
-     * In a well-mixed environment, the goal is the same for every agent.
-     * Subclasses should override this with a topography-specific method.
-     *-----------------------------------------------------------------------*/
 	int index = agent->get_index();
 	Point2Di position = this->mPositions[index];
-    Task task = this->mLandscape->taskAt(position.x, position.y);
-
-	return task;
+    PayoffVector payoffs = this->mLandscape->payoffs_at(position.x, position.y);
+    return payoffs;
 }
 
-double EnvironmentCA2DMulti::payoff(Agent *agent, Task phenotype)
+TaskVector EnvironmentCA2DMulti::tasks_for(Agent *agent)
+{
+	int index = agent->get_index();
+	Point2Di position = this->mPositions[index];
+    TaskVector tasks = this->mLandscape->tasks_at(position.x, position.y);
+	return tasks;
+}
+
+double EnvironmentCA2DMulti::payoff(Agent *agent, TaskVector phenotype)
 {
     double payoff = Environment::payoff(agent, phenotype);
     
@@ -232,7 +235,7 @@ double EnvironmentCA2DMulti::payoff(Agent *agent, Task phenotype)
         payoff /= cohabitors.size();
     }
     
-    payoff = payoff * mLandscape->payoffAt(position.x, position.y);
+    // payoff = payoff * mLandscape->payoffAt(position.x, position.y);
     
     return payoff;
 }

@@ -39,6 +39,7 @@ const char *settings_t_help[] = {
   "  -B, --bits=INT                environmental bits",
   "  -s, --steps=INT               steps to run",
   "  -T, --trials=INT              trials to run  (default=`1')",
+  "      --tasks=INT               environmental tasks  (default=`1')",
   "  -m, --mu=DOUBLE               s.d. of mutations",
   "  -a, --alpha=DOUBLE            fitness rolloff",
   "  -O, --omega0=DOUBLE           initial metabolism  (default=`4')",
@@ -49,6 +50,7 @@ const char *settings_t_help[] = {
   "  -L, --logdir=STRING           path to store log  (default=`logs')",
   "  -l, --log                     logging on/off  (default=on)",
   "  -i, --log-every=INT           interval between logging  (default=`1000')",
+  "      --dump-every=INT          interval between dumping agents  (default=`0')",
   "      --log-dispersion          log morisita's dispersion index  (default=off)",
   "      --log-agents-at=INT       log all phenotypes at time N  (default=`0')",
   "  -d, --debug                   debug on/off  (default=off)",
@@ -159,6 +161,7 @@ void clear_given (struct settings_t *args_info)
   args_info->bits_given = 0 ;
   args_info->steps_given = 0 ;
   args_info->trials_given = 0 ;
+  args_info->tasks_given = 0 ;
   args_info->mu_given = 0 ;
   args_info->alpha_given = 0 ;
   args_info->omega0_given = 0 ;
@@ -169,6 +172,7 @@ void clear_given (struct settings_t *args_info)
   args_info->logdir_given = 0 ;
   args_info->log_given = 0 ;
   args_info->log_every_given = 0 ;
+  args_info->dump_every_given = 0 ;
   args_info->log_dispersion_given = 0 ;
   args_info->log_agents_at_given = 0 ;
   args_info->debug_given = 0 ;
@@ -235,6 +239,8 @@ void clear_args (struct settings_t *args_info)
   args_info->steps_orig = NULL;
   args_info->trials_arg = 1;
   args_info->trials_orig = NULL;
+  args_info->tasks_arg = 1;
+  args_info->tasks_orig = NULL;
   args_info->mu_orig = NULL;
   args_info->alpha_orig = NULL;
   args_info->omega0_arg = 4;
@@ -248,6 +254,8 @@ void clear_args (struct settings_t *args_info)
   args_info->log_flag = 1;
   args_info->log_every_arg = 1000;
   args_info->log_every_orig = NULL;
+  args_info->dump_every_arg = 0;
+  args_info->dump_every_orig = NULL;
   args_info->log_dispersion_flag = 0;
   args_info->log_agents_at_arg = 0;
   args_info->log_agents_at_orig = NULL;
@@ -357,69 +365,71 @@ void init_args_info(struct settings_t *args_info)
   args_info->bits_help = settings_t_help[4] ;
   args_info->steps_help = settings_t_help[5] ;
   args_info->trials_help = settings_t_help[6] ;
-  args_info->mu_help = settings_t_help[7] ;
-  args_info->alpha_help = settings_t_help[8] ;
-  args_info->omega0_help = settings_t_help[9] ;
-  args_info->p_mut_help = settings_t_help[10] ;
-  args_info->p_switch_help = settings_t_help[11] ;
-  args_info->p_move_help = settings_t_help[12] ;
-  args_info->p_noise_help = settings_t_help[13] ;
-  args_info->logdir_help = settings_t_help[14] ;
-  args_info->log_help = settings_t_help[15] ;
-  args_info->log_every_help = settings_t_help[16] ;
-  args_info->log_dispersion_help = settings_t_help[17] ;
-  args_info->log_agents_at_help = settings_t_help[18] ;
-  args_info->debug_help = settings_t_help[19] ;
-  args_info->batch_help = settings_t_help[20] ;
-  args_info->metabolism_help = settings_t_help[21] ;
-  args_info->reproduction_count_help = settings_t_help[22] ;
-  args_info->strategy_copy_novel_trait_help = settings_t_help[23] ;
-  args_info->strategy_copy_random_neighbour_help = settings_t_help[24] ;
-  args_info->strategy_copy_best_neighbour_help = settings_t_help[25] ;
-  args_info->strategy_always_assimilate_help = settings_t_help[26] ;
-  args_info->suppress_b_evo_help = settings_t_help[27] ;
-  args_info->suppress_b_ind_help = settings_t_help[28] ;
-  args_info->suppress_b_soc_help = settings_t_help[29] ;
-  args_info->fixed_b_evo_help = settings_t_help[30] ;
-  args_info->fixed_b_ind_help = settings_t_help[31] ;
-  args_info->fixed_b_soc_help = settings_t_help[32] ;
-  args_info->initial_b_evo_help = settings_t_help[33] ;
-  args_info->initial_b_ind_help = settings_t_help[34] ;
-  args_info->initial_b_soc_help = settings_t_help[35] ;
-  args_info->initial_geno_bits_help = settings_t_help[36] ;
-  args_info->thoroughbred_help = settings_t_help[37] ;
-  args_info->thoroughbred_mu_help = settings_t_help[38] ;
-  args_info->perturbation_help = settings_t_help[39] ;
-  args_info->perturbation_time_help = settings_t_help[40] ;
-  args_info->perturbation_size_help = settings_t_help[41] ;
-  args_info->invasion_time_help = settings_t_help[42] ;
-  args_info->invasion_ratio_help = settings_t_help[43] ;
-  args_info->neighbourhood_size_help = settings_t_help[44] ;
-  args_info->conf_file_help = settings_t_help[45] ;
-  args_info->ca_width_help = settings_t_help[46] ;
-  args_info->ca_non_adjacent_birth_help = settings_t_help[47] ;
-  args_info->ca_colocated_birth_help = settings_t_help[48] ;
-  args_info->graph_degree_help = settings_t_help[49] ;
-  args_info->abm_width_help = settings_t_help[50] ;
-  args_info->abm_neighbourhood_type_help = settings_t_help[51] ;
-  args_info->abm_neighbourhood_size_help = settings_t_help[52] ;
-  args_info->spatial_variance_help = settings_t_help[53] ;
-  args_info->spatial_patch_size_help = settings_t_help[54] ;
-  args_info->frequency_inverse_payoff_help = settings_t_help[55] ;
-  args_info->movement_help = settings_t_help[56] ;
-  args_info->movement_cohesion_genetic_help = settings_t_help[57] ;
-  args_info->movement_rate_genetic_help = settings_t_help[58] ;
-  args_info->payoff_distribution_help = settings_t_help[59] ;
-  args_info->payoff_correlation_mu_help = settings_t_help[60] ;
-  args_info->payoff_depletion_rate_help = settings_t_help[61] ;
-  args_info->payoff_regeneration_rate_help = settings_t_help[62] ;
-  args_info->structured_landscape_detail_help = settings_t_help[63] ;
-  args_info->structured_landscape_gradient_help = settings_t_help[64] ;
-  args_info->structured_landscape_abundance_help = settings_t_help[65] ;
-  args_info->fitness_objective_bimodal_help = settings_t_help[66] ;
-  args_info->fitness_initial_zero_help = settings_t_help[67] ;
-  args_info->selection_method_help = settings_t_help[68] ;
-  args_info->selection_tournament_size_help = settings_t_help[69] ;
+  args_info->tasks_help = settings_t_help[7] ;
+  args_info->mu_help = settings_t_help[8] ;
+  args_info->alpha_help = settings_t_help[9] ;
+  args_info->omega0_help = settings_t_help[10] ;
+  args_info->p_mut_help = settings_t_help[11] ;
+  args_info->p_switch_help = settings_t_help[12] ;
+  args_info->p_move_help = settings_t_help[13] ;
+  args_info->p_noise_help = settings_t_help[14] ;
+  args_info->logdir_help = settings_t_help[15] ;
+  args_info->log_help = settings_t_help[16] ;
+  args_info->log_every_help = settings_t_help[17] ;
+  args_info->dump_every_help = settings_t_help[18] ;
+  args_info->log_dispersion_help = settings_t_help[19] ;
+  args_info->log_agents_at_help = settings_t_help[20] ;
+  args_info->debug_help = settings_t_help[21] ;
+  args_info->batch_help = settings_t_help[22] ;
+  args_info->metabolism_help = settings_t_help[23] ;
+  args_info->reproduction_count_help = settings_t_help[24] ;
+  args_info->strategy_copy_novel_trait_help = settings_t_help[25] ;
+  args_info->strategy_copy_random_neighbour_help = settings_t_help[26] ;
+  args_info->strategy_copy_best_neighbour_help = settings_t_help[27] ;
+  args_info->strategy_always_assimilate_help = settings_t_help[28] ;
+  args_info->suppress_b_evo_help = settings_t_help[29] ;
+  args_info->suppress_b_ind_help = settings_t_help[30] ;
+  args_info->suppress_b_soc_help = settings_t_help[31] ;
+  args_info->fixed_b_evo_help = settings_t_help[32] ;
+  args_info->fixed_b_ind_help = settings_t_help[33] ;
+  args_info->fixed_b_soc_help = settings_t_help[34] ;
+  args_info->initial_b_evo_help = settings_t_help[35] ;
+  args_info->initial_b_ind_help = settings_t_help[36] ;
+  args_info->initial_b_soc_help = settings_t_help[37] ;
+  args_info->initial_geno_bits_help = settings_t_help[38] ;
+  args_info->thoroughbred_help = settings_t_help[39] ;
+  args_info->thoroughbred_mu_help = settings_t_help[40] ;
+  args_info->perturbation_help = settings_t_help[41] ;
+  args_info->perturbation_time_help = settings_t_help[42] ;
+  args_info->perturbation_size_help = settings_t_help[43] ;
+  args_info->invasion_time_help = settings_t_help[44] ;
+  args_info->invasion_ratio_help = settings_t_help[45] ;
+  args_info->neighbourhood_size_help = settings_t_help[46] ;
+  args_info->conf_file_help = settings_t_help[47] ;
+  args_info->ca_width_help = settings_t_help[48] ;
+  args_info->ca_non_adjacent_birth_help = settings_t_help[49] ;
+  args_info->ca_colocated_birth_help = settings_t_help[50] ;
+  args_info->graph_degree_help = settings_t_help[51] ;
+  args_info->abm_width_help = settings_t_help[52] ;
+  args_info->abm_neighbourhood_type_help = settings_t_help[53] ;
+  args_info->abm_neighbourhood_size_help = settings_t_help[54] ;
+  args_info->spatial_variance_help = settings_t_help[55] ;
+  args_info->spatial_patch_size_help = settings_t_help[56] ;
+  args_info->frequency_inverse_payoff_help = settings_t_help[57] ;
+  args_info->movement_help = settings_t_help[58] ;
+  args_info->movement_cohesion_genetic_help = settings_t_help[59] ;
+  args_info->movement_rate_genetic_help = settings_t_help[60] ;
+  args_info->payoff_distribution_help = settings_t_help[61] ;
+  args_info->payoff_correlation_mu_help = settings_t_help[62] ;
+  args_info->payoff_depletion_rate_help = settings_t_help[63] ;
+  args_info->payoff_regeneration_rate_help = settings_t_help[64] ;
+  args_info->structured_landscape_detail_help = settings_t_help[65] ;
+  args_info->structured_landscape_gradient_help = settings_t_help[66] ;
+  args_info->structured_landscape_abundance_help = settings_t_help[67] ;
+  args_info->fitness_objective_bimodal_help = settings_t_help[68] ;
+  args_info->fitness_initial_zero_help = settings_t_help[69] ;
+  args_info->selection_method_help = settings_t_help[70] ;
+  args_info->selection_tournament_size_help = settings_t_help[71] ;
   
 }
 
@@ -506,6 +516,7 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->bits_orig));
   free_string_field (&(args_info->steps_orig));
   free_string_field (&(args_info->trials_orig));
+  free_string_field (&(args_info->tasks_orig));
   free_string_field (&(args_info->mu_orig));
   free_string_field (&(args_info->alpha_orig));
   free_string_field (&(args_info->omega0_orig));
@@ -516,6 +527,7 @@ config_parser_release (struct settings_t *args_info)
   free_string_field (&(args_info->logdir_arg));
   free_string_field (&(args_info->logdir_orig));
   free_string_field (&(args_info->log_every_orig));
+  free_string_field (&(args_info->dump_every_orig));
   free_string_field (&(args_info->log_agents_at_orig));
   free_string_field (&(args_info->reproduction_count_orig));
   free_string_field (&(args_info->strategy_copy_novel_trait_orig));
@@ -611,6 +623,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "steps", args_info->steps_orig, 0);
   if (args_info->trials_given)
     write_into_file(outfile, "trials", args_info->trials_orig, 0);
+  if (args_info->tasks_given)
+    write_into_file(outfile, "tasks", args_info->tasks_orig, 0);
   if (args_info->mu_given)
     write_into_file(outfile, "mu", args_info->mu_orig, 0);
   if (args_info->alpha_given)
@@ -631,6 +645,8 @@ config_parser_dump(FILE *outfile, struct settings_t *args_info)
     write_into_file(outfile, "log", 0, 0 );
   if (args_info->log_every_given)
     write_into_file(outfile, "log-every", args_info->log_every_orig, 0);
+  if (args_info->dump_every_given)
+    write_into_file(outfile, "dump-every", args_info->dump_every_orig, 0);
   if (args_info->log_dispersion_given)
     write_into_file(outfile, "log-dispersion", 0, 0 );
   if (args_info->log_agents_at_given)
@@ -1002,6 +1018,7 @@ config_parser_internal (
         { "bits",	1, NULL, 'B' },
         { "steps",	1, NULL, 's' },
         { "trials",	1, NULL, 'T' },
+        { "tasks",	1, NULL, 0 },
         { "mu",	1, NULL, 'm' },
         { "alpha",	1, NULL, 'a' },
         { "omega0",	1, NULL, 'O' },
@@ -1012,6 +1029,7 @@ config_parser_internal (
         { "logdir",	1, NULL, 'L' },
         { "log",	0, NULL, 'l' },
         { "log-every",	1, NULL, 'i' },
+        { "dump-every",	1, NULL, 0 },
         { "log-dispersion",	0, NULL, 0 },
         { "log-agents-at",	1, NULL, 0 },
         { "debug",	0, NULL, 'd' },
@@ -1272,8 +1290,22 @@ config_parser_internal (
           break;
 
         case 0:	/* Long option with no short option */
+          /* environmental tasks.  */
+          if (strcmp (long_options[option_index].name, "tasks") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->tasks_arg), 
+                 &(args_info->tasks_orig), &(args_info->tasks_given),
+                &(local_args_info.tasks_given), optarg, 0, "1", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "tasks", '-',
+                additional_error))
+              goto failure;
+          
+          }
           /* prob. of bit mutation.  */
-          if (strcmp (long_options[option_index].name, "p_mut") == 0)
+          else if (strcmp (long_options[option_index].name, "p_mut") == 0)
           {
           
           
@@ -1324,6 +1356,20 @@ config_parser_internal (
                 &(local_args_info.p_noise_given), optarg, 0, 0, ARG_DOUBLE,
                 check_ambiguity, override, 0, 0,
                 "p_noise", '-',
+                additional_error))
+              goto failure;
+          
+          }
+          /* interval between dumping agents.  */
+          else if (strcmp (long_options[option_index].name, "dump-every") == 0)
+          {
+          
+          
+            if (update_arg( (void *)&(args_info->dump_every_arg), 
+                 &(args_info->dump_every_orig), &(args_info->dump_every_given),
+                &(local_args_info.dump_every_given), optarg, 0, "0", ARG_INT,
+                check_ambiguity, override, 0, 0,
+                "dump-every", '-',
                 additional_error))
               goto failure;
           

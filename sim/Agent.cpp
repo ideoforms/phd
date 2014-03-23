@@ -20,34 +20,49 @@ Agent::Agent(Environment *env)
 {
 	this->mEnv = env;
 
-	this->mGenotype = Task(settings.bits_arg);
+	this->mGenotype = TaskVector();
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+		this->mGenotype.push_back(Task(settings.bits_arg));
+
+	/*--------------------------------------------------------------------*
+	 * Option: Set precisely N bits to 1
+	 *--------------------------------------------------------------------*/
 	if (settings.initial_geno_bits_given)
 	{
-		this->mGenotype.reset();
-
-		/*--------------------------------------------------------------------*
-		 * Set first bits to 1, then shuffle whole genome
-		 * so that exactly initial-geno-bits are set to 1
-		 *--------------------------------------------------------------------*/
-		this->mGenotype |= Task(settings.bits_arg, pow(2, (int) (settings.bits_arg * settings.initial_geno_bits_arg)) - 1);
-		if (settings.initial_geno_bits_arg == 1)
-			this->mGenotype.set();
-
-		for (int i = settings.bits_arg - 1; i >= 0; i--)
+		for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
 		{
-			int j = rng_randint(i + 1);
-			int tmp = this->mGenotype[i];
-			this->mGenotype[i] = this->mGenotype[j];
-			this->mGenotype[j] = tmp;
+			this->mGenotype[taskIndex].reset();
+
+			/*--------------------------------------------------------------------*
+			 * Set first bits to 1, then shuffle whole genome
+			 * so that exactly initial-geno-bits are set to 1
+			 *--------------------------------------------------------------------*/
+			this->mGenotype[taskIndex] |= Task(settings.bits_arg, pow(2, (int) (settings.bits_arg * settings.initial_geno_bits_arg)) - 1);
+			if (settings.initial_geno_bits_arg == 1)
+				this->mGenotype[taskIndex].set();
+
+			for (int i = settings.bits_arg - 1; i >= 0; i--)
+			{
+				int j = rng_randint(i + 1);
+				int tmp = this->mGenotype[taskIndex][i];
+				this->mGenotype[taskIndex][i] = this->mGenotype[taskIndex][j];
+				this->mGenotype[taskIndex][j] = tmp;
+			}
 		}
 	}
+	/*--------------------------------------------------------------------*
+	 * Default: Set bits to uniform random value
+	 *--------------------------------------------------------------------*/
 	else
 	{
-		for (int i = 0; i < settings.bits_arg; i++)
-			this->mGenotype[i] = rng_coin(0.5);
+		for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+			for (int i = 0; i < settings.bits_arg; i++)
+				this->mGenotype[taskIndex][i] = rng_coin(0.5);
 	}
 
-	this->mPhenotype = Task(settings.bits_arg);
+	this->mPhenotype = TaskVector();
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+		this->mPhenotype.push_back(Task(settings.bits_arg));
 
 	this->mBEvo = settings.initial_b_evo_given ? settings.initial_b_evo_arg : rng_uniformuf();
 	this->mBInd = settings.initial_b_ind_given ? settings.initial_b_ind_arg : rng_uniformuf();
@@ -68,12 +83,19 @@ Agent::Agent(Agent *parent)
 	this->mEnv = parent->mEnv;
 
 	// IMPORTANT: Must initialise an object or we risk making a copy of the parent's geno (ptr)!
-	this->mGenotype = Task(settings.bits_arg);
-	this->mGenotype = parent->mGenotype;
+	// Still confused by this ...
+    this->mGenotype = TaskVector();
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+	{
+		this->mGenotype.push_back(Task(settings.bits_arg));
+		this->mGenotype[taskIndex] = parent->mGenotype[taskIndex];
+	}
 	// printf("created new agent with %d bits (parent has %d)\n", this->mGenotype.size(), parent->mGenotype.size());
 	// printf("(my geno ptr = %p, parent geno ptr = %p)\n", &this->mGenotype, &parent->mGenotype);
 
-	this->mPhenotype = Task(settings.bits_arg);
+    this->mPhenotype = TaskVector();
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+		this->mPhenotype.push_back(Task(settings.bits_arg));
 
 	this->mBEvo = parent->mBEvo;
 	this->mBInd = parent->mBInd;
@@ -177,18 +199,20 @@ double Agent::get_fitness() const
 }
 
 
-Task Agent::learn_ind()
+TaskVector Agent::learn_ind()
 {
-	Task action = this->mPhenotype;
+	TaskVector tasks = this->mPhenotype;
+	int taskIndex = rng_randint(settings.tasks_arg);
 	int bit = rng_randint(settings.bits_arg);
-	action.flip(bit);
-	return action;
+	tasks[taskIndex].flip(bit);
+	return tasks;
 }
 
-Task Agent::learn_soc()
+TaskVector Agent::learn_soc()
 {
 	int bit, index;
-	Task action = this->mPhenotype;
+	TaskVector tasks = this->mPhenotype;
+	int taskIndex = rng_randint(settings.tasks_arg);
 
 	vector <Agent *> neighbours = this->mEnv->get_neighbours(this);
 
@@ -236,11 +260,11 @@ Task Agent::learn_soc()
 			 * SHOULDN'T WE STILL BE ABLE TO COPY FROM ZERO-FITNESS NEIGHBOURS?
 			 *------------------------------------------------------------*/
 			// printf("got neighbours but non with non-zero fitness, bailing...\n");
-			return action;
+			return tasks;
 		}
 
 		Agent *exemplar = neighbours[index];
-		Task exemplar_pheno = exemplar->mPhenotype;
+		TaskVector exemplar_pheno = exemplar->mPhenotype;
 
 		if (!settings.strategy_copy_novel_trait_arg)
 		{
@@ -248,10 +272,10 @@ Task Agent::learn_soc()
 			 * Strategy: By default, copy a random trait.
 			 *------------------------------------------------------------*/
 			bit = rng_randint(settings.bits_arg);
-			action.set(bit, exemplar_pheno.test(bit));
+			tasks[taskIndex].set(bit, exemplar_pheno[taskIndex].test(bit));
 			if (rng_coin(settings.p_noise_arg))
 			{
-				action.flip(bit);
+				tasks[taskIndex].flip(bit);
 			}
 		}
 		else
@@ -268,13 +292,13 @@ Task Agent::learn_soc()
 			for (int i = 0; i < settings.bits_arg && !found; i++)
 			{
 				bit = indices[i];
-				if (action.test(bit) != exemplar_pheno.test(bit))
+				if (tasks[taskIndex].test(bit) != exemplar_pheno[taskIndex].test(bit))
 				{
 					// cout << "copying bit " << bit << " (mine = " << action << ", theirs = " << exemplar_pheno << ")" << std::endl;
 					found = true;
-					action.set(bit, exemplar_pheno.test(bit));
+					tasks[taskIndex].set(bit, exemplar_pheno[taskIndex].test(bit));
 					if (rng_coin(settings.p_noise_arg))
-						action.flip(bit);
+						tasks[taskIndex].flip(bit);
 				}
 			}
 
@@ -283,13 +307,13 @@ Task Agent::learn_soc()
 				if (rng_coin(settings.p_noise_arg))
 				{
 					bit = rng_randint(settings.bits_arg);
-					action.flip(bit);
+					tasks[taskIndex].flip(bit);
 				}
 			}
 		}
 	}
 
-	return action;
+	return tasks;
 }
 
 void Agent::update()
@@ -304,7 +328,7 @@ void Agent::update()
 		double modes[] = { this->mBEvo, this->mBInd, this->mBSoc };
 		int mode = roulette(modes, 3);
 
-		Task action = this->mPhenotype;
+		TaskVector action = this->mPhenotype;
 
 		switch (mode)
 		{
@@ -395,12 +419,12 @@ void Agent::mutate()
 	this->mMCoh += rng_gaussian(0, settings.mu_arg);
 	this->mMCoh = clip(this->mMCoh, -1, 1);
 
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
 	for (int i = 0; i < settings.bits_arg; i++)
 	{
 		if (rng_coin(settings.p_mut_arg))
 		{
-			// printf("flipping bit %d (of %d)\n", i, this->mGenotype.size());
-			this->mGenotype.flip(i);
+			this->mGenotype[taskIndex].flip(i);
 		}
 	}
 	this->mPhenotype = this->mGenotype;
@@ -418,8 +442,19 @@ Agent *Agent::replicate()
 ostream& operator<< (ostream &stream, Agent &object)
 {
 	// stream << setprecision(16) << fixed;
-	stream << "[agent ([ " << object.mBEvo << ", " << object.mBInd << ", " << object.mBSoc << " | " << object.mLastAction << ": " << object.get_fitness() << " | " << object.mGenotype << " | " << object.mPhenotype << "]) ]";
+	// 	TODO: print out all tasks
+	stream << "[agent ([ " << object.mBEvo << ", " << object.mBInd << ", " << object.mBSoc << " | " << object.mLastAction << ": " << object.get_fitness() << " | " << object.mGenotype[0] << " | " << object.mPhenotype[0] << "]) ]";
+
 	return stream;
+}
+
+void Agent::dump()
+{
+	cout << "[agent ([ " << mBEvo << ", " << mBInd << ", " << mBSoc << " ])]:" << get_fitness() << std::endl;
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+	{
+		cout << " - " << taskIndex << ": " << mGenotype[taskIndex] << " | " << mPhenotype[taskIndex] << endl;
+	}
 }
 
 } // namespace sim

@@ -87,7 +87,8 @@ void ImitationCAApp::draw()
         for (int x = 0; x < env->mWidth; x++)
         for (int y = 0; y < env->mHeight; y++)
         {
-            float payoff = mEnvironment->mLandscape->payoffAt(x, y);
+            PayoffVector payoffs = mEnvironment->mLandscape->payoffs_at(x, y);
+            double payoff = payoffs[0];
             gl::color(Color(payoff, payoff, payoff));
             gl::drawSolidRect(Rectf(x * cellWidth, y * cellHeight, (x + 1) * cellWidth, (y + 1) * cellHeight));
         }
@@ -123,7 +124,8 @@ void ImitationCAApp::draw()
         for (int x = 0; x < env->mWidth; x++)
             for (int y = 0; y < env->mHeight; y++)
             {
-                float payoff = mEnvironment->mLandscape->payoffAt(x, y);
+                PayoffVector payoffs = mEnvironment->mLandscape->payoffs_at(x, y);
+                double payoff = payoffs[0];
                 gl::color(Color(payoff, payoff, payoff));
                 gl::drawSolidRect(Rectf(x * cellWidth, y * cellHeight, (x + 1) * cellWidth, (y + 1) * cellHeight));
             }

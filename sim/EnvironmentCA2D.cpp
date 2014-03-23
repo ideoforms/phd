@@ -109,7 +109,7 @@ void EnvironmentCA2D::reproduce()
 	mGrid[child_loc.x][child_loc.y] = child;
 }
 
-Task EnvironmentCA2D::goal_for(Agent *agent)
+TaskVector EnvironmentCA2D::tasks_for(Agent *agent)
 {
     /*-----------------------------------------------------------------------*
      * In a well-mixed environment, the goal is the same for every agent.
@@ -117,7 +117,7 @@ Task EnvironmentCA2D::goal_for(Agent *agent)
      *-----------------------------------------------------------------------*/
 	int index = agent->get_index();
 	Point2Di position = this->mPositions[index];
-    Task task = this->mLandscape->taskAt(position.x, position.y);
+    TaskVector task = this->mLandscape->tasks_at(position.x, position.y);
 
 	return task;
 }

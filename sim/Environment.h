@@ -43,8 +43,9 @@ public:
 	int                         get_popsize();
 
     virtual void                move(Agent *agent);
-	virtual double              payoff(Agent *agent, Task genotype);
-	virtual Task				goal_for(Agent *agent);
+	virtual double              payoff(Agent *agent, TaskVector genotype);
+	virtual TaskVector			tasks_for(Agent *agent);
+	virtual PayoffVector		payoffs_for(Agent *agent);
 	virtual vector <Agent *> 	get_neighbours(const Agent *agent);
 
 	/*-----------------------------------------------------------------------*
@@ -60,7 +61,7 @@ public:
 		stream << "[environment: t = " <<
 			object.mAge << ", pop = " <<
 			object.mAgents.size() << ", task = " <<
-			object.mLandscape->taskAt(0, 0) << "]";
+			object.mLandscape->tasks_at(0, 0)[0] << "]";
 		return stream;
 	}
 
@@ -106,8 +107,8 @@ public:
 	 * An ABM environment has a fixed integer width and height (which are
 	 * usually the same)
 	 *-----------------------------------------------------------------------*/
-	unsigned						mWidth;
-	unsigned						mHeight;
+	unsigned				mWidth;
+	unsigned				mHeight;
 
 	vector <Point2Df>		mPositions;
     vector <Point2Df>		mVelocity;

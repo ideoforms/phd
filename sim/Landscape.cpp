@@ -28,8 +28,12 @@ Landscape::Landscape(unsigned bits, unsigned width, unsigned height)
 		this->mObjective[x].resize(this->mHeight);
 		for (int y = 0; y < this->mHeight; y++)
 		{
-			this->mObjective[x][y] = Task(this->mBits);
-			this->mObjective[x][y].set();
+			this->mObjective[x][y] = TaskVector();
+			for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+			{
+				this->mObjective[x][y].push_back(Task(settings.bits_arg));
+				this->mObjective[x][y][taskIndex].reset();
+			}
 		}
 	}
 	
@@ -40,7 +44,7 @@ Landscape::Landscape(unsigned bits, unsigned width, unsigned height)
 	}
 	this->distribute_payoffs();
 }
-	
+
 void Landscape::distribute_payoffs()
 {
 	LandscapeGenerator *generator;
@@ -54,85 +58,105 @@ void Landscape::distribute_payoffs()
 
 	for (int x = 0; x < this->mWidth; x++)
 	for (int y = 0; y < this->mHeight; y++)
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
 	{
-		if (strcmp(settings.payoff_distribution_arg, "uniform") == 0)
+		double payoff = 0;
+
+		if (settings.tasks_arg == 2 && taskIndex == 1)
 		{
-			this->mPayoff[x][y] = 1.0;
+			payoff = 1.0 - this->mPayoff[x][y][0];
+			printf("*** setting to inverse of other task: %f -> %f\n", this->mPayoff[x][y][0], payoff);
+		}
+		else if (strcmp(settings.payoff_distribution_arg, "uniform") == 0)
+		{
+			payoff = 0.5;
 		}
 		else if (strcmp(settings.payoff_distribution_arg, "random") == 0)
 		{
-			this->mPayoff[x][y] = rng_uniform(0, 1);
+			payoff = rng_uniform(0, 1);
 		}
 		else if (strcmp(settings.payoff_distribution_arg, "anticorrelated") == 0)
 		{
 			/*-----------------------------------------------------------------------*
 			 * Chequerboard pattern -- pairwise correlation is -1
 			 *-----------------------------------------------------------------------*/
-			this->mPayoff[x][y] = (x + y) % 2;
+			payoff = (x + y) % 2;
 		}
 		else if (strcmp(settings.payoff_distribution_arg, "correlated") == 0)
 		{
 			if (x == 0)
 			{
 				if (y == 0)
-					this->mPayoff[x][y] = 0.5;
+					payoff = 0.5;
 				else
-					this->mPayoff[x][y] = this->mPayoff[x][y - 1] + rng_gaussian(0, settings.payoff_correlation_mu_arg);
+					payoff = this->mPayoff[x][y - 1][taskIndex] + rng_gaussian(0, settings.payoff_correlation_mu_arg);
 			}
 			else
 			{
-				float mu = (y == 0) ? rng_gaussian(0, settings.payoff_correlation_mu_arg) : (this->mPayoff[x][0] - this->mPayoff[x - 1][0]);
+				float mu = (y == 0) ? rng_gaussian(0, settings.payoff_correlation_mu_arg) : (this->mPayoff[x][0][taskIndex] - this->mPayoff[x - 1][0][taskIndex]);
 				
-				this->mPayoff[x][y] = this->mPayoff[x - 1][y] + mu;
+				payoff = this->mPayoff[x - 1][y][taskIndex] + mu;
 			}
-			this->mPayoff[x][y] = clip(this->mPayoff[x][y], 0, 1);
+			payoff = clip(payoff, 0, 1);
 		}
 		else if (strcmp(settings.payoff_distribution_arg, "structured") == 0)
 		{
-			this->mPayoff[x][y] = generator->get((float) x / 16, (float) y / 16);
+			payoff = generator->get((float) x / 16, (float) y / 16);
+			printf("generator payoff: %f\n", payoff);
 		}
 		else
 		{
 			throw("invalid payoff distribution type");
 		}
+
+		this->mPayoff[x][y].push_back(payoff);
 	}
 }
-
+	
 void Landscape::distribute(unsigned heterogeneity)
 {
+	if (settings.tasks_arg > 1)
+		printf("WARNING: Distribute broken for >1 tasks\n");
 	/*-----------------------------------------------------------------------*
 	 * Creates a 2D grid landscape where the pairwise Hamming distance
 	 * between any two cells is equal to heterogeneity.
+	 * TODO: This is dodgy - varies both tasks simultaneously - should just
+	 *       vary 1 bit
 	 *-----------------------------------------------------------------------*/
-	for (int y = 1; y < this->mHeight; y++)
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
 	{
-		this->mObjective[0][y] = this->mObjective[0][y - 1];
-		for (int h = 0; h < heterogeneity; h++)
-		{
-			#ifdef DETERMINISTIC_VARIANCE
-				this->mObjective[0][y].flip(h);
-			#else
-				int index = rng_randint(this->mBits);
-				this->mObjective[0][y].flip(index);
-			#endif
-		}
-	}
-
-	for (int x = 1; x < this->mWidth; x++)
-	{
-		this->mObjective[x][0] = this->mObjective[x - 1][0];
-		for (int h = 0; h < heterogeneity; h++)
-		{
-			#ifdef DETERMINISTIC_VARIANCE
-				this->mObjective[x][0].flip(h);
-			#else
-				int index = rng_randint(this->mBits);
-				this->mObjective[x][0].flip(index);
-			#endif
-		}
-
 		for (int y = 1; y < this->mHeight; y++)
-			this->mObjective[x][y] = this->mObjective[x][0] ^ this->mObjective[0][y];
+		{
+			this->mObjective[0][y][taskIndex] = this->mObjective[0][y - 1][taskIndex];
+			for (int h = 0; h < heterogeneity; h++)
+			{
+				#ifdef DETERMINISTIC_VARIANCE
+					this->mObjective[0][y][taskIndex].flip(h);
+				#else
+					int index = rng_randint(this->mBits);
+					this->mObjective[0][y][taskIndex].flip(index);
+				#endif
+			}
+		}
+
+		for (int x = 1; x < this->mWidth; x++)
+		{
+			this->mObjective[x][0][taskIndex] = this->mObjective[x - 1][0][taskIndex];
+			for (int h = 0; h < heterogeneity; h++)
+			{
+				#ifdef DETERMINISTIC_VARIANCE
+					this->mObjective[x][0][taskIndex].flip(h);
+				#else
+					int index = rng_randint(this->mBits);
+					this->mObjective[x][0][taskIndex].flip(index);
+				#endif
+			}
+
+			for (int y = 1; y < this->mHeight; y++)
+			{
+				this->mObjective[x][y][taskIndex] = this->mObjective[x][0][taskIndex] ^ this->mObjective[0][y][taskIndex];
+			}
+		}
 	}
 }
 
@@ -142,7 +166,7 @@ void Landscape::dump()
 	{
 		for (int x = 0; x < this->mWidth; x++)
 		{
-			cout << this->mObjective[x][y] << " ";
+			cout << this->mObjective[x][y][0] << " ";
 		}
 		cout << std::endl;
 	}
@@ -150,13 +174,16 @@ void Landscape::dump()
 
 void Landscape::perturb(float perturbance)
 {
-	for (int index = 0; index < this->mBits; index++)
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
 	{
-		if (rng_coin(perturbance))
+		for (int index = 0; index < this->mBits; index++)
 		{
-			for (int x = 0; x < this->mWidth; x++)
-			for (int y = 0; y < this->mHeight; y++)
-				this->mObjective[x][y].flip(index);
+			if (rng_coin(perturbance))
+			{
+				for (int x = 0; x < this->mWidth; x++)
+				for (int y = 0; y < this->mHeight; y++)
+					this->mObjective[x][y][taskIndex].flip(index);
+			}
 		}
 	}
 }
@@ -166,15 +193,19 @@ void Landscape::fluctuate()
 	/*--------------------------------------------------------------------*
 	 * fluctuations
 	 *--------------------------------------------------------------------*/
-	unsigned index = rng_randint(this->mBits);
-	for (int x = 0; x < this->mWidth; x++)
-	for (int y = 0; y < this->mHeight; y++)
-		this->mObjective[x][y].flip(index);
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+	{
+		unsigned index = rng_randint(this->mBits);
+		for (int x = 0; x < this->mWidth; x++)
+		for (int y = 0; y < this->mHeight; y++)
+			this->mObjective[x][y][taskIndex].flip(index);
+	}
 }
 	
 void Landscape::deplete_at(unsigned x, unsigned y)
 {
-	this->mPayoff[x][y] *= (1 - settings.payoff_depletion_rate_arg);
+	for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
+		this->mPayoff[x][y][taskIndex] *= (1 - settings.payoff_depletion_rate_arg);
 }
 	
 void Landscape::regenerate()
@@ -184,17 +215,19 @@ void Landscape::regenerate()
 	else
 		for (int x = 0; x < this->mWidth; x++)
 		for (int y = 0; y < this->mHeight; y++)
+		for (int taskIndex = 0; taskIndex < settings.tasks_arg; taskIndex++)
 		{
-			this->mPayoff[x][y] *= (1 + settings.payoff_regeneration_rate_arg);
-			this->mPayoff[x][y] = clip(this->mPayoff[x][y], 0, 1);
+			this->mPayoff[x][y][taskIndex] *= (1 + settings.payoff_regeneration_rate_arg);
+			this->mPayoff[x][y][taskIndex] = clip(this->mPayoff[x][y][taskIndex], 0, 1);
 		}
 }
 
 
-Task Landscape::taskAt(unsigned x, unsigned y)
+TaskVector Landscape::tasks_at(unsigned x, unsigned y)
 {
 	if (settings.spatial_patch_size_arg == 1)
 	{
+		// cout << "Landscape::tasks_at " << x << ", " << y << ": " << this->mObjective[x][y][0] << ", " << this->mObjective[x][y][1] << endl;
 		return this->mObjective[x][y];
 	}
 	else
@@ -205,7 +238,7 @@ Task Landscape::taskAt(unsigned x, unsigned y)
 	}
 }
 	
-float Landscape::payoffAt(unsigned x, unsigned y)
+PayoffVector Landscape::payoffs_at(unsigned x, unsigned y)
 {
 	unsigned patch_x = x / settings.spatial_patch_size_arg;
 	unsigned patch_y = y / settings.spatial_patch_size_arg;

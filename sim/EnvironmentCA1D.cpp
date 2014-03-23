@@ -70,14 +70,14 @@ void EnvironmentCA1D::reproduce()
 	mAgents[child_index] = child;
 }
 
-Task EnvironmentCA1D::goal_for(Agent *agent)
+TaskVector EnvironmentCA1D::tasks_for(Agent *agent)
 {
     /*-----------------------------------------------------------------------*
      * In a well-mixed environment, the goal is the same for every agent.
      * Subclasses should override this with a topography-specific method.
      *-----------------------------------------------------------------------*/
 	int index = agent->get_index();
-    Task task = this->mLandscape->taskAt(index, 0);
+    TaskVector task = this->mLandscape->tasks_at(index, 0);
 
 	// cout << "(agent " << index << ") task at " << position << " is " << task << endl;
 

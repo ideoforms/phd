@@ -54,6 +54,9 @@ struct settings_t
   int trials_arg;	/**< @brief trials to run (default='1').  */
   char * trials_orig;	/**< @brief trials to run original value given at command line.  */
   const char *trials_help; /**< @brief trials to run help description.  */
+  int tasks_arg;	/**< @brief environmental tasks (default='1').  */
+  char * tasks_orig;	/**< @brief environmental tasks original value given at command line.  */
+  const char *tasks_help; /**< @brief environmental tasks help description.  */
   double mu_arg;	/**< @brief s.d. of mutations.  */
   char * mu_orig;	/**< @brief s.d. of mutations original value given at command line.  */
   const char *mu_help; /**< @brief s.d. of mutations help description.  */
@@ -83,6 +86,9 @@ struct settings_t
   int log_every_arg;	/**< @brief interval between logging (default='1000').  */
   char * log_every_orig;	/**< @brief interval between logging original value given at command line.  */
   const char *log_every_help; /**< @brief interval between logging help description.  */
+  int dump_every_arg;	/**< @brief interval between dumping agents (default='0').  */
+  char * dump_every_orig;	/**< @brief interval between dumping agents original value given at command line.  */
+  const char *dump_every_help; /**< @brief interval between dumping agents help description.  */
   int log_dispersion_flag;	/**< @brief log morisita's dispersion index (default=off).  */
   const char *log_dispersion_help; /**< @brief log morisita's dispersion index help description.  */
   int log_agents_at_arg;	/**< @brief log all phenotypes at time N (default='0').  */
@@ -245,6 +251,7 @@ struct settings_t
   unsigned int bits_given ;	/**< @brief Whether bits was given.  */
   unsigned int steps_given ;	/**< @brief Whether steps was given.  */
   unsigned int trials_given ;	/**< @brief Whether trials was given.  */
+  unsigned int tasks_given ;	/**< @brief Whether tasks was given.  */
   unsigned int mu_given ;	/**< @brief Whether mu was given.  */
   unsigned int alpha_given ;	/**< @brief Whether alpha was given.  */
   unsigned int omega0_given ;	/**< @brief Whether omega0 was given.  */
@@ -255,6 +262,7 @@ struct settings_t
   unsigned int logdir_given ;	/**< @brief Whether logdir was given.  */
   unsigned int log_given ;	/**< @brief Whether log was given.  */
   unsigned int log_every_given ;	/**< @brief Whether log-every was given.  */
+  unsigned int dump_every_given ;	/**< @brief Whether dump-every was given.  */
   unsigned int log_dispersion_given ;	/**< @brief Whether log-dispersion was given.  */
   unsigned int log_agents_at_given ;	/**< @brief Whether log-agents-at was given.  */
   unsigned int debug_given ;	/**< @brief Whether debug was given.  */

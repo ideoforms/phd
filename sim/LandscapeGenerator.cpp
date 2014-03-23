@@ -31,14 +31,21 @@ void LandscapeGenerator::generate()
 
 float LandscapeGenerator::get(float x, float y)
 {
+    // [-1 .. 1]
     float value = mPerlin->get(x * 16.0 * mDetail, y * 16.0 * mDetail, this->mGradient);
     // if (value < -0.5) value = -0.5;
     // if (value > 0.5) value = 0.5;
     // value = tanh(value * (1 + 5 * (1 - mGradient))) + mAbundance;
     
     // 2014-02-10
+    // [-1 .. 1]
     value = tanh(value * pow(10, map(mGradient, 0, 1, -1, 1)));
-    value = value + mAbundance;
+    
+    // [0 .. 1]
+    value = (value * 0.5) + mAbundance;
+    if (value < 0) value = 0;
+    if (value > 1) value = 1;
+    
     printf("pos: %d, %d = %f\n", (int) (x * 16.0 * mDetail), (int) (y * 16.0 * mDetail), value);
     
     return value;
@@ -66,7 +73,7 @@ void Perlin2D::init()
     for (int x = 0; x < this->mWidth * resolution + 1; x++)
     for (int y = 0; y < this->mWidth * resolution + 1; y++)
     {
-        this->mSeeds[octave][x][y] = rng_uniform(-0.5, 0.5);
+        this->mSeeds[octave][x][y] = rng_uniform(-1.0, 1.0);
     }
 }
 

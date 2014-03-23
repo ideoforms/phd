@@ -29,13 +29,14 @@ public:
 	Agent(Agent *parent);
 	virtual ~Agent() {}
 
+	virtual void 		dump();
 	virtual void 		reset();
 	virtual void 		update();
 	virtual void		mutate();
 	virtual Agent *		replicate();
     
-    Task                learn_ind();
-    Task                learn_soc();
+    TaskVector                learn_ind();
+    TaskVector                learn_soc();
 
 	int					get_index() const;
 	double				get_fitness() const;
@@ -53,8 +54,8 @@ public:
 	double				mOmega;
 	double				mDelta;
 
-	Task			 	mGenotype;
-	Task			 	mPhenotype;
+	TaskVector			mGenotype;
+	TaskVector			mPhenotype;
 	Environment 		*mEnv;
 
 	double				mMRate; /* [0..1] */
