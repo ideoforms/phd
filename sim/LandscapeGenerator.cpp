@@ -18,7 +18,7 @@ LandscapeGenerator::LandscapeGenerator(float detail, float gradient, float abund
     this->mGradient = gradient;
     this->mAbundance = abundance;
     
-    this->mPerlin = new Perlin2D(64);
+    this->mPerlin = new Perlin2D(16);
     this->mPerlin->mOctaves = 1;
     this->mPerlin->mRolloff = 0.5;
     this->generate();

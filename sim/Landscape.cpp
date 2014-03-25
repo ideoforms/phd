@@ -69,11 +69,11 @@ void Landscape::distribute_payoffs()
 		}
 		else if (strcmp(settings.payoff_distribution_arg, "uniform") == 0)
 		{
-			payoff = 0.5;
+			payoff = 1.0 / settings.tasks_arg;
 		}
 		else if (strcmp(settings.payoff_distribution_arg, "random") == 0)
 		{
-			payoff = rng_uniform(0, 1);
+			payoff = rng_uniform(0, 1) / settings.tasks_arg;
 		}
 		else if (strcmp(settings.payoff_distribution_arg, "anticorrelated") == 0)
 		{
@@ -81,6 +81,7 @@ void Landscape::distribute_payoffs()
 			 * Chequerboard pattern -- pairwise correlation is -1
 			 *-----------------------------------------------------------------------*/
 			payoff = (x + y) % 2;
+			payoff /= settings.tasks_arg;
 		}
 		else if (strcmp(settings.payoff_distribution_arg, "correlated") == 0)
 		{
@@ -98,10 +99,12 @@ void Landscape::distribute_payoffs()
 				payoff = this->mPayoff[x - 1][y][taskIndex] + mu;
 			}
 			payoff = clip(payoff, 0, 1);
+			payoff /= settings.tasks_arg;
 		}
 		else if (strcmp(settings.payoff_distribution_arg, "structured") == 0)
 		{
-			payoff = generator->get((float) x / 16, (float) y / 16);
+            // DJJ 2014-03-23 - changed from "16" - is this why we are not getting such strong results?
+			payoff = generator->get((float) x / mWidth, (float) y / mWidth);
 			printf("generator payoff: %f\n", payoff);
 		}
 		else

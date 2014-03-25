@@ -249,6 +249,7 @@ double Environment::payoff(Agent *agent, TaskVector phenotype)
 		double taskProximity = 1.0 - taskDistance;
 		double taskFitness = pow(taskProximity, 1.0 / settings.alpha_arg) * payoffs[taskIndex];
 		payoff += taskFitness;
+		// cout << "task " << taskIndex << ": " << tasks[taskIndex] << ", distance = " << taskDistance << ", proximity = " << taskProximity << ", fitness = " << taskFitness << std::endl;
 	}
 	payoff /= settings.tasks_arg;
 
@@ -268,7 +269,6 @@ double Environment::payoff(Agent *agent, TaskVector phenotype)
 	}
     */
 
-	// cout << "task = " << goal << ", distance = " << distance << ", proximity = " << proximity << ", fitness = " << fitness << std::endl;
 	return payoff;
 }
 
