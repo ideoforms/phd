@@ -16,11 +16,15 @@ Compiling this simulation has the following prerequisites:
 * **boost**: for bitset vectors
 * **gsl**: for pseudo-random number operations
 
+To build and run the GUI elements, Xcode and Cinder (`http://libcinder.org/`) are required (tested with Xcode 6.3.1 and Cinder 0.8.6).
+
 ## Compilation
 
-To build this simulation on OS X, as long as the above prerequisites are installed, simply run:
+To build the command-line simulation on OS X, as long as the above prerequisites are installed, simply run:
 
 	make
+
+To build the GUI simulation, open the .xcodeproj file in Xcode. You will need to set CINDER_PATH to point to your Cinder distribution.
 
 ## Configuration
 
