@@ -1,7 +1,7 @@
 CPP=clang++
 INCLUDE=-I/usr/local/boost -I/usr/local/include -I.
 SIM=app-utils.cpp sim/*.cpp sim/io/*.cpp sim/config/*.c
-CFLAGS=/usr/local/lib/libgsl.a -O3 -Wall
+CFLAGS=-std=c++11 /usr/local/lib/libgsl.a -O3 -Wall
 
 all:
 	gengetopt --output-dir=sim/config -f config_parser -F settings -a settings_t -C < sim/config/settings.ggo
